@@ -5,10 +5,9 @@ import type { Fabric } from "@/types";
 import { Button } from "./ui/button";
 import { FabricOrderForm } from "./FabricOrderForm";
 
-const FabricCard = ({ fabric, buttonTitle, buttonAction, href }: { 
+const FabricCard = ({ fabric, buttonTitle, href }: { 
   fabric: Fabric; 
   buttonTitle: string; 
-  buttonAction: () => void;
   href?: string;
 }) => {
   const [isOrderFormDialogOpen, setIsOrderFormDialogOpen] = useState(false);
@@ -23,6 +22,7 @@ const FabricCard = ({ fabric, buttonTitle, buttonAction, href }: {
           onClick={() => setIsImageExpanded(false)}
         >
           <button
+          title="Close"
             onClick={(e) => {
               e.stopPropagation();
               setIsImageExpanded(false);
@@ -59,7 +59,8 @@ const FabricCard = ({ fabric, buttonTitle, buttonAction, href }: {
           onClick={(e) => e.stopPropagation()}
         >
           <button
-            onClick={() => setIsOrderFormDialogOpen(false)}
+              title="Close"
+              onClick={() => setIsOrderFormDialogOpen(false)}
             className="cursor-pointer absolute left-4 top-4 rounded-full p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-300"
           >
             <X className="h-5 w-5" />

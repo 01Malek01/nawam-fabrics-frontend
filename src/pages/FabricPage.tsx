@@ -21,7 +21,7 @@ export default function FabricPage() {
   }
   return (
     <div className=' w-full flex flex-col items-center justify-center my-2'>
-        <FabricCard   buttonTitle='احجز الأن' buttonAction={() => {}} fabric={fabric} />
+        <FabricCard   buttonTitle='احجز الأن' fabric={fabric} />
     </div>
   )
 }
