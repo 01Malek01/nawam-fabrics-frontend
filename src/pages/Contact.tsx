@@ -6,8 +6,7 @@ const Contact = () => {
       <h1>Contact Us</h1>
       <p>Get in touch with our team for any inquiries.</p>
       <div className="contact-info">
-        <p>Email: info@nawamfabrics.com</p>
-        <p>Phone: (123) 456-7890</p>
+       
       </div>
     </div>
   );

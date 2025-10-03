@@ -8,10 +8,11 @@ import type { Category } from "@/types";
 import { useNavigate } from "react-router-dom";
 const Home = () => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   useEffect(() => {
-    console.log( airtableService.getAllRecords().then((result) => console.log(result)))
     const fetchCategories = async () => {
+      setIsLoading(true);
       try {
         const allCategories = await airtableService.getAllRecords("Categories");
         
@@ -47,14 +48,29 @@ const Home = () => {
         setCategories(categoriesWithSubs);
       } catch (error) {
         console.error("Error fetching categories:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
-
     fetchCategories();
   }, []);
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background-light dark:bg-background-dark">
+        <div className="animate-pulse">
+          <img 
+            src="/logo.png" 
+            alt="Loading..." 
+            className="h-32 w-32 md:h-48 md:w-48"
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200 min-h-screen space-y-2 ">
+    <div className="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200 min-h-screen space-y-2">
       {categories?.map((category) => (
         <LandingPageCard
           key={category.id}
