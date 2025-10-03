@@ -16,19 +16,24 @@ import {
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import type { Fabric } from "@/types";
+import useCreateReservation from "@/hooks/api/useCreateReservation";
+import { useNavigate } from "react-router-dom";
 // Form validation schema
 const formSchema = z.object({
-  name: z.string().min(2, {
+    customerName: z.string().min(2, {
     message: "الاسم يجب أن يكون على الأقل حرفين",
   }),
-  phone: z.string().regex(/^\+?[0-9\s-]{10,}$/, {
+  customerPhone: z.string().regex(/^\+?[0-9\s-]{10,}$/, {
     message: "رقم الهاتف غير صالح",
   }),
-  meters: z.coerce.number().min(0.1, {
+  quantityMeters: z.coerce.number().min(0.1, {
     message: "الكمية يجب أن تكون أكبر من 0",
   }),
-  address: z.string().min(5, {
+  customerAddress: z.string().min(5, {
     message: "العنوان يجب أن يكون على الأقل 5 أحرف",
+  }),
+  productRecordId: z.string().min(1, {
+    message: "المنتج يجب أن يكون على الأقل 1 حرف",
   }),
 });
 
@@ -36,34 +41,80 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface FabricOrderFormProps {
   fabric: Fabric;
-  onSuccess?: () => void;
-  onCancel?: () => void;
-  onSubmit?: (values: FormValues) => void;
 }
 
-export function FabricOrderForm({ fabric, onSuccess, onCancel }: FabricOrderFormProps) {
+
+export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
+  const { createReservation, isLoading, isSuccess, error } = useCreateReservation()
+  const navigate = useNavigate();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      phone: "",
-      meters: 1,
-      address: "",
+      customerName: "",
+      customerPhone: "",
+      quantityMeters: 1,
+      customerAddress: "",
+      productRecordId: fabric.id
+
     },
   });
 
-  function onSubmit(values: FormValues) {
-    if (onSubmit) {
-      onSubmit(values);
-    } else {
-      // Default submit handler
-      console.log("No submit handler provided. Form values:", {
-        fabric: fabric?.name,
-        ...values,
-      });
+  async function onSubmit(values: FormValues) {
+    try {
+      await createReservation(values);
+      // Reset form only on successful submission
+      form.reset();
+    } catch (err) {
+      // Error is already handled by the useCreateReservation hook
+      console.error('Error submitting form:', err);
     }
+  }
     
-    if (onSuccess) onSuccess();
+  
+
+  if (isLoading) {
+    return (
+      <div className="w-full max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+        <p className="text-gray-700 dark:text-gray-300">جاري معالجة طلبك...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md text-center">
+        <div className="text-red-500 text-4xl mb-4">⚠️</div>
+        <h2 className="text-xl font-bold mb-2 text-red-600 dark:text-red-400">حدث خطأ</h2>
+        <p className="text-gray-700 dark:text-gray-300 mb-4">
+          عذراً، حدث خطأ أثناء معالجة طلبك. يرجى المحاولة مرة أخرى لاحقاً.
+        </p>
+        <Button 
+          onClick={() => navigate('/')} 
+          className="mt-4"
+        >
+          المحاولة مرة أخرى
+        </Button>
+      </div>
+    );
+  }
+
+  if (isSuccess) {
+    return (
+      <div className="w-full max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md text-center">
+        <div className="text-green-500 text-4xl mb-4">✓</div>
+        <h2 className="text-xl font-bold mb-2 text-green-600 dark:text-green-400">تم إرسال طلبك بنجاح!</h2>
+        <p className="text-gray-700 dark:text-gray-300 mb-4">
+          سنتواصل معك قريباً لتأكيد الطلب وتفاصيل الدفع.
+        </p>
+        <Button 
+          onClick={() => navigate('/')}
+          className="mt-4"
+        >
+          العودة للصفحة الرئيسية
+        </Button>
+      </div>
+    );
   }
 
   return (
@@ -77,7 +128,7 @@ export function FabricOrderForm({ fabric, onSuccess, onCancel }: FabricOrderForm
           <FormField
           
             control={form.control}
-            name="name"
+            name="customerName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>الاسم الكامل</FormLabel>
@@ -91,7 +142,7 @@ export function FabricOrderForm({ fabric, onSuccess, onCancel }: FabricOrderForm
           
           <FormField
             control={form.control}
-            name="phone"
+            name="customerPhone"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>رقم الهاتف</FormLabel>
@@ -105,15 +156,13 @@ export function FabricOrderForm({ fabric, onSuccess, onCancel }: FabricOrderForm
           
           <FormField
             control={form.control}
-            name="meters"
+            name="quantityMeters"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>الكمية (متر)</FormLabel>
                 <FormControl>
                   <Input 
-                    type="number" 
-                    step="0.1"
-                    min="0.1"
+                    type="text" 
                     placeholder="أدخل الكمية المطلوبة" 
                     {...field} 
                   />
@@ -125,7 +174,7 @@ export function FabricOrderForm({ fabric, onSuccess, onCancel }: FabricOrderForm
           
           <FormField
             control={form.control}
-            name="address"
+            name="customerAddress"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>العنوان</FormLabel>
@@ -142,16 +191,7 @@ export function FabricOrderForm({ fabric, onSuccess, onCancel }: FabricOrderForm
           />
           
           <div className="flex justify-end gap-4 pt-4">
-            {onCancel && (
-              <Button 
-                type="button" 
-                variant="outline"
-                onClick={onCancel}
-                className="w-full sm:w-auto cursor-pointer"
-              >
-                إلغاء
-              </Button>
-            )}
+            
             <Button type="submit" className="w-full sm:w-auto cursor-pointer">
               تأكيد الطلب
             </Button>

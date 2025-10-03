@@ -1,3 +1,4 @@
+import Fabrics from '@/components/Fabrics';
 import { useParams } from 'react-router-dom'
 
 export default function ProductsPage() {
@@ -6,7 +7,7 @@ export default function ProductsPage() {
     console.log(' categoryId',categoryId, 'subCategoryId', subCategoryId);
   return (
     <div>
-        Filtered products go here
+      <Fabrics categoryId={categoryId as string} subCategoryId={subCategoryId as string} />
     </div>
   )
 }

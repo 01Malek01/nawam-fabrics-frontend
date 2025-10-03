@@ -4,25 +4,32 @@ import { Link } from "react-router-dom";
 import type { Fabric } from "@/types";
 import { Button } from "./ui/button";
 import { FabricOrderForm } from "./FabricOrderForm";
+import { useOrderDialog } from "@/context/OrderDialogContext";
 
-const FabricCard = ({ fabric, buttonTitle, href }: { 
-  fabric: Fabric; 
-  buttonTitle: string; 
+const FabricCard = ({
+  fabric,
+  buttonTitle,
+  href,
+  buttonAction,
+}: {
+  fabric: Fabric;
+  buttonTitle: string;
   href?: string;
+  buttonAction: () => void;
 }) => {
-  const [isOrderFormDialogOpen, setIsOrderFormDialogOpen] = useState(false);
+  const { isOrderDialogOpen, closeOrderDialog } = useOrderDialog();
   const [isImageExpanded, setIsImageExpanded] = useState(false);
 
   return (
     <div className="group relative">
       {/* Image Overlay */}
       {isImageExpanded && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
           onClick={() => setIsImageExpanded(false)}
         >
           <button
-          title="Close"
+            title="Close"
             onClick={(e) => {
               e.stopPropagation();
               setIsImageExpanded(false);
@@ -41,40 +48,40 @@ const FabricCard = ({ fabric, buttonTitle, href }: {
       )}
 
       {/* Order Form Overlay */}
-      {isOrderFormDialogOpen && (
-        <div 
+      {isOrderDialogOpen && (
+        <div
           className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
-          onClick={() => setIsOrderFormDialogOpen(false)}
+          onClick={() => closeOrderDialog()}
         ></div>
       )}
 
       {/* Order Form Dialog */}
-      <div 
+      <div
         className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-200 ${
-          isOrderFormDialogOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
+          isOrderDialogOpen ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
-        <div 
+        <div
           className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-gray-800"
           onClick={(e) => e.stopPropagation()}
         >
           <button
-              title="Close"
-              onClick={() => setIsOrderFormDialogOpen(false)}
+            title="Close"
+            onClick={() => closeOrderDialog()}
             className="cursor-pointer absolute left-4 top-4 rounded-full p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-300"
           >
             <X className="h-5 w-5" />
           </button>
-          <FabricOrderForm 
-            fabric={fabric} 
-            onCancel={() => setIsOrderFormDialogOpen(false)}
+          <FabricOrderForm
+            fabric={fabric}
+            
           />
         </div>
       </div>
 
       {/* Product Card */}
       <div className="relative">
-        <div 
+        <div
           className="group relative aspect-square overflow-hidden rounded-lg bg-gray-100"
           onClick={() => setIsImageExpanded(true)}
         >
@@ -87,26 +94,32 @@ const FabricCard = ({ fabric, buttonTitle, href }: {
             <Maximize2 className="h-8 w-8 text-white" />
           </div>
         </div>
-        
+
         {href && (
-          <Link to={href} className="absolute inset-0 z-10" aria-label={`View ${fabric.name}`} />
+          <Link
+            to={href}
+            className="absolute inset-0 z-10"
+            aria-label={`View ${fabric.name}`}
+          />
         )}
       </div>
-      
+
       <div className="mt-4 flex flex-col">
         <div className="flex items-center justify-between py-2">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white">
             {fabric?.name}
           </h3>
           <p className="text-2xl font-bold text-primary">
-            {fabric?.price} <span className="text-base font-medium text-gray-500">/ متر</span>
+            {fabric?.price}
+            <span className="  text-green-600">جنيه</span>{" "}
+            <span className="text-base font-medium text-gray-500">/ متر</span>
           </p>
         </div>
-        <Button 
+        <Button
           onClick={(e) => {
+            buttonAction();
             e.preventDefault();
             e.stopPropagation();
-            setIsOrderFormDialogOpen(true);
           }}
           className="mt-2 w-full cursor-pointer rounded-lg p-6 text-lg font-bold"
         >

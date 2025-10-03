@@ -25,6 +25,7 @@ export interface Category {
     name: string;
   }>;
   Products: string[];
+  ParentCategory:string[]
 }
   
   export interface ProductFields {
