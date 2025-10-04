@@ -6,5 +6,9 @@ export interface Fabric {
     name: string;
     price: string;
     image: string;
+    images: string[];
+    description: string;
+    mainCategory: string;
+    subCategory: string;
   
 }

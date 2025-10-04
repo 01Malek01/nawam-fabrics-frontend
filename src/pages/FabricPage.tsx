@@ -1,36 +1,103 @@
-import React from "react";
-import FabricCard from "../components/FabricCard";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useOrderDialog } from "@/context/OrderDialogContext";
+import type { Fabric } from "@/types";
+import { airtableService } from "@/services/airtable";
+import ImagesSlider from "@/components/Slider";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { FabricOrderForm } from "@/components/FabricOrderForm";
 
 export default function FabricPage() {
   const { fabricId } = useParams();
-  const { setOrderDialogOpen } = useOrderDialog();
-  const fabric = {
-    id: fabricId as string,
-    name: "Floral Cotton Print",
-    price: "$12.99",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAgEn5bBp8A3v5TMgmG_Xy30ZssTkQ8uJQAkn9gjKJvFTKqVKFHIOVfsEWTffLVupooswoJqnDc2pwIS3RFtU8Y2nx3tuFu2A6cdTRVdJ-0zdiZBOmRiFOvmKQGlFK8ViKl_t7BjzhTIi-k9S3DqfghfDdi6L_x8J5uT-4nKcla4hFpaPprg2XU4LthpdL30Fbu88v8p-bqOjfnmxRs-Jhvu-JZQsTMUBEb-j5TB5P-GDg1712IqY5Fe-4yfiTk5UreQ_nUBDL02pY",
-    description:
-      "A beautiful floral print cotton fabric perfect for summer dresses and light clothing. Made from 100% organic cotton with a soft hand feel.",
-    type: "Cotton",
-    width: "150cm",
-    weight: "150gsm",
-    careInstructions:
-      "Machine wash cold, gentle cycle. Do not bleach. Tumble dry low. Iron on low heat.",
-    stock: 25,
-    colors: ["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4"],
-    sku: "FCP-001",
-    tags: ["summer", "floral", "lightweight", "breathable"],
-  };
+  const { isOrderDialogOpen, setOrderDialogOpen } = useOrderDialog();
+  const [fabric, setFabric] = useState<Fabric | null>(null);
+
+  useEffect(() => {
+    const fetchFabric = async () => {
+   const fabricData = await airtableService.getRecordById(fabricId as string);
+   setFabric({
+      id: fabricData.id,
+      images: fabricData.Image?.map((image: { url:string}) => image.url) || [],
+      name: fabricData.Name,
+      price: fabricData.PricePerMeter,
+      description: fabricData?.Description || "",
+      mainCategory: fabricData.MainCategory,
+      subCategory: fabricData.SubCategory,
+   })
+   console.log( 'fetched fabric by id:',fabric)
+    }
+    fetchFabric();
+  }, [fabricId]);
+
+  if (!fabric) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background-light dark:bg-background-dark">
+        <div className="animate-pulse">
+          <img 
+            src="/logo.png" 
+            alt="Loading..." 
+            className="h-32 w-32 md:h-48 md:w-48"
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className=" w-full flex flex-col items-center justify-center my-2">
-      <FabricCard
-        buttonTitle="احجز الأن"
-        fabric={fabric}
-        buttonAction={() => setOrderDialogOpen(true)}
-      />
+    <div className="container mx-auto px-4 py-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Product Images */}
+        <div className="bg-white p-4 rounded-lg shadow lg:order-2">
+          {fabric.images && fabric.images.length > 0 ? (
+            <ImagesSlider images={fabric.images} />
+          ) : (
+            <div className="w-full h-64 bg-gray-100 flex items-center justify-center">
+              <span>No images available</span>
+            </div>
+          )}
+        </div>
+
+        {/* Product Details */}
+        <div className="space-y-6 order-1">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">{fabric.name}</h1>
+          </div>
+
+          <p className="text-2xl font-bold text-primary flex  items-center  gap-2">
+            {fabric?.price}
+            <span className="  text-green-600">جنيه</span>{" "}
+            <span className="text-base font-medium text-gray-500">/ متر</span>
+          </p>
+
+          {fabric.description && (
+            <div className="mt-6">
+              <h2 className="text-lg font-medium text-gray-900">الوصف</h2>
+              <p className="mt-2 text-gray-600 whitespace-pre-line">
+                {fabric.description}
+              </p>
+            </div>
+          )}
+
+          <div className="pt-4 border-t border-gray-200">
+            <Button 
+              className="w-full md:w-auto cursor-pointer"
+              onClick={() => setOrderDialogOpen(true)}
+            >
+              طلب الآن
+            </Button>
+
+            {/* Order Form Dialog */}
+            <Dialog open={isOrderDialogOpen} onOpenChange={setOrderDialogOpen}>
+              <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
+                {fabric && <FabricOrderForm fabric={fabric} />}
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
