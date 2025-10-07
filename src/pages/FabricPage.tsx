@@ -9,6 +9,7 @@ import ImagesSlider from "@/components/Slider";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { FabricOrderForm } from "@/components/FabricOrderForm";
+import VideoIframe from "@/components/VideoIframe";
 
 export default function FabricPage() {
   const { fabricId } = useParams();
@@ -17,18 +18,23 @@ export default function FabricPage() {
 
   useEffect(() => {
     const fetchFabric = async () => {
-   const fabricData = await airtableService.getRecordById(fabricId as string);
-   setFabric({
-      id: fabricData.id,
-      images: fabricData.Image?.map((image: { url:string}) => image.url) || [],
-      name: fabricData.Name,
-      price: fabricData.PricePerMeter,
-      description: fabricData?.Description || "",
-      mainCategory: fabricData.MainCategory,
-      subCategory: fabricData.SubCategory,
-   })
-   console.log( 'fetched fabric by id:',fabric)
-    }
+      const fabricData = await airtableService.getRecordById(
+        fabricId as string
+      );
+      console.log("fabric", fabricData);
+
+      setFabric({
+        id: fabricData.id,
+        images:
+          fabricData.Image?.map((image: { url: string }) => image.url) || [],
+        name: fabricData.Name,
+        price: fabricData.PricePerMeter,
+        description: fabricData?.Description || "",
+        mainCategory: fabricData.MainCategory,
+        subCategory: fabricData.SubCategory,
+        videoUrl: fabricData.VideoUrl || fabricData?.Video?.[0]?.url || "",
+      });
+    };
     fetchFabric();
   }, [fabricId]);
 
@@ -36,9 +42,9 @@ export default function FabricPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background-light dark:bg-background-dark">
         <div className="animate-pulse">
-          <img 
-            src="/logo.png" 
-            alt="Loading..." 
+          <img
+            src="/logo.png"
+            alt="Loading..."
             className="h-32 w-32 md:h-48 md:w-48"
           />
         </div>
@@ -82,7 +88,7 @@ export default function FabricPage() {
           )}
 
           <div className="pt-4 border-t border-gray-200">
-            <Button 
+            <Button
               className="w-full md:w-auto cursor-pointer"
               onClick={() => setOrderDialogOpen(true)}
             >
@@ -97,6 +103,12 @@ export default function FabricPage() {
             </Dialog>
           </div>
         </div>
+      </div>
+      <div className="product-video w-full mt-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          مقطع الفيديو للمنتج
+        </h2>
+        {fabric.videoUrl && <VideoIframe videoUrl={fabric.videoUrl} />}
       </div>
     </div>
   );
