@@ -21,7 +21,6 @@ export default function FabricPage() {
       const fabricData = await airtableService.getRecordById(
         fabricId as string
       );
-      console.log("fabric", fabricData);
 
       setFabric({
         id: fabricData.id,

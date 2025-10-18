@@ -15,7 +15,6 @@ const Fabrics = ({categoryId, subCategoryId}: {categoryId: string, subCategoryId
       const fetchFabrics = async () => {
         try {
           const records = await airtableService.getAllRecords('Products');
-          console.log(records)
           const filteredFabrics = records
             .filter((fabric: any) => 
               fabric.MainCategory?.includes(categoryId) && 
