@@ -1,6 +1,6 @@
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Slider, { type Settings } from "react-slick";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -41,8 +41,16 @@ const PrevArrow: React.FC<ArrowProps> = ({ className, style, onClick }) => {
 };
 
 const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
-  const settings: Settings = {
-    dots: window.innerWidth >= 768, // Show dots only on medium screens and up
+  const [nav1, setNav1] = useState<Slider | null>(null);
+  const [nav2, setNav2] = useState<Slider | null>(null);
+  const [slider1, setSlider1] = useState<Slider | null>(null);
+  const [slider2, setSlider2] = useState<Slider | null>(null);
+  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Main slider settings
+  const mainSettings: Settings = {
+    dots: window.innerWidth >= 768,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
@@ -54,13 +62,63 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
     customPaging: () => (
       <div className="w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-colors duration-200" />
     ),
+    beforeChange: (current: number, next: number) => setCurrentSlide(next),
   };
 
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  // Overlay slider settings
+  const overlaySettings: Settings = {
+    dots: window.innerWidth >= 768,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    cssEase: "ease-in-out",
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
+    initialSlide: currentSlide,
+    dotsClass: "slick-dots !bottom-8",
+    customPaging: () => (
+      <div className="w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-colors duration-200" />
+    ),
+    afterChange: (current: number) => setCurrentSlide(current),
+  };
+
+  // Handle browser back button to close modal instead of navigating away
+  const handlePopState = useCallback((event: PopStateEvent) => {
+    if (isOverlayOpen) {
+      setIsOverlayOpen(false);
+      window.history.pushState(null, '', window.location.href);
+    } else {
+      window.history.back();
+    }
+  }, [isOverlayOpen]);
+
+  useEffect(() => {
+    if (isOverlayOpen) {
+      window.history.pushState({ modalOpen: true }, '', window.location.href);
+    }
+  }, [isOverlayOpen]);
+
+  useEffect(() => {
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [handlePopState]);
+
+  const handleImageClick = (index: number) => {
+    setCurrentSlide(index);
+    setIsOverlayOpen(true);
+  };
+
+  const handleCloseOverlay = () => {
+    setIsOverlayOpen(false);
+  };
 
   return (
     <div className="slider-container relative group">
-      <Slider {...settings}>
+      {/* Main Slider */}
+      <Slider {...mainSettings} ref={slider => setSlider1(slider)}>
         {images.map((image, index) => (
           <div className="px-2" key={index}>
             <div className="relative overflow-hidden rounded-lg cursor-zoom-in">
@@ -69,55 +127,74 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
                 alt={`Fabric ${index + 1}`} 
                 className="w-full h-96 object-cover rounded-lg transition-transform duration-300 hover:scale-105" 
                 loading={index === 0 ? 'eager' : 'lazy'}
-                onClick={() => setSelectedImage(image)}
+                onClick={() => handleImageClick(index)}
               />
             </div>
           </div>
         ))}
       </Slider>
 
-      {/* Image Modal */}
-      <Dialog.Root open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
+      {/* Overlay Slider */}
+      <Dialog.Root open={isOverlayOpen} onOpenChange={setIsOverlayOpen}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <Dialog.Overlay className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
             <Dialog.Content 
-              className="relative max-w-4xl w-full max-h-[90vh]"
-              onPointerDownOutside={(e) => e.preventDefault()}
+              className="relative max-w-6xl w-full max-h-[90vh]"
+              onPointerDownOutside={handleCloseOverlay}
+              onEscapeKeyDown={handleCloseOverlay}
             >
               <Button 
                 variant="default" 
                 size="icon" 
-                className="absolute -top-5 z-10 right-0 text-white hover:bg-white/20"
-                onClick={() => setSelectedImage(null)}
-                aria-label="Close"
+                className="absolute -top-12 right-0 z-50 bg-gray-800 hover:bg-gray-700 text-white border-none"
+                onClick={handleCloseOverlay}
+                aria-label="Close overlay"
               >
                 <X className="h-6 w-6" />
               </Button>
+              <p className="text-white text-center absolute -top-12  inset-0">اسحب لليمين او لليسار لتصفح الصور</p>
               
-              <div className="relative h-full w-full flex items-center justify-center">
-                <img 
-                  src={selectedImage || ''} 
-                  alt="Enlarged view" 
-                  className="max-h-[80vh] max-w-full object-contain rounded-lg"
-                />
-              </div>
-              
-              <div className="flex justify-center mt-4 space-x-2">
-                {images.map((image, idx) => (
-                  <button
-                    key={idx}
-                    className={`w-16 h-16 rounded overflow-hidden border-2 ${
-                      selectedImage === image ? 'border-primary' : 'border-transparent'
-                    }`}
-                    onClick={() => setSelectedImage(image)}
-                  >
-                    <img 
-                      src={image} 
-                      alt={`Thumbnail ${idx + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
+              <div className="relative h-full w-full">
+                <Slider {...overlaySettings} ref={slider => setSlider2(slider)}>
+                  {images.map((image, index) => (
+                    <div key={index} className="outline-none">
+                      <div className="flex items-center justify-center h-[70vh]">
+                        <img 
+                          src={image} 
+                          alt={`Fabric ${index + 1} - Full view`} 
+                          className="max-h-full max-w-full object-contain rounded-lg"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </Slider>
+                
+                {/* Thumbnail navigation */}
+                <div className="mt-4 px-8">
+                  <div className="flex justify-center space-x-2 overflow-x-auto py-2">
+                    {images.map((image, idx) => (
+                      <button
+                        key={idx}
+                        className={`flex-shrink-0 w-16 h-16 rounded overflow-hidden border-2 transition-all ${
+                          currentSlide === idx 
+                            ? 'border-white scale-110' 
+                            : 'border-transparent hover:border-white/50'
+                        }`}
+                        onClick={() => {
+                          if (slider2) {
+                            slider2.slickGoTo(idx);
+                          }
+                        }}
+                      >
+                        <img 
+                          src={image} 
+                          alt={`Thumbnail ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </Dialog.Content>
           </Dialog.Overlay>
