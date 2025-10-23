@@ -18,6 +18,7 @@ import { Textarea } from "./ui/textarea";
 import type { Fabric } from "@/types";
 import useCreateReservation from "@/hooks/api/useCreateReservation";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 // Form validation schema
 const formSchema = z.object({
     customerName: z.string().min(2, {
@@ -35,6 +36,9 @@ const formSchema = z.object({
   productRecordId: z.string().min(1, {
     message: "المنتج يجب أن يكون على الأقل 1 حرف",
   }),
+  selectedImages: z.array(z.string()).min(1, {
+    message: "يجب اختيار صورة واحدة على الأقل",
+  }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -46,6 +50,9 @@ interface FabricOrderFormProps {
 
 export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
   const { createReservation, isLoading, isSuccess, error } = useCreateReservation()
+  useEffect(() => {
+ console.log(fabric)
+  }, [fabric]);
   const navigate = useNavigate();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -54,8 +61,8 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
       customerPhone: "",
       quantityMeters: 1,
       customerAddress: "",
-      productRecordId: fabric.id
-
+      productRecordId: fabric.id,
+      selectedImages: [],
     },
   });
 
@@ -189,7 +196,55 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
               </FormItem>
             )}
           />
-          
+
+          <FormField
+            control={form.control}
+            name="selectedImages"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>اختر الصور المطلوبة</FormLabel>
+                <FormControl>
+                  <div className="grid grid-cols-2 gap-4">
+                    {fabric.images?.map((imageUrl, index) => (
+                      <div key={index} className="relative">
+                        <input
+                          type="checkbox"
+                          id={`image-${index}`}
+                          checked={field.value?.includes(imageUrl)}
+                          onChange={(e) => {
+                            const updatedImages = e.target.checked
+                              ? [...field.value, imageUrl]
+                              : field.value.filter(url => url !== imageUrl);
+                            field.onChange(updatedImages);
+                          }}
+                          className="sr-only peer"
+                        />
+                        <label
+                          htmlFor={`image-${index}`}
+                          className="block relative cursor-pointer rounded-lg overflow-hidden border-5 border-transparent peer-checked:border-blue-500 transition-colors"
+                        >
+                          <img
+                            src={imageUrl}
+                            alt={`صورة ${index + 1} للمنتج`}
+                            className="w-full h-32 object-cover"
+                          />
+                          <div className="absolute inset-0 bg-black/0 peer-checked:bg-black/20 transition-colors flex items-center justify-center">
+                            <div className="w-6 h-6 rounded-full border-2 border-white bg-primary opacity-0 peer-checked:opacity-100 transition-opacity flex items-center justify-center">
+                              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                          </div>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <div className="flex justify-end gap-4 pt-4">
             
             <Button type="submit" className="w-full sm:w-auto cursor-pointer">
