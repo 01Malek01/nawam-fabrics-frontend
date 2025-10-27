@@ -1,50 +1,75 @@
 const Contact = () => {
-  const phoneNumber = '01148820088';
-  const whatsappLink = `https://wa.me/2${phoneNumber}`;
-
   return (
-    <section className="max-w-3xl mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold mb-8 text-right">تواصل معنا</h1>
-      
-      <div className="space-y-6 text-right">
-        <div className="bg-white/60 dark:bg-white/5 border rounded-lg p-6">
-          <h2 className="text-2xl font-semibold text-primary-600 mb-4">📞 معلومات التواصل</h2>
-          
-          <div className="space-y-4">
-            <div>
-              <h3 className="font-semibold text-lg">واتساب:</h3>
-              <a 
-                href={whatsappLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-2 my-2"
-              >
-                <span>01148820088</span>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 2C6.48 2 2 6.48 2 12c0 1.96.6 3.77 1.63 5.28L2 22l4.72-1.63A9.95 9.95 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.66 0-3.21-.51-4.5-1.38l-.3-.18-3.12.82.83-3.04-.2-.31A7.95 7.95 0 014 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8zm4.5-12h-9v1.5h9v-1.5zm-9 4h6v1.5h-6v-1.5z" />
-                </svg>
-              </a>
-              <p className="text-black/80 dark:text-white/80 mt-1">فريق خدمة العملاء متاح للرد على استفساراتك</p>
-            </div>
+    <section className="max-w-4xl mx-auto py-10 px-4">
+      <h1 className="text-3xl font-bold mb-8 text-right">❓ الأسئلة الشائعة</h1>
 
-           
+      <div className="bg-white/60 dark:bg-white/5 border rounded-lg p-6 text-right">
+        <div className="space-y-8">
+
+          {/* Question 1 */}
+          <div className="border-r-4 border-[#A8511A] pr-4">
+            <h2 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">🧵 1. هل الأقمشة أصلية وجودتها مضمونة؟</h2>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+              نعم، جميع الأقمشة لدينا أصلية ومختارة بعناية من أفضل المصانع المحلية والمستوردة لضمان أعلى جودة وأفضل خامة.
+            </p>
           </div>
-        </div>
 
-        <div className="bg-white/60 dark:bg-white/5 border rounded-lg p-6">
-          <h2 className="text-2xl font-semibold text-primary-600 mb-4">📧 أرسل لنا رسالة</h2>
-          <p className="text-black/80 dark:text-white/80 mb-4">يمكنك مراسلتنا عبر الواتساب وسنرد عليك في أسرع وقت ممكن</p>
-          <a 
-            href={whatsappLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <svg className="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 2C6.48 2 2 6.48 2 12c0 1.96.6 3.77 1.63 5.28L2 22l4.72-1.63A9.95 9.95 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.66 0-3.21-.51-4.5-1.38l-.3-.18-3.12.82.83-3.04-.2-.31A7.95 7.95 0 014 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8zm4.5-12h-9v1.5h9v-1.5zm-9 4h6v1.5h-6v-1.5z" />
-            </svg>
-            تواصل معنا على واتساب
-          </a>
+          {/* Question 2 */}
+          <div className="border-r-4 border-[#A8511A] pr-4">
+            <h2 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">📦 2. هل توفرون الشحن لجميع المحافظات؟</h2>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+              نعم، يتوفر شحن لجميع محافظات مصر من خلال شركات شحن موثوقة لضمان سرعة التوصيل وسلامة المنتج.
+            </p>
+          </div>
+
+          {/* Question 3 */}
+          <div className="border-r-4 border-[#A8511A] pr-4">
+            <h2 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">💰 3. ما هي طريقة الدفع؟</h2>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+              يتم دفع عربون 10٪ من قيمة الطلب عن طريق فودافون كاش أو إنستا باي، والباقي يُسدّد عند استلام الطلب من المندوب.
+            </p>
+          </div>
+
+          {/* Question 4 */}
+          <div className="border-r-4 border-[#A8511A] pr-4">
+            <h2 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">⏱️ 4. كم تستغرق مدة التوصيل؟</h2>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+              عادة يتم التوصيل خلال من 2 إلى 5 أيام عمل حسب المحافظة ومكان العميل.
+            </p>
+          </div>
+
+          {/* Question 5 */}
+          <div className="border-r-4 border-[#A8511A] pr-4">
+            <h2 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">🔄 5. هل يمكن استبدال أو إرجاع المنتج؟</h2>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+              نعم، يمكنك الاستبدال أو الإرجاع خلال 14 يومًا من الاستلام بشرط أن يكون القماش بحالته الأصلية ولم يُستخدم أو يُقصّ.
+            </p>
+          </div>
+
+          {/* Question 6 */}
+          <div className="border-r-4 border-[#A8511A] pr-4">
+            <h2 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">🧽 6. كيف أعتني بالقماش بعد الشراء؟</h2>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+              ننصح دائمًا بـ الغسيل الجاف للأصواف والصوف الكشمير، وتجنب استخدام الماء الساخن أو العصر القوي للحفاظ على نعومة القماش وجودته.
+            </p>
+          </div>
+
+          {/* Question 7 */}
+          <div className="border-r-4 border-[#A8511A] pr-4">
+            <h2 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">📞 7. كيف يمكنني التواصل معكم؟</h2>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+              يمكنك التواصل معنا مباشرة عبر:
+            </p>
+            <div className="space-y-2 text-gray-700 dark:text-gray-300">
+              <p className="flex items-center justify-end gap-2">
+                <span>📲 واتساب: 01148820088 / 01008124051</span>
+              </p>
+              <p className="flex items-center justify-end gap-2">
+                <span>📍 أو زيارة الفرع: البحيرة – دمنهور – منطقة العبّارة – برج اللواء – أمام مدرسة التعاون</span>
+              </p>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>

@@ -38,7 +38,7 @@ const Fabrics = ({categoryId, subCategoryId}: {categoryId: string, subCategoryId
       fetchFabrics();
     },[categoryId, subCategoryId])
     return (
-    <div className="font-display bg-background-light dark:bg-background-dark text-black dark:text-white min-h-screen p-3">
+    <div className="font-display bg-background-light dark:bg-background-dark text-black dark:text-white min-h-screen p-2 sm:p-4">
       <div className="flex flex-col md:flex-row min-h-screen justify-between space-x-8 ">
         {/* <aside className="py-5">
             <FilterMenu />
@@ -47,8 +47,8 @@ const Fabrics = ({categoryId, subCategoryId}: {categoryId: string, subCategoryId
         {/* Main Content */}
           <main className=" w-full">
 
-            {/* Products Grid */}               
-              <div className="grid justify-center items-center md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+            {/* Products Grid */}
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 justify-center items-stretch">
                {fabrics?.map((fabric) => (
                 <FabricCard 
                   key={fabric.id}

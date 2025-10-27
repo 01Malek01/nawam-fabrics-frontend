@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from "react";
 import { airtableService } from "../services/airtable";
 import LandingPageCard from "@/components/LandingPageCard";
+import HeroSlider from "@/components/HeroSlider";
 import type { Category } from "@/types";
 import { useNavigate } from "react-router-dom";
 const Home = () => {
@@ -70,21 +71,26 @@ const Home = () => {
   }
 
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200 min-h-screen space-y-2">
-      {categories?.map((category) => (
-        <LandingPageCard
-          key={category.id}
-          category={category}
-          onClick={() => {
-            console.log("Selected:", category);
-            // Handle navigation or state update
-            if( category?.subCategories?.length === 0){
-              navigate(`/categories/${category.id}`);   
-            }
-          }}
-          className="mb-4"
-        />
-      ))}
+    <div className="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200 min-h-screen">
+      {/* Hero Slider */}
+      <HeroSlider />
+
+      <div className="grid grid-cols-2 gap-4 max-w-7xl mx-auto px-4 py-8">
+        {categories?.map((category) => (
+          <LandingPageCard
+            key={category.id}
+            category={category}
+            onClick={() => {
+              console.log("Selected:", category);
+              // Handle navigation or state update
+              if( category?.subCategories?.length === 0){
+                navigate(`/categories/${category.id}`);
+              }
+            }}
+            className=""
+          />
+        ))}
+      </div>
     </div>
   );
 };

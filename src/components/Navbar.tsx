@@ -17,15 +17,15 @@ const Navbar = () => {
         {/* Logo */}
         <Link
           to="/"
-          className="flex items-center gap-4 text-black dark:text-white"
+          className="flex items-center gap-4 text-[#A8511A] dark:text-[#A8511A]"
         >
           <img
-            className="w-32 h-32 object-contain"
-            src="logo.png"
-            alt="el Nawam fabrics logo"
+            className="w-32 h-32 object-contain text-[#A8511A] dark:text-[#A8511A]"
+            src="image.png"
+            alt="el Nawam fabrics image"
           />
         </Link>
-      </div>
+      </div>  
 
       {/* Desktop Navigation */}
       <nav className="hidden md:flex items-center gap-9">
@@ -33,7 +33,7 @@ const Navbar = () => {
           to="/"
           className={`text-base font-medium ${
             isActive("/")
-              ? "font-bold text-black dark:text-white"
+              ? "font-bold text-[#A8511A] dark:text-[#A8511A]"
               : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
           }`}
         >

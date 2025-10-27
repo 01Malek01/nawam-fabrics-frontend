@@ -75,6 +75,17 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             >
               تواصل معنا
             </Link>
+            <Link
+              to="/washing-instructions"
+              className={`text-2xl font-medium ${
+                isActive("/washing-instructions")
+                  ? "text-black dark:text-white"
+                  : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
+              }`}
+              onClick={onClose}
+            >
+              إرشادات الغسيل
+            </Link>
           </nav>
         </motion.div>
       )}

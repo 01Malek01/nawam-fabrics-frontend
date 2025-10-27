@@ -21,7 +21,7 @@ const FabricCard = ({
   const [isImageExpanded, setIsImageExpanded] = useState(false);
 
   return (
-    <div className="group relative">
+    <div className="group relative flex flex-col h-full">
       {/* Image Overlay */}
       {isImageExpanded && (
         <div
@@ -80,51 +80,62 @@ const FabricCard = ({
       </div>
 
       {/* Product Card */}
-      <div className="relative">
-        <div
-          className="group relative aspect-square overflow-hidden rounded-lg bg-gray-100"
-          onClick={() => setIsImageExpanded(true)}
-        >
-          <img
-            src={fabric?.image}
-            alt={fabric?.name}
-            className="cursor-pointer h-full w-full object-cover object-center transition-all duration-300 group-hover:scale-105"
-          />
-          <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100">
-            <Maximize2 className="h-8 w-8 text-white" />
+      <div className="relative flex flex-col h-full">
+        {/* Image Section */}
+        <div className="flex-shrink-0">
+          <div
+            className="group relative aspect-square overflow-hidden rounded-lg bg-gray-100"
+            onClick={() => setIsImageExpanded(true)}
+          >
+            <img
+              src={fabric?.image}
+              alt={fabric?.name}
+              className="cursor-pointer h-full w-full object-cover object-center transition-all duration-300 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100">
+              <Maximize2 className="h-8 w-8 text-white" />
+            </div>
+          </div>
+
+          {href && (
+            <Link
+              to={href}
+              className="absolute inset-0 z-10"
+              aria-label={`View ${fabric.name}`}
+            />
+          )}
+        </div>
+
+        {/* Content Section */}
+        <div className="flex-1 flex flex-col mt-3 sm:mt-4">
+          <div className="flex items-start sm:items-center justify-between py-2 gap-2 min-h-[3rem] sm:min-h-[3.5rem]">
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white leading-tight flex-1">
+              {fabric?.name}
+            </h3>
+            <div className="text-right flex-shrink-0">
+              <p className="text-lg sm:text-xl font-bold text-primary leading-tight">
+                {fabric?.price}
+              </p>
+              <div className="flex items-center justify-end gap-1 text-sm">
+                <span className="text-green-600">جنيه</span>
+                <span className="font-medium text-gray-500">/ متر</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex-1 flex items-end">
+            <Button
+              onClick={(e) => {
+                buttonAction();
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              className="w-full cursor-pointer rounded-lg p-3 sm:p-4 text-base sm:text-lg font-bold mt-auto"
+            >
+              {buttonTitle}
+            </Button>
           </div>
         </div>
-
-        {href && (
-          <Link
-            to={href}
-            className="absolute inset-0 z-10"
-            aria-label={`View ${fabric.name}`}
-          />
-        )}
-      </div>
-
-      <div className="mt-4 flex flex-col">
-        <div className="flex items-center justify-between py-2">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-            {fabric?.name}
-          </h3>
-          <p className="text-2xl font-bold text-primary">
-            {fabric?.price}
-            <span className="  text-green-600">جنيه</span>{" "}
-            <span className="text-base font-medium text-gray-500">/ متر</span>
-          </p>
-        </div>
-        <Button
-          onClick={(e) => {
-            buttonAction();
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-          className="mt-2 w-full cursor-pointer rounded-lg p-6 text-lg font-bold"
-        >
-          {buttonTitle}
-        </Button>
       </div>
     </div>
   );
