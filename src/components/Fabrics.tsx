@@ -1,67 +1,158 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import { useEffect, useState } from 'react';
-import FabricCard from './FabricCard';
-import { airtableService } from '../services/airtable';
-import type { Fabric } from '@/types';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import FabricCard from "./FabricCard";
+import { airtableService } from "../services/airtable";
+import type { Fabric } from "@/types";
+import { useNavigate } from "react-router-dom";
 
+const Fabrics = ({
+  categoryId,
+  subCategoryId,
+  searchQuery,
+  showMostSold,
+}: {
+  categoryId?: string;
+  subCategoryId?: string;
+  searchQuery?: string;
+  showMostSold?: boolean;
+}) => {
+  const navigate = useNavigate();
+  const [fabrics, setFabrics] = useState<Fabric[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-const Fabrics = ({categoryId, subCategoryId}: {categoryId: string, subCategoryId?: string}) => {
-    const navigate = useNavigate();
-    const [fabrics, setFabrics] = useState<Fabric[]>([]);
-    
-    useEffect(() => {
-      const fetchFabrics = async () => {
-        try {
-          const records = await airtableService.getAllRecords('Products');
-          const filteredFabrics = records
-            .filter((fabric: any) => 
-              fabric.MainCategory?.includes(categoryId) && 
-              (!subCategoryId || fabric.SubCategory?.includes(subCategoryId))
-            )
-            .map((fabric: any) => ({
-              id: fabric.id,
-              name: fabric.Name || 'Unnamed Fabric',
-              price: fabric.PricePerMeter || 'جم0.00',
-              image: fabric.Image?.[0]?.url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuAgEn5bBp8A3v5TMgmG_Xy30ZssTkQ8uJQAkn9gjKJvFTKqVKFHIOVfsEWTffLVupooswoJqnDc2pwIS3RFtU8Y2nx3tuFu2A6cdTRVdJ-0zdiZBOmRiFOvmKQGlFK8ViKl_t7BjzhTIi-k9S3DqfghfDdi6L_x8J5uT-4nKcla4hFpaPprg2XU4LthpdL30Fbu88v8p-bqOjfnmxRs-Jhvu-JZQsTMUBEb-j5TB5P-GDg1712IqY5Fe-4yfiTk5UreQ_nUBDL02pY',
-              MainCategory: fabric.MainCategory,
-              SubCategory: fabric.SubCategory
-            } as Fabric));
-            
-          setFabrics(filteredFabrics);
-        } catch (error) {
-          console.error('Error fetching fabrics:', error);
+  useEffect(() => {
+    const fetchFabrics = async () => {
+      try {
+        setIsLoading(true);
+        const records = await airtableService.getAllRecords("Products");
+
+        // Normalize Airtable records to the Fabric shape our components expect
+        const normalized = records.map((r: any) => {
+          const imagesFromImageField = Array.isArray(r.Image)
+            ? r.Image.map((a: any) => a.url).filter(Boolean)
+            : Array.isArray(r.Images)
+            ? r.Images.map((a: any) => (a?.url ? a.url : a)).filter(Boolean)
+            : [];
+
+          const imageUrl =
+            imagesFromImageField[0] ||
+            r.image ||
+            (r.Image && r.Image[0]?.url) ||
+            (r.Images && r.Images[0]?.url) ||
+            "";
+
+          return {
+            id: r.id,
+            name: r.Name || r.name || "",
+            price: String(r.Price || r.price || ""),
+            image: imageUrl,
+            images: imagesFromImageField,
+            description: r.Description || r.description || "",
+            mainCategory: Array.isArray(r.MainCategory)
+              ? r.MainCategory
+              : r.MainCategory || r.mainCategory || [],
+            subCategory: Array.isArray(r.SubCategory)
+              ? r.SubCategory
+              : r.SubCategory || r.subCategory || [],
+            _raw: r,
+          } as any;
+        });
+
+        let filteredFabrics: any[] = normalized;
+
+        // Apply search filter if searchQuery is provided
+        if (searchQuery) {
+          const searchRegex = new RegExp(searchQuery, "i");
+          filteredFabrics = filteredFabrics.filter(
+            (fabric: any) =>
+              searchRegex.test(fabric.name) ||
+              searchRegex.test(fabric.description) ||
+              (Array.isArray(fabric.mainCategory) &&
+                fabric.mainCategory.join(" ") &&
+                searchRegex.test(fabric.mainCategory.join(" "))) ||
+              (Array.isArray(fabric.subCategory) &&
+                fabric.subCategory.join(" ") &&
+                searchRegex.test(fabric.subCategory.join(" "))) ||
+              (Array.isArray(fabric._raw?.MainCategory) &&
+                searchRegex.test(fabric._raw.MainCategory.join(" "))) ||
+              (Array.isArray(fabric._raw?.SubCategory) &&
+                searchRegex.test(fabric._raw.SubCategory.join(" ")))
+          );
         }
-      };
 
-      fetchFabrics();
-    },[categoryId, subCategoryId])
+        // Apply category filters if provided and not 'all'
+        if (categoryId && categoryId !== "all") {
+          filteredFabrics = filteredFabrics.filter((fabric: any) => {
+            const hasMainCategory =
+              (Array.isArray(fabric.mainCategory) &&
+                fabric.mainCategory.includes(categoryId)) ||
+              String(fabric.mainCategory) === String(categoryId);
+            const matchesSubCategory = subCategoryId
+              ? (Array.isArray(fabric.subCategory) &&
+                  fabric.subCategory.includes(subCategoryId)) ||
+                String(fabric.subCategory) === String(subCategoryId)
+              : true;
+            return hasMainCategory && matchesSubCategory;
+          });
+        }
+
+        // Filter for most sold products if showMostSold is true
+        if (showMostSold) {
+          filteredFabrics = filteredFabrics.filter(
+            (fabric) => fabric._raw?.MostSold === true
+          );
+        }
+
+        setFabrics(filteredFabrics as Fabric[]);
+      } catch (error) {
+        console.error("Error fetching fabrics:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFabrics();
+  }, [categoryId, subCategoryId, searchQuery, showMostSold]);
+
+  if (isLoading) {
     return (
-    <div className="font-display bg-background-light dark:bg-background-dark text-black dark:text-white min-h-screen p-2 sm:p-4">
-      <div className="flex flex-col md:flex-row min-h-screen justify-between space-x-8 ">
-        {/* <aside className="py-5">
-            <FilterMenu />
-        </aside> */}
-        
-        {/* Main Content */}
-          <main className=" w-full">
-
-            {/* Products Grid */}
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 justify-center items-stretch">
-               {fabrics?.map((fabric) => (
-                <FabricCard 
-                  key={fabric.id}
-                  buttonTitle='تصفح القماش' 
-                  href={`/fabric/${fabric.id}`}
-                  fabric={fabric} 
-                  buttonAction={() => navigate(`/fabric/${fabric.id}`)} 
-                  
-                />
-                ))}
-              </div>
-          </main>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-pulse">
+          <img
+            src="/logo.png"
+            alt="Loading..."
+            className="h-32 w-32 md:h-48 md:w-48"
+          />
+        </div>
       </div>
+    );
+  }
+
+  if (fabrics.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] text-center p-4">
+        <h2 className="text-2xl font-semibold mb-2">لا توجد منتجات</h2>
+        {searchQuery && (
+          <p className="text-gray-600">
+            لم يتم العثور على منتجات تطابق بحثك: "{searchQuery}"
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+      {fabrics.map((fabric: Fabric) => (
+        <FabricCard
+          key={fabric.id}
+          fabric={fabric}
+          href={`/fabric/${fabric.id}`}
+          buttonTitle="اطلب"
+          buttonAction={() => navigate(`/fabric/${fabric.id}`)}
+        />
+      ))}
     </div>
   );
 };

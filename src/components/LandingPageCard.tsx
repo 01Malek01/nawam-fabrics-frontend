@@ -1,7 +1,7 @@
-import { XIcon } from 'lucide-react';
-import React, { useState } from 'react';
-import { Button } from './ui/button';
-import { useNavigate } from 'react-router-dom';
+import { XIcon } from "lucide-react";
+import React, { useState } from "react";
+import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface Category {
   id: string;
@@ -19,10 +19,10 @@ interface LandingPageCardProps {
   className?: string;
 }
 
-export default function LandingPageCard({ 
+export default function LandingPageCard({
   category,
   onClick,
-  className = '' 
+  className = "",
 }: LandingPageCardProps) {
   const [showSubcategories, setShowSubcategories] = useState(false);
   const navigate = useNavigate();
@@ -31,11 +31,14 @@ export default function LandingPageCard({
     if (category.subCategories && category.subCategories.length > 0) {
       setShowSubcategories(true);
     } else {
-      onClick(category.id); 
+      onClick(category.id);
     }
   };
 
-  const handleSubcategoryClick = (e: React.MouseEvent, subCategoryId: string) => {
+  const handleSubcategoryClick = (
+    e: React.MouseEvent,
+    subCategoryId: string
+  ) => {
     e.stopPropagation();
     navigate(`/categories/${category.id}/${subCategoryId}`);
     setShowSubcategories(false);
@@ -47,8 +50,8 @@ export default function LandingPageCard({
   };
 
   return (
-    <div 
-      className={`relative w-full h-96 sm:h-[500px] rounded-xl overflow-hidden cursor-pointer group ${className}`}
+    <div
+      className={`relative w-full h-64 sm:h-[500px] rounded-xl overflow-hidden cursor-pointer group ${className}`}
       onClick={handleCardClick}
     >
       <img
@@ -66,32 +69,36 @@ export default function LandingPageCard({
 
       {/* Subcategories Overlay */}
       {showSubcategories && (
-        <div 
+        <div
           className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col justify-center items-center p-4 sm:p-6"
           onClick={handleCloseOverlay}
         >
-          <div 
+          <div
             className="w-full max-w-4xl bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 md:p-8 space-y-4 max-h-[90vh] overflow-y-auto"
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="flex justify-between items-center mb-4 sm:mb-6">
               <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white text-right w-full">
                 اختر من {category.name}
               </h3>
-              <button 
-                title='Close'
+              <button
+                title="Close"
                 onClick={handleCloseOverlay}
                 className="flex-shrink-0 cursor-pointer text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors ml-4"
               >
-                <XIcon size={24} className="sm:w-7 sm:h-7 md:w-8 md:h-8" fill='black' />
+                <XIcon
+                  size={24}
+                  className="sm:w-7 sm:h-7 md:w-8 md:h-8"
+                  fill="black"
+                />
               </button>
             </div>
-            
+
             {/* Subcategories Grid */}
             <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
               {category.subCategories?.map((subCategory) => (
-                <Button 
+                <Button
                   variant={"outline"}
                   key={subCategory.id}
                   onClick={(e) => handleSubcategoryClick(e, subCategory.id)}
@@ -106,7 +113,7 @@ export default function LandingPageCard({
 
             {/* Close Button for Mobile */}
             <div className="flex justify-center mt-6 sm:hidden">
-              <Button 
+              <Button
                 variant="outline"
                 onClick={handleCloseOverlay}
                 className="cursor-pointer px-8 py-3 text-base font-medium border-2"
