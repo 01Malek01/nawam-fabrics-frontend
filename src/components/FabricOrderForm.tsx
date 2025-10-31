@@ -21,14 +21,14 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 // Form validation schema
 const formSchema = z.object({
-    customerName: z.string().min(2, {
+  customerName: z.string().min(2, {
     message: "الاسم يجب أن يكون على الأقل حرفين",
   }),
   customerPhone: z.string().regex(/^\+?[0-9\s-]{10,}$/, {
     message: "رقم الهاتف غير صالح",
   }),
-  quantityMeters: z.coerce.number().min(0.1, {
-    message: "الكمية يجب أن تكون أكبر من 0",
+  quantityMeters: z.string().min(1, {
+    message: "الكمية مطلوبة، ولا يمكن أن تكون فارغة",
   }),
   customerAddress: z.string().min(5, {
     message: "العنوان يجب أن يكون على الأقل 5 أحرف",
@@ -47,11 +47,11 @@ interface FabricOrderFormProps {
   fabric: Fabric;
 }
 
-
 export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
-  const { createReservation, isLoading, isSuccess, error } = useCreateReservation()
+  const { createReservation, isLoading, isSuccess, error } =
+    useCreateReservation();
   useEffect(() => {
- console.log(fabric)
+    console.log(fabric);
   }, [fabric]);
   const navigate = useNavigate();
   const form = useForm<FormValues>({
@@ -73,11 +73,9 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
       form.reset();
     } catch (err) {
       // Error is already handled by the useCreateReservation hook
-      console.error('Error submitting form:', err);
+      console.error("Error submitting form:", err);
     }
   }
-    
-  
 
   if (isLoading) {
     return (
@@ -92,14 +90,13 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
     return (
       <div className="w-full max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md text-center">
         <div className="text-red-500 text-4xl mb-4">⚠️</div>
-        <h2 className="text-xl font-bold mb-2 text-red-600 dark:text-red-400">حدث خطأ</h2>
+        <h2 className="text-xl font-bold mb-2 text-red-600 dark:text-red-400">
+          حدث خطأ
+        </h2>
         <p className="text-gray-700 dark:text-gray-300 mb-4">
           عذراً، حدث خطأ أثناء معالجة طلبك. يرجى المحاولة مرة أخرى لاحقاً.
         </p>
-        <Button 
-          onClick={() => navigate('/')} 
-          className="mt-4"
-        >
+        <Button onClick={() => navigate("/")} className="mt-4">
           المحاولة مرة أخرى
         </Button>
       </div>
@@ -110,14 +107,13 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
     return (
       <div className="w-full max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md text-center">
         <div className="text-green-500 text-4xl mb-4">✓</div>
-        <h2 className="text-xl font-bold mb-2 text-green-600 dark:text-green-400">تم إرسال طلبك بنجاح!</h2>
+        <h2 className="text-xl font-bold mb-2 text-green-600 dark:text-green-400">
+          تم إرسال طلبك بنجاح!
+        </h2>
         <p className="text-gray-700 dark:text-gray-300 mb-4">
           سنتواصل معك قريباً لتأكيد الطلب وتفاصيل الدفع.
         </p>
-        <Button 
-          onClick={() => navigate('/')}
-          className="mt-4"
-        >
+        <Button onClick={() => navigate("/")} className="mt-4">
           العودة للصفحة الرئيسية
         </Button>
       </div>
@@ -127,13 +123,12 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
   return (
     <div className="w-full max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
-        طلب {fabric?.name}    
+        طلب {fabric?.name}
       </h2>
-      
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
-          
             control={form.control}
             name="customerName"
             render={({ field }) => (
@@ -146,7 +141,7 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="customerPhone"
@@ -160,7 +155,7 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="quantityMeters"
@@ -168,17 +163,17 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
               <FormItem>
                 <FormLabel>الكمية (متر)</FormLabel>
                 <FormControl>
-                  <Input 
-                    type="text" 
-                    placeholder="أدخل الكمية المطلوبة" 
-                    {...field} 
+                  <Input
+                    type="text"
+                    placeholder="أدخل الكمية المطلوبة"
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="customerAddress"
@@ -186,10 +181,10 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
               <FormItem>
                 <FormLabel>العنوان</FormLabel>
                 <FormControl>
-                  <Textarea 
-                    placeholder="أدخل عنوانك بالتفصيل" 
+                  <Textarea
+                    placeholder="أدخل عنوانك بالتفصيل"
                     className="min-h-[100px]"
-                    {...field} 
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
@@ -214,7 +209,7 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
                           onChange={(e) => {
                             const updatedImages = e.target.checked
                               ? [...field.value, imageUrl]
-                              : field.value.filter(url => url !== imageUrl);
+                              : field.value.filter((url) => url !== imageUrl);
                             field.onChange(updatedImages);
                           }}
                           className="sr-only peer"
@@ -230,8 +225,16 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
                           />
                           <div className="absolute inset-0 bg-black/0 peer-checked:bg-black/20 transition-colors flex items-center justify-center">
                             <div className="w-6 h-6 rounded-full border-2 border-white bg-primary opacity-0 peer-checked:opacity-100 transition-opacity flex items-center justify-center">
-                              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              <svg
+                                className="w-4 h-4 text-white"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                  clipRule="evenodd"
+                                />
                               </svg>
                             </div>
                           </div>
@@ -246,7 +249,6 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
           />
 
           <div className="flex justify-end gap-4 pt-4">
-            
             <Button type="submit" className="w-full sm:w-auto cursor-pointer">
               تأكيد الطلب
             </Button>
