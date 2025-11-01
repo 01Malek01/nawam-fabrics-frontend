@@ -119,8 +119,11 @@ const Home = () => {
               الأكثر مبيعا
             </h2>
           </div>
-          <div className="w-full backdrop-blur-sm bg-white/30 dark:bg-black/30 p-6 rounded-xl shadow-xl">
-            <Fabrics showMostSold={true} />
+          <div className="w-full backdrop-blur-sm bg-white/30 dark:bg-black/30 p-6 rounded-xl shadow-xl overflow-hidden">
+            {/* Custom scrollbar track */}
+            <div className="overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-amber-500/20 hover:scrollbar-thumb-amber-500/30 pb-2">
+              <Fabrics showMostSold={true} />
+            </div>
           </div>
         </div>
       </div>

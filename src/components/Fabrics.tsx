@@ -144,15 +144,27 @@ const Fabrics = ({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+    <div
+      className={
+        showMostSold
+          ? "flex overflow-x-auto gap-4 pb-4 snap-x"
+          : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4"
+      }
+    >
       {fabrics.map((fabric: Fabric) => (
-        <FabricCard
+        <div
           key={fabric.id}
-          fabric={fabric}
-          href={`/fabric/${fabric.id}`}
-          buttonTitle="اطلب"
-          buttonAction={() => navigate(`/fabric/${fabric.id}`)}
-        />
+          className={
+            showMostSold ? "flex-none w-[280px] snap-start" : undefined
+          }
+        >
+          <FabricCard
+            fabric={fabric}
+            href={`/fabric/${fabric.id}`}
+            buttonTitle="اطلب"
+            buttonAction={() => navigate(`/fabric/${fabric.id}`)}
+          />
+        </div>
       ))}
     </div>
   );
