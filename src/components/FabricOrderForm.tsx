@@ -36,7 +36,7 @@ const formSchema = z.object({
   productRecordId: z.string().min(1, {
     message: "المنتج يجب أن يكون على الأقل 1 حرف",
   }),
-  selectedImages: z.array(z.string()).min(1, {
+  Images: z.array(z.string()).min(1, {
     message: "يجب اختيار صورة واحدة على الأقل",
   }),
 });
@@ -62,7 +62,7 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
       quantityMeters: 1,
       customerAddress: "",
       productRecordId: fabric.id,
-      selectedImages: [],
+      Images: [],
     },
   });
 
@@ -194,7 +194,7 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
 
           <FormField
             control={form.control}
-            name="selectedImages"
+            name="Images"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>اختر الصور المطلوبة</FormLabel>

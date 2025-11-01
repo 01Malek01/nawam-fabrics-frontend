@@ -6,13 +6,14 @@ export type CreateReservationPayload = {
   customerName: string;
   customerPhone: string;
   customerAddress: string;
+  Images: string[];
 };
 
 export const useCreateReservation = () => {
   const [data, setData] = useState<unknown>(undefined);
   const [error, setError] = useState<Error | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
-const [isSuccess, setIsSuccess] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const createReservation = async (payload: CreateReservationPayload) => {
     setIsLoading(true);
     setError(undefined);
@@ -42,7 +43,7 @@ const [isSuccess, setIsSuccess] = useState(false);
     }
   };
 
-  return { createReservation, data, error, isLoading ,isSuccess };
+  return { createReservation, data, error, isLoading, isSuccess };
 };
 
 export default useCreateReservation;

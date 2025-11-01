@@ -81,10 +81,7 @@ const FabricCard = ({
           >
             <X className="h-5 w-5" />
           </button>
-          <FabricOrderForm
-            fabric={fabric}
-            
-          />
+          <FabricOrderForm fabric={fabric} />
         </div>
       </div>
 
