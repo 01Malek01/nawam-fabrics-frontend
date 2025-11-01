@@ -19,6 +19,15 @@ const FabricCard = ({
 }) => {
   const { isOrderDialogOpen, closeOrderDialog } = useOrderDialog();
   const [isImageExpanded, setIsImageExpanded] = useState(false);
+  // Determine a safe display price. Airtable records sometimes have different
+  // field names or the normalized `price` might be empty — fall back to the
+  // raw record fields if available.
+  const displayPrice =
+    fabric?.price ||
+    (fabric as any)?._raw?.Price ||
+    (fabric as any)?._raw?.price ||
+    (fabric as any)?._raw?.سعر ||
+    "";
 
   return (
     <div className="group relative flex flex-col h-full">
@@ -114,7 +123,7 @@ const FabricCard = ({
             </h3>
             <div className="text-right flex-shrink-0">
               <p className="text-lg sm:text-xl font-bold text-primary leading-tight">
-                {fabric?.price}
+                {displayPrice || "—"}
               </p>
               <div className="flex items-center justify-end gap-1 text-sm">
                 <span className="text-green-600">جنيه</span>

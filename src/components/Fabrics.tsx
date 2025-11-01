@@ -26,6 +26,7 @@ const Fabrics = ({
       try {
         setIsLoading(true);
         const records = await airtableService.getAllRecords("Products");
+        console.log(records);
 
         // Normalize Airtable records to the Fabric shape our components expect
         const normalized = records.map((r: any) => {
@@ -45,7 +46,7 @@ const Fabrics = ({
           return {
             id: r.id,
             name: r.Name || r.name || "",
-            price: String(r.Price || r.price || ""),
+            price: String(r.PricePerMeter || r.PricePerMeter || ""),
             image: imageUrl,
             images: imagesFromImageField,
             description: r.Description || r.description || "",
