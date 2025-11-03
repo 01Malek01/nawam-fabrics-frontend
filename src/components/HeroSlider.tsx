@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Slider from "react-slick";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -57,7 +56,6 @@ const heroSlides = [
 
 const HeroSlider: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const navigate = useNavigate();
 
   const settings = {
     dots: true,
@@ -97,33 +95,13 @@ const HeroSlider: React.FC = () => {
               <div className="absolute inset-0 w-full h-full">
                 <img
                   src={slide.image}
-                  alt={slide.title}
+                  alt={slide.image}
                   className="w-full h-full object-cover"
                   loading="eager"
                 />
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-              </div>
-
-            </div>
-            {/* Content */}
-            <div className="absolute inset-0 z-10 flex items-center">
-              <div className="container mx-auto px-6 sm:px-8 lg:px-12">
-                <div className="max-w-lg text-right">
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight drop-shadow-lg">
-                    {slide.title}
-                  </h1>
-                  <p className="text-lg sm:text-xl lg:text-2xl text-white/90 mb-6 leading-relaxed drop-shadow-md">
-                    {slide.description}
-                  </p>
-                  {/* <button
-                    className="bg-[#A8511A] hover:bg-[#A8511A]/90 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
-                    onClick={() => navigate(slide.buttonLink)}
-                  >
-                    {slide.buttonText}
-                  </button> */}
-                </div>
+                {/* <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/30 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div> */}
               </div>
             </div>
           </div>
