@@ -51,14 +51,16 @@ export default function LandingPageCard({
 
   return (
     <div
-      className={`relative w-full h-64 sm:h-[500px] rounded-xl overflow-hidden cursor-pointer group ${className}`}
+      className={`relative w-full rounded-xl overflow-hidden cursor-pointer group ${className}`}
       onClick={handleCardClick}
     >
-      <img
-        src={category.imageUrl}
-        alt={category.name}
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-      />
+      <div className="relative w-full h-0 pb-[100%] sm:pb-[75%] md:pb-[66.67%]">
+        <img
+          src={category.imageUrl}
+          alt={category.name}
+          className="absolute inset-0 w-full h-full object-cover object-left-top transition-transform duration-500 group-hover:scale-105"
+        />
+      </div>
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-10 text-white">
         <h2 className="text-3xl sm:text-5xl font-bold mb-3 drop-shadow-lg">

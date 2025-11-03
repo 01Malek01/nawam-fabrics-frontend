@@ -40,26 +40,17 @@ const PrevArrow: React.FC<ArrowProps> = ({ className, onClick }) => {
 const heroSlides = [
   {
     id: 1,
-    image: "/logo.png",
-    title: "أقمشة صوفية فاخرة",
-    description: "مجموعة متنوعة من أفضل أنواع الصوف والكشمير",
-    buttonText: "تصفح الآن",
+    image: "/banner1.jpeg",
     buttonLink: "/categories"
   },
   {
     id: 2,
-    image: "/logo.png",
-    title: "بدلات  أنيقة",
-    description: "خامات عالية الجودة لإطلالة مميزة",
-    buttonText: "اكتشف المزيد",
+    image: "/banner2.png",
     buttonLink: "/categories"
   },
   {
     id: 3,
-    image: "/logo.png",
-    title: "أقمشة قطنية فاخرة",
-    description: "تصاميم أصيلة بلمسة عصرية",
-    buttonText: "شاهد المجموعة",
+    image: "/banner3.png",
     buttonLink: "/categories"
   }
 ];
@@ -97,25 +88,27 @@ const HeroSlider: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-[400px] sm:h-[500px] lg:h-[600px] overflow-hidden rounded-lg mb-8">
+    <div className="relative w-full overflow-hidden rounded-lg mb-8">
       <Slider {...settings}>
         {heroSlides.map((slide) => (
-          <div key={slide.id} className="relative">
+          <div key={slide.id} className="relative w-full">
             {/* Background Image */}
-            <div className="absolute inset-0">
-              <img
-                src={slide.image}
-                alt={slide.title}
-                className="w-full h-full object-cover"
-                loading="eager"
-              />
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-            </div>
+            <div className="relative w-full h-0 pb-[56.25%]"> {/* 16:9 aspect ratio container */}
+              <div className="absolute inset-0 w-full h-full">
+                <img
+                  src={slide.image}
+                  alt={slide.title}
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                />
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              </div>
 
+            </div>
             {/* Content */}
-            <div className="relative z-10 h-[40rem] flex items-center">
+            <div className="absolute inset-0 z-10 flex items-center">
               <div className="container mx-auto px-6 sm:px-8 lg:px-12">
                 <div className="max-w-lg text-right">
                   <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight drop-shadow-lg">
