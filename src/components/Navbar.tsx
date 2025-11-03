@@ -35,7 +35,7 @@ const Navbar = () => {
           >
             <img
               className="h-64 md:h-64 w-auto object-contain"
-              src="نوام لوجو_.png"
+              src=" logo.png"
               alt="el Nawam fabrics image"
             />
           </Link>
