@@ -69,14 +69,14 @@ export default function LandingPageCard({
         <div className="w-16 h-1 bg-white mb-4 rounded-full" />
       </div>
 
-      {/* Subcategories Overlay */}
+      {/* Subcategories Overlay - Full Screen */}
       {showSubcategories && (
         <div
-          className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col justify-center items-center p-4 sm:p-6"
+          className="fixed inset-0 bg-black/90 backdrop-blur-sm flex flex-col items-center p-4 sm:p-6 z-50 overflow-y-auto"
           onClick={handleCloseOverlay}
         >
           <div
-            className="w-full max-w-4xl bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 md:p-8 space-y-4 max-h-[90vh] overflow-y-auto"
+            className="w-full max-w-6xl bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 md:p-8 space-y-4 min-h-full flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
