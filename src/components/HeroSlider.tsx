@@ -40,18 +40,18 @@ const heroSlides = [
   {
     id: 1,
     image: "/banner1.jpeg",
-    buttonLink: "/categories"
-  },
-  {
-    id: 2,
-    image: "/banner2.png",
-    buttonLink: "/categories"
+    buttonLink: "/categories",
   },
   {
     id: 3,
     image: "/banner3.png",
-    buttonLink: "/categories"
-  }
+    buttonLink: "/categories",
+  },
+  {
+    id: 4,
+    image: "/banner4.png",
+    buttonLink: "/categories",
+  },
 ];
 
 const HeroSlider: React.FC = () => {
@@ -79,10 +79,10 @@ const HeroSlider: React.FC = () => {
         breakpoint: 768,
         settings: {
           arrows: false,
-          dots: true
-        }
-      }
-    ]
+          dots: true,
+        },
+      },
+    ],
   };
 
   return (
@@ -91,7 +91,9 @@ const HeroSlider: React.FC = () => {
         {heroSlides.map((slide) => (
           <div key={slide.id} className="relative w-full">
             {/* Background Image */}
-            <div className="relative w-full h-0 pb-[56.25%]"> {/* 16:9 aspect ratio container */}
+            <div className="relative w-full h-0 pb-[56.25%]">
+              {" "}
+              {/* 16:9 aspect ratio container */}
               <div className="absolute inset-0 w-full h-full">
                 <img
                   src={slide.image}
