@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Slider from "react-slick";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import LazyImage from "./LazyImage";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -95,11 +96,10 @@ const HeroSlider: React.FC = () => {
               {" "}
               {/* 16:9 aspect ratio container */}
               <div className="absolute inset-0 w-full h-full">
-                <img
+                <LazyImage
                   src={slide.image}
                   alt={slide.image}
                   className="w-full h-full object-cover"
-                  loading="eager"
                 />
                 {/* Gradient Overlay */}
                 {/* <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/30 to-transparent"></div>

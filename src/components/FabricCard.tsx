@@ -5,6 +5,7 @@ import type { Fabric } from "@/types";
 import { Button } from "./ui/button";
 import { FabricOrderForm } from "./FabricOrderForm";
 import { useOrderDialog } from "@/context/OrderDialogContext";
+import LazyImage from "./LazyImage";
 
 const FabricCard = ({
   fabric,
@@ -93,7 +94,7 @@ const FabricCard = ({
             className="group relative aspect-square overflow-hidden rounded-lg bg-gray-100"
             onClick={() => setIsImageExpanded(true)}
           >
-            <img
+            <LazyImage
               src={fabric?.image}
               alt={fabric?.name}
               className="cursor-pointer h-full w-full object-cover object-center transition-all duration-300 group-hover:scale-105"

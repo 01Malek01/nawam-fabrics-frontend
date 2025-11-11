@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import FabricCard from "./FabricCard";
 import { airtableService } from "../services/airtable";
+import LazyImage from "./LazyImage";
 import type { Fabric } from "@/types";
 import { useNavigate } from "react-router-dom";
 
@@ -120,7 +121,7 @@ const Fabrics = ({
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-pulse">
-          <img
+          <LazyImage
             src="/logo.png"
             alt="Loading..."
             className="h-32 w-32 md:h-48 md:w-48"

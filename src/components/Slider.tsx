@@ -5,6 +5,7 @@ import Slider, { type Settings } from "react-slick";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
+import LazyImage from "./LazyImage";
 
 // Define prop types for the arrow components
 interface ArrowProps {
@@ -18,7 +19,7 @@ const NextArrow: React.FC<ArrowProps> = ({ className, style, onClick }) => {
   return (
     <div
       className={`${className} !flex items-center justify-center w-10 h-10 rounded-full bg-white/80 hover:bg-white text-gray-800 shadow-lg z-10`}
-      style={{ ...style, right: '10px' }}
+      style={{ ...style, right: "10px" }}
       onClick={onClick}
       aria-label="Next slide"
     >
@@ -31,7 +32,7 @@ const PrevArrow: React.FC<ArrowProps> = ({ className, style, onClick }) => {
   return (
     <div
       className={`${className} !flex items-center justify-center w-10 h-10 rounded-full bg-white/80 hover:bg-white text-gray-800 shadow-lg z-10`}
-      style={{ ...style, left: '10px' }}
+      style={{ ...style, left: "10px" }}
       onClick={onClick}
       aria-label="Previous slide"
     >
@@ -85,7 +86,7 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
   const handlePopState = useCallback(() => {
     if (isOverlayOpen) {
       setIsOverlayOpen(false);
-      window.history.pushState(null, '', window.location.href);
+      window.history.pushState(null, "", window.location.href);
     } else {
       window.history.back();
     }
@@ -93,14 +94,14 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
 
   useEffect(() => {
     if (isOverlayOpen) {
-      window.history.pushState({ modalOpen: true }, '', window.location.href);
+      window.history.pushState({ modalOpen: true }, "", window.location.href);
     }
   }, [isOverlayOpen]);
 
   useEffect(() => {
-    window.addEventListener('popstate', handlePopState);
+    window.addEventListener("popstate", handlePopState);
     return () => {
-      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener("popstate", handlePopState);
     };
   }, [handlePopState]);
 
@@ -116,15 +117,14 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
   return (
     <div className="slider-container relative group">
       {/* Main Slider */}
-      <Slider {...mainSettings} ref={slider => setSlider1(slider)}>
+      <Slider {...mainSettings} ref={(slider) => setSlider1(slider)}>
         {images.map((image, index) => (
           <div className="px-2" key={index}>
             <div className="relative overflow-hidden rounded-lg cursor-zoom-in">
-              <img
+              <LazyImage
                 src={image}
                 alt={`Fabric ${index + 1}`}
                 className="w-full h-96 object-cover rounded-lg transition-transform duration-300 hover:scale-105"
-                loading={index === 0 ? 'eager' : 'lazy'}
                 onClick={() => handleImageClick(index)}
               />
             </div>
@@ -144,8 +144,8 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
                 key={idx}
                 className={`group relative aspect-square overflow-hidden rounded-lg border-2 transition-all duration-200 hover:scale-105 ${
                   currentSlide === idx
-                    ? 'border-[#A8511A] ring-2 ring-[#A8511A]/20'
-                    : 'border-gray-200 hover:border-[#A8511A]/50'
+                    ? "border-[#A8511A] ring-2 ring-[#A8511A]/20"
+                    : "border-gray-200 hover:border-[#A8511A]/50"
                 }`}
                 onClick={() => {
                   if (slider1) {
@@ -191,10 +191,15 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
               >
                 <X className="h-6 w-6" />
               </Button>
-              <p className="text-white text-center absolute -top-12 inset-0">اسحب لليمين او لليسار لتصفح الصور</p>
+              <p className="text-white text-center absolute -top-12 inset-0">
+                اسحب لليمين او لليسار لتصفح الصور
+              </p>
 
               <div className="relative h-full w-full">
-                <Slider {...overlaySettings} ref={slider => setSlider2(slider)}>
+                <Slider
+                  {...overlaySettings}
+                  ref={(slider) => setSlider2(slider)}
+                >
                   {images.map((image, index) => (
                     <div key={index} className="outline-none">
                       <div className="flex items-center justify-center h-[70vh]">
@@ -216,8 +221,8 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
                         key={idx}
                         className={`flex-shrink-0 w-16 h-16 rounded overflow-hidden border-2 transition-all ${
                           currentSlide === idx
-                            ? 'border-white scale-110'
-                            : 'border-transparent hover:border-white/50'
+                            ? "border-white scale-110"
+                            : "border-transparent hover:border-white/50"
                         }`}
                         onClick={() => {
                           if (slider2) {

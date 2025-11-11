@@ -3,6 +3,7 @@ import { Menu } from "lucide-react";
 import { useState } from "react";
 import MobileMenu from "./MobileMenu";
 import SearchBar from "./SearchBar";
+import LazyImage from "./LazyImage";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -33,9 +34,9 @@ const Navbar = () => {
             to="/"
             className="flex items-center gap-4 text-[#A8511A] dark:text-[#A8511A]"
           >
-            <img
-              className="h-64 md:h-64 w-auto object-contain"
-              src=" logo.png"
+            <LazyImage
+              className="h-12 md:h-16 w-auto object-contain"
+              src="نوام لوجو_.png"
               alt="el Nawam fabrics image"
             />
           </Link>

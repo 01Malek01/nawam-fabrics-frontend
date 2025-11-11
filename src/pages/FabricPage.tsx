@@ -6,6 +6,7 @@ import { useOrderDialog } from "@/context/OrderDialogContext";
 import type { Fabric } from "@/types";
 import { airtableService } from "@/services/airtable";
 import ImagesSlider from "@/components/Slider";
+import LazyImage from "@/components/LazyImage";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { FabricOrderForm } from "@/components/FabricOrderForm";
@@ -41,7 +42,7 @@ export default function FabricPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background-light dark:bg-background-dark">
         <div className="animate-pulse">
-          <img
+          <LazyImage
             src="/logo.png"
             alt="Loading..."
             className="h-32 w-32 md:h-48 md:w-48"

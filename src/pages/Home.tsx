@@ -6,6 +6,7 @@ import { airtableService } from "../services/airtable";
 import LandingPageCard from "@/components/LandingPageCard";
 import HeroSlider from "@/components/HeroSlider";
 import Fabrics from "@/components/Fabrics";
+import LazyImage from "@/components/LazyImage";
 import type { Category } from "@/types";
 import { useNavigate } from "react-router-dom";
 const Home = () => {
@@ -66,7 +67,7 @@ const Home = () => {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background-light dark:bg-background-dark">
         <div className="animate-pulse">
-          <img
+          <LazyImage
             src="/logo.png"
             alt="Loading..."
             className="h-32 w-32 md:h-48 md:w-48"

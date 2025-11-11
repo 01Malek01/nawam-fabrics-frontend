@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Fabrics from "@/components/Fabrics";
+import LazyImage from "@/components/LazyImage";
 import { useParams, useSearchParams } from "react-router-dom";
 
 export default function ProductsPage() {
@@ -21,7 +22,7 @@ export default function ProductsPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background-light dark:bg-background-dark">
         <div className="animate-pulse">
-          <img
+          <LazyImage
             src="/logo.png"
             alt="Loading..."
             className="h-32 w-32 md:h-48 md:w-48"

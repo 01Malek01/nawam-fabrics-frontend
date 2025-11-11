@@ -19,6 +19,7 @@ import type { Fabric } from "@/types";
 import useCreateReservation from "@/hooks/api/useCreateReservation";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import LazyImage from "./LazyImage";
 // Form validation schema
 const formSchema = z.object({
   customerName: z.string().min(2, {
@@ -218,7 +219,7 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
                           htmlFor={`image-${index}`}
                           className="block relative cursor-pointer rounded-lg overflow-hidden border-5 border-transparent peer-checked:border-blue-500 transition-colors"
                         >
-                          <img
+                          <LazyImage
                             src={imageUrl}
                             alt={`صورة ${index + 1} للمنتج`}
                             className="w-full h-32 object-cover"

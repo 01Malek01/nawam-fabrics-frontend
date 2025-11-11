@@ -2,6 +2,7 @@ import { XIcon } from "lucide-react";
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
+import LazyImage from "./LazyImage";
 
 interface Category {
   id: string;
@@ -55,7 +56,7 @@ export default function LandingPageCard({
       onClick={handleCardClick}
     >
       <div className="relative w-full h-0 pb-[100%] sm:pb-[75%] md:pb-[66.67%]">
-        <img
+        <LazyImage
           src={category.imageUrl}
           alt={category.name}
           className="absolute inset-0 w-full h-full object-cover object-left-top transition-transform duration-500 group-hover:scale-105"
