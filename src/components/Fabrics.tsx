@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import FabricCard from "./FabricCard";
 import { airtableService } from "../services/airtable";
 import LazyImage from "./LazyImage";
+import { optimizeImage, optimizeImages } from "@/utils/imageOptimizer";
 import type { Fabric } from "@/types";
 import { useNavigate } from "react-router-dom";
 
@@ -44,12 +45,24 @@ const Fabrics = ({
             (r.Images && r.Images[0]?.url) ||
             "";
 
+          // Optimize images using free API
+          const optimizedMainImage = imageUrl
+            ? optimizeImage(imageUrl, { width: 800, quality: 80 })
+            : "";
+          const optimizedImages =
+            imagesFromImageField.length > 0
+              ? optimizeImages(imagesFromImageField, {
+                  width: 1200,
+                  quality: 85,
+                })
+              : [];
+
           return {
             id: r.id,
             name: r.Name || r.name || "",
             price: String(r.PricePerMeter || r.PricePerMeter || ""),
-            image: imageUrl,
-            images: imagesFromImageField,
+            image: optimizedMainImage,
+            images: optimizedImages,
             description: r.Description || r.description || "",
             mainCategory: Array.isArray(r.MainCategory)
               ? r.MainCategory

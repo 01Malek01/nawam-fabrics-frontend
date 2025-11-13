@@ -7,6 +7,7 @@ import type { Fabric } from "@/types";
 import { airtableService } from "@/services/airtable";
 import ImagesSlider from "@/components/Slider";
 import LazyImage from "@/components/LazyImage";
+import { optimizeImages } from "@/utils/imageOptimizer";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { FabricOrderForm } from "@/components/FabricOrderForm";
@@ -23,10 +24,16 @@ export default function FabricPage() {
         fabricId as string
       );
 
+      const rawImages =
+        fabricData.Image?.map((image: { url: string }) => image.url) || [];
+      const optimizedImageUrls =
+        rawImages.length > 0
+          ? optimizeImages(rawImages, { width: 1200, quality: 85 })
+          : [];
+
       setFabric({
         id: fabricData.id,
-        images:
-          fabricData.Image?.map((image: { url: string }) => image.url) || [],
+        images: optimizedImageUrls,
         name: fabricData.Name,
         price: fabricData.PricePerMeter,
         description: fabricData?.Description || "",

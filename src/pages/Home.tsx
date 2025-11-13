@@ -7,6 +7,7 @@ import LandingPageCard from "@/components/LandingPageCard";
 import HeroSlider from "@/components/HeroSlider";
 import Fabrics from "@/components/Fabrics";
 import LazyImage from "@/components/LazyImage";
+import { optimizeImage } from "@/utils/imageOptimizer";
 import type { Category } from "@/types";
 import { useNavigate } from "react-router-dom";
 const Home = () => {
@@ -32,22 +33,32 @@ const Home = () => {
             category.Image?.[0]?.url ||
             "https://lh3.googleusercontent.com/aida-public/AB6AXuAgEn5bBp8A3v5TMgmG_Xy30ZssTkQ8uJQAkn9gjKJvFTKqVKFHIOVfsEWTffLVupooswoJqnDc2pwIS3RFtU8Y2nx3tuFu2A6cdTRVdJ-0zdiZBOmRiFOvmKQGlFK8ViKl_t7BjzhTIi-k9S3DqfghfDdi6L_x8J5uT-4nKcla4hFpaPprg2XU4LthpdL30Fbu88v8p-bqOjfnmxRs-Jhvu-JZQsTMUBEb-j5TB5P-GDg1712IqY5Fe-4yfiTk5UreQ_nUBDL02pY";
 
+          // Optimize category image
+          const optimizedImageUrl = imageUrl
+            ? optimizeImage(imageUrl, { width: 600, quality: 80 })
+            : imageUrl;
+
           // Find subcategories for this main category
           const categorySubs = subCategories
             .filter((sub) => sub.ParentCategory.includes(category.id))
-            .map((sub) => ({
-              id: sub.id,
-              name: sub.Name,
-              description: sub.Description,
-              imageUrl: sub.Image?.[0]?.url || imageUrl,
-              productsCount: sub.ProductsCount || 0,
-            }));
+            .map((sub) => {
+              const subImageUrl = sub.Image?.[0]?.url || imageUrl;
+              return {
+                id: sub.id,
+                name: sub.Name,
+                description: sub.Description,
+                imageUrl: subImageUrl
+                  ? optimizeImage(subImageUrl, { width: 600, quality: 80 })
+                  : subImageUrl,
+                productsCount: sub.ProductsCount || 0,
+              };
+            });
 
           return {
             id: category.id,
             name: category.Name,
             description: category.Description,
-            imageUrl,
+            imageUrl: optimizedImageUrl,
             subCategories: categorySubs,
             productsCount: category.ProductsCount || 0,
           };
