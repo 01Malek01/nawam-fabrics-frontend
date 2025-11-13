@@ -12,7 +12,6 @@ export default function ProductsPage() {
         categoryId={categoryId as string}
         subCategoryId={subCategoryId as string}
         searchQuery={searchQuery || undefined}
-        isLazyLoaded
       />
     </div>
   );
