@@ -164,6 +164,7 @@ const Fabrics = ({
             href={`/fabric/${fabric.id}`}
             buttonTitle="اطلب"
             buttonAction={() => navigate(`/fabric/${fabric.id}`)}
+            isLazyLoaded={false}
           />
         </div>
       ))}

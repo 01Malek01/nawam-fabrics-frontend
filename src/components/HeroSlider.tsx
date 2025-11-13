@@ -94,16 +94,13 @@ const HeroSlider: React.FC = () => {
             {/* Background Image */}
             <div className="relative w-full h-0 pb-[56.25%]">
               {" "}
-              {/* 16:9 aspect ratio container */}
               <div className="absolute inset-0 w-full h-full">
-                <LazyImage
+                <img
                   src={slide.image}
                   alt={slide.image}
                   className="w-full h-full object-cover"
+                  loading="eager"
                 />
-                {/* Gradient Overlay */}
-                {/* <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/30 to-transparent"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div> */}
               </div>
             </div>
           </div>

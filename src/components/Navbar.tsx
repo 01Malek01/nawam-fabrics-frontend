@@ -28,15 +28,14 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Logo centered on mobile, left on desktop */}
         <div className="flex-1 flex items-center justify-center md:justify-start">
           <Link
             to="/"
             className="flex items-center gap-4 text-[#A8511A] dark:text-[#A8511A]"
           >
-            <LazyImage
-              className="h-12 md:h-16 w-auto object-contain"
-              src="نوام لوجو_.png"
+            <img
+              className="h-64 md:h-64 w-auto object-contain"
+              src=" logo.png"
               alt="el Nawam fabrics image"
             />
           </Link>

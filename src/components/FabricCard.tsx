@@ -12,11 +12,13 @@ const FabricCard = ({
   buttonTitle,
   href,
   buttonAction,
+  isLazyLoaded = true,
 }: {
   fabric: Fabric;
   buttonTitle: string;
   href?: string;
   buttonAction: () => void;
+  isLazyLoaded?: boolean;
 }) => {
   const { isOrderDialogOpen, closeOrderDialog } = useOrderDialog();
   const [isImageExpanded, setIsImageExpanded] = useState(false);
@@ -94,11 +96,20 @@ const FabricCard = ({
             className="group relative aspect-square overflow-hidden rounded-lg bg-gray-100"
             onClick={() => setIsImageExpanded(true)}
           >
-            <LazyImage
-              src={fabric?.image}
-              alt={fabric?.name}
-              className="cursor-pointer h-full w-full object-cover object-center transition-all duration-300 group-hover:scale-105"
-            />
+            {isLazyLoaded ? (
+              <LazyImage
+                src={fabric?.image}
+                alt={fabric?.name}
+                className="cursor-pointer h-full w-full object-cover object-center transition-all duration-300 group-hover:scale-105"
+              />
+            ) : (
+              <img
+                src={fabric?.image}
+                alt={fabric?.name}
+                className="cursor-pointer h-full w-full object-cover object-center transition-all duration-300 group-hover:scale-105"
+              />
+            )}
+
             <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100">
               <Maximize2 className="h-8 w-8 text-white" />
             </div>
