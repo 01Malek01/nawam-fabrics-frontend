@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { FabricOrderForm } from "@/components/FabricOrderForm";
 import VideoIframe from "@/components/VideoIframe";
+import { Helmet } from "react-helmet";
 
 export default function FabricPage() {
   const { fabricId } = useParams();
@@ -60,65 +61,79 @@ export default function FabricPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Product Images */}
-        <div className="bg-white p-4 rounded-lg shadow lg:order-2">
-          {fabric.images && fabric.images.length > 0 ? (
-            <ImagesSlider images={fabric.images} />
-          ) : (
-            <div className="w-full h-64 bg-gray-100 flex items-center justify-center">
-              <span>No images available</span>
-            </div>
-          )}
-        </div>
-
-        {/* Product Details */}
-        <div className="space-y-6 order-1">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{fabric.name}</h1>
+    <>
+      <Helmet>
+        <title>{fabric?.name || "قماش"} - النوام للأقمشة</title>
+        <meta
+          name="description"
+          content={fabric?.description || "تفاصيل القماش في النوام للأقمشة"}
+        />
+      </Helmet>
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Product Images */}
+          <div className="bg-white p-4 rounded-lg shadow lg:order-2">
+            {fabric.images && fabric.images.length > 0 ? (
+              <ImagesSlider images={fabric.images} />
+            ) : (
+              <div className="w-full h-64 bg-gray-100 flex items-center justify-center">
+                <span>No images available</span>
+              </div>
+            )}
           </div>
 
-          <p className="text-2xl font-bold text-primary flex  items-center  gap-2">
-            {fabric?.price}
-            <span className="  text-green-600">جنيه</span>{" "}
-            <span className="text-base font-medium text-gray-500">/ متر</span>
-          </p>
-
-          {fabric.description && (
-            <div className="mt-6">
-              <h2 className="text-lg font-medium text-gray-900">الوصف</h2>
-              <p className="mt-2 text-gray-600 whitespace-pre-line">
-                {fabric.description}
-              </p>
+          {/* Product Details */}
+          <div className="space-y-6 order-1">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {fabric.name}
+              </h1>
             </div>
-          )}
 
-          <div className="pt-4 border-t border-gray-200">
-            <Button
-              className="w-full md:w-auto cursor-pointer"
-              onClick={() => setOrderDialogOpen(true)}
-            >
-              طلب الآن
-            </Button>
+            <p className="text-2xl font-bold text-primary flex  items-center  gap-2">
+              {fabric?.price}
+              <span className="  text-green-600">جنيه</span>{" "}
+              <span className="text-base font-medium text-gray-500">/ متر</span>
+            </p>
 
-            {/* Order Form Dialog */}
-            <Dialog open={isOrderDialogOpen} onOpenChange={setOrderDialogOpen}>
-              <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
-                {fabric && <FabricOrderForm fabric={fabric} />}
-              </DialogContent>
-            </Dialog>
+            {fabric.description && (
+              <div className="mt-6">
+                <h2 className="text-lg font-medium text-gray-900">الوصف</h2>
+                <p className="mt-2 text-gray-600 whitespace-pre-line">
+                  {fabric.description}
+                </p>
+              </div>
+            )}
+
+            <div className="pt-4 border-t border-gray-200">
+              <Button
+                className="w-full md:w-auto cursor-pointer"
+                onClick={() => setOrderDialogOpen(true)}
+              >
+                طلب الآن
+              </Button>
+
+              {/* Order Form Dialog */}
+              <Dialog
+                open={isOrderDialogOpen}
+                onOpenChange={setOrderDialogOpen}
+              >
+                <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
+                  {fabric && <FabricOrderForm fabric={fabric} />}
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
         </div>
+        {fabric.videoUrl && (
+          <div className="product-video w-full mt-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              مقطع الفيديو للمنتج
+            </h2>
+            <VideoIframe videoUrl={fabric.videoUrl} />
+          </div>
+        )}
       </div>
-      {fabric.videoUrl && (
-        <div className="product-video w-full mt-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            مقطع الفيديو للمنتج
-          </h2>
-          <VideoIframe videoUrl={fabric.videoUrl} />
-        </div>
-      )}
-    </div>
+    </>
   );
 }

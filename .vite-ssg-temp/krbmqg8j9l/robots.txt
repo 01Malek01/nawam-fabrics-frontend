@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://elnawamfabrics.com/sitemap.xml
+
+User-agent: Googlebot
+Disallow: /private

@@ -10,6 +10,7 @@ import LazyImage from "@/components/LazyImage";
 import { optimizeImage } from "@/utils/imageOptimizer";
 import type { Category } from "@/types";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet";
 const Home = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -89,10 +90,22 @@ const Home = () => {
   }
 
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200 min-h-screen">
-      {/* Hero Slider */}
-      <HeroSlider />
-      {/* Logo Section
+    <>
+      <Helmet>
+        <title>الرئيسية - النوام للأقمشة</title>
+        <meta
+          name="description"
+          content="اكتشف مجموعة واسعة من الأقمشة عالية الجودة في النوام للأقمشة. تصفح الفئات والمنتجات الأكثر مبيعاً."
+        />
+        <meta
+          name="keywords"
+          content="أقمشة, قماش, ملابس, نوام, fabrics, textile"
+        />
+      </Helmet>
+      <div className="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200 min-h-screen">
+        {/* Hero Slider */}
+        <HeroSlider />
+        {/* Logo Section
       <div className="flex justify-center items-center py-12 px-4 bg-white/50 dark:bg-black/50">
         <div className="relative">
           <img
@@ -103,43 +116,44 @@ const Home = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white/20 dark:to-black/20 opacity-0 hover:opacity-100 transition-opacity duration-300" />
         </div>
       </div> */}
-      {/* Main Categories */}
-      <h2 className="text-3xl font-bold mb-6  text-[#A8511A] dark:text-[#A8511A] text-center">
-        الأصناف الرئيسية
-      </h2>{" "}
-      <div className="grid grid-cols-2 gap-4 max-w-7xl mx-auto px-4 py-8">
-        {categories?.map((category) => (
-          <LandingPageCard
-            key={category.id}
-            category={category}
-            onClick={() => {
-              console.log("Selected:", category);
-              // Handle navigation or state update
-              if (category?.subCategories?.length === 0) {
-                navigate(`/categories/${category.id}`);
-              }
-            }}
-            className=""
-          />
-        ))}
-      </div>
-      {/* Most Sold Products Section */}
-      <div className="bg-gradient-to-b from-amber-50 to-white dark:from-amber-900/10 dark:to-gray-900/50 mt-16">
-        <div className="max-w-7xl mx-auto px-4 py-12 rounded-lg">
-          <div className="relative">
-            <h2 className="text-3xl font-bold mb-8 text-[#A8511A] dark:text-[#A8511A] text-center">
-              الأكثر مبيعا
-            </h2>
-          </div>
-          <div className="w-full backdrop-blur-sm bg-white/30 dark:bg-black/30 p-6 rounded-xl shadow-xl overflow-hidden">
-            {/* Custom scrollbar track */}
-            <div className="overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-amber-500/20 hover:scrollbar-thumb-amber-500/30 pb-2">
-              <Fabrics showMostSold={true} />
+        {/* Main Categories */}
+        <h2 className="text-3xl font-bold mb-6  text-[#A8511A] dark:text-[#A8511A] text-center">
+          الأصناف الرئيسية
+        </h2>{" "}
+        <div className="grid grid-cols-2 gap-4 max-w-7xl mx-auto px-4 py-8">
+          {categories?.map((category) => (
+            <LandingPageCard
+              key={category.id}
+              category={category}
+              onClick={() => {
+                console.log("Selected:", category);
+                // Handle navigation or state update
+                if (category?.subCategories?.length === 0) {
+                  navigate(`/categories/${category.id}`);
+                }
+              }}
+              className=""
+            />
+          ))}
+        </div>
+        {/* Most Sold Products Section */}
+        <div className="bg-gradient-to-b from-amber-50 to-white dark:from-amber-900/10 dark:to-gray-900/50 mt-16">
+          <div className="max-w-7xl mx-auto px-4 py-12 rounded-lg">
+            <div className="relative">
+              <h2 className="text-3xl font-bold mb-8 text-[#A8511A] dark:text-[#A8511A] text-center">
+                الأكثر مبيعا
+              </h2>
+            </div>
+            <div className="w-full backdrop-blur-sm bg-white/30 dark:bg-black/30 p-6 rounded-xl shadow-xl overflow-hidden">
+              {/* Custom scrollbar track */}
+              <div className="overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-amber-500/20 hover:scrollbar-thumb-amber-500/30 pb-2">
+                <Fabrics showMostSold={true} />
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -1,5 +1,6 @@
 import Fabrics from "@/components/Fabrics";
 import { useParams, useSearchParams } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 export default function ProductsPage() {
   const { categoryId, subCategoryId } = useParams();
@@ -7,12 +8,21 @@ export default function ProductsPage() {
   const searchQuery = searchParams.get("search");
 
   return (
-    <div>
-      <Fabrics
-        categoryId={categoryId as string}
-        subCategoryId={subCategoryId as string}
-        searchQuery={searchQuery || undefined}
-      />
-    </div>
+    <>
+      <Helmet>
+        <title>المنتجات - النوام للأقمشة</title>
+        <meta
+          name="description"
+          content="تصفح مجموعة واسعة من الأقمشة حسب الفئة أو البحث في النوام للأقمشة."
+        />
+      </Helmet>
+      <div>
+        <Fabrics
+          categoryId={categoryId as string}
+          subCategoryId={subCategoryId as string}
+          searchQuery={searchQuery || undefined}
+        />
+      </div>
+    </>
   );
 }

@@ -4,10 +4,14 @@ import "./index.css";
 import App from "./App.tsx";
 import { OrderDialogProvider } from "./context/OrderDialogContext.tsx";
 
-createRoot(document.getElementById("root")!).render(
+export const createApp = () => (
   <StrictMode>
     <OrderDialogProvider>
       <App />
     </OrderDialogProvider>
   </StrictMode>
 );
+
+if (typeof window !== "undefined") {
+  createRoot(document.getElementById("root")!).render(createApp());
+}
