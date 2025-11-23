@@ -17,6 +17,8 @@ import Complaints from "./pages/Complaints";
 import FabricTypes from "./pages/FabricTypes";
 import Branches from "./pages/Branches";
 import WashingInstructions from "./pages/WashingInstructions";
+import Admin from "./pages/Admin";
+import Login from "./pages/Login";
 function App() {
   return (
     <Router>
@@ -25,6 +27,8 @@ function App() {
         <Navbar />
         <main className="flex-1">
           <Routes>
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />

@@ -1,0 +1,72 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import useAuth from "@/hooks/useAuth";
+
+const Login = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await login({ username, password });
+      if (res && res.message === "Logged in") {
+        navigate("/admin", { replace: true });
+      } else {
+        setError("Invalid credentials");
+      }
+    } catch (err: any) {
+      setError(err?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background-light dark:bg-background-dark p-6">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded shadow p-6">
+        <h2 className="text-xl font-semibold text-right mb-4">تسجيل الدخول</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm text-right">اسم المستخدم</label>
+            <input
+              type="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              className="w-full mt-1 p-2 border rounded"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-right">كلمة المرور</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full mt-1 p-2 border rounded"
+            />
+          </div>
+          {error && <div className="text-red-600 text-sm">{error}</div>}
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="bg-primary text-white px-4 py-2 rounded"
+              disabled={loading}
+            >
+              {loading ? "جاري الدخول..." : "دخول"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
