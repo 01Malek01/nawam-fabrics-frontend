@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { X, ChevronDown, ChevronUp } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { airtableService } from "../services/airtable";
+import usePublicApi from "@/hooks/usePublicApi";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -13,6 +13,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (path: string) => location.pathname === path;
+  const { getCategories } = usePublicApi();
 
   const [categories, setCategories] = useState<
     Array<{
@@ -30,17 +31,17 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     const fetch = async () => {
       setLoading(true);
       try {
-        const all = await airtableService.getAllRecords("Categories");
-        const main = all.filter((c: any) => !c?.ParentCategory);
-        const subs = all.filter((c: any) => c?.ParentCategory?.length > 0);
+        const all = await getCategories();
+        const main = all.filter((c: any) => !c?.isSubCategory);
+        const subs = all.filter((c: any) => c?.isSubCategory);
 
         const mapped = main.map((m: any) => {
           const children = subs
-            .filter((s: any) => s.ParentCategory?.includes(m.id))
-            .map((s: any) => ({ id: s.id, name: s.Name || s.name || "" }));
+            .filter((s: any) => s.ParentCategory._id === m._id)
+            .map((s: any) => ({ id: s._id, name: s.Name || "" }));
           return {
-            id: m.id,
-            name: m.Name || m.name || "",
+            id: m._id,
+            name: m.Name || "",
             subCategories: children,
           };
         });
@@ -57,7 +58,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     return () => {
       mounted = false;
     };
-  }, [isOpen]);
+  }, [isOpen, getCategories]);
 
   const toggle = (id: string) => setExpanded((s) => ({ ...s, [id]: !s[id] }));
 

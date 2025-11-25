@@ -2,11 +2,11 @@
 // @ts-nocheck
 import { useEffect, useState } from "react";
 import FabricCard from "./FabricCard";
-import { airtableService } from "../services/airtable";
 import LazyImage from "./LazyImage";
 import { optimizeImage, optimizeImages } from "@/utils/imageOptimizer";
 import type { Fabric } from "@/types";
 import { useNavigate } from "react-router-dom";
+import usePublicApi from "@/hooks/usePublicApi";
 
 const Fabrics = ({
   categoryId,
@@ -20,6 +20,7 @@ const Fabrics = ({
   showMostSold?: boolean;
 }) => {
   const navigate = useNavigate();
+  const { getProducts } = usePublicApi();
   const [fabrics, setFabrics] = useState<Fabric[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -27,28 +28,25 @@ const Fabrics = ({
     const fetchFabrics = async () => {
       try {
         setIsLoading(true);
-        const records = await airtableService.getAllRecords("Products");
+        const params: Record<string, string | number | boolean> = {};
+        if (categoryId && categoryId !== "all") params.category = categoryId;
+        if (subCategoryId) params.subcategory = subCategoryId;
+
+        const records = await getProducts(params);
         console.log(records);
 
-        // Normalize Airtable records to the Fabric shape our components expect
-        const normalized = records.map((r: any) => {
-          const imagesFromImageField = Array.isArray(r.Image)
-            ? r.Image.map((a: any) => a.url).filter(Boolean)
-            : Array.isArray(r.Images)
-            ? r.Images.map((a: any) => (a?.url ? a.url : a)).filter(Boolean)
-            : [];
-
-          const imageUrl =
-            imagesFromImageField[0] ||
-            r.image ||
-            (r.Image && r.Image[0]?.url) ||
-            (r.Images && r.Images[0]?.url) ||
-            "";
+        // Normalize API records to the Fabric shape our components expect
+        let normalized = records.map((r: any) => {
+          const imagesFromImageField = r.Image || [];
 
           // Optimize images using free API
-          const optimizedMainImage = imageUrl
-            ? optimizeImage(imageUrl, { width: 800, quality: 80 })
-            : "";
+          const optimizedMainImage =
+            imagesFromImageField.length > 0
+              ? optimizeImage(imagesFromImageField[0], {
+                  width: 800,
+                  quality: 80,
+                })
+              : "";
           const optimizedImages =
             imagesFromImageField.length > 0
               ? optimizeImages(imagesFromImageField, {
@@ -58,68 +56,36 @@ const Fabrics = ({
               : [];
 
           return {
-            id: r.id,
-            name: r.Name || r.name || "",
-            price: String(r.PricePerMeter || r.PricePerMeter || ""),
+            id: r._id,
+            name: r.Name || "",
+            price: String(r.PricePerMeter || ""),
             image: optimizedMainImage,
             images: optimizedImages,
-            description: r.Description || r.description || "",
-            mainCategory: Array.isArray(r.MainCategory)
-              ? r.MainCategory
-              : r.MainCategory || r.mainCategory || [],
-            subCategory: Array.isArray(r.SubCategory)
-              ? r.SubCategory
-              : r.SubCategory || r.subCategory || [],
-            _raw: r,
-          } as any;
+            description: r.Description || "",
+            mainCategory: r.mainCategoryName || "",
+            subCategory: r.subCategoryName || "",
+            videoUrl: r.VideoUrl || "",
+          } as Fabric;
         });
 
-        let filteredFabrics: any[] = normalized;
-
-        // Apply search filter if searchQuery is provided
+        // Apply search filter if searchQuery is provided (client-side since backend doesn't support)
         if (searchQuery) {
           const searchRegex = new RegExp(searchQuery, "i");
-          filteredFabrics = filteredFabrics.filter(
+          normalized = normalized.filter(
             (fabric: any) =>
               searchRegex.test(fabric.name) ||
               searchRegex.test(fabric.description) ||
-              (Array.isArray(fabric.mainCategory) &&
-                fabric.mainCategory.join(" ") &&
-                searchRegex.test(fabric.mainCategory.join(" "))) ||
-              (Array.isArray(fabric.subCategory) &&
-                fabric.subCategory.join(" ") &&
-                searchRegex.test(fabric.subCategory.join(" "))) ||
-              (Array.isArray(fabric._raw?.MainCategory) &&
-                searchRegex.test(fabric._raw.MainCategory.join(" "))) ||
-              (Array.isArray(fabric._raw?.SubCategory) &&
-                searchRegex.test(fabric._raw.SubCategory.join(" ")))
+              searchRegex.test(fabric.mainCategory) ||
+              searchRegex.test(fabric.subCategory)
           );
-        }
-
-        // Apply category filters if provided and not 'all'
-        if (categoryId && categoryId !== "all") {
-          filteredFabrics = filteredFabrics.filter((fabric: any) => {
-            const hasMainCategory =
-              (Array.isArray(fabric.mainCategory) &&
-                fabric.mainCategory.includes(categoryId)) ||
-              String(fabric.mainCategory) === String(categoryId);
-            const matchesSubCategory = subCategoryId
-              ? (Array.isArray(fabric.subCategory) &&
-                  fabric.subCategory.includes(subCategoryId)) ||
-                String(fabric.subCategory) === String(subCategoryId)
-              : true;
-            return hasMainCategory && matchesSubCategory;
-          });
         }
 
         // Filter for most sold products if showMostSold is true
         if (showMostSold) {
-          filteredFabrics = filteredFabrics.filter(
-            (fabric) => fabric._raw?.MostSold === true
-          );
+          normalized = normalized.filter((fabric) => fabric.MostSold === true);
         }
 
-        setFabrics(filteredFabrics as Fabric[]);
+        setFabrics(normalized);
       } catch (error) {
         console.error("Error fetching fabrics:", error);
       } finally {
@@ -128,7 +94,7 @@ const Fabrics = ({
     };
 
     fetchFabrics();
-  }, [categoryId, subCategoryId, searchQuery, showMostSold]);
+  }, [categoryId, subCategoryId, searchQuery, showMostSold, getProducts]);
 
   if (isLoading) {
     return (

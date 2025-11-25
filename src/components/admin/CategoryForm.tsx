@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Folder, Image as ImageIcon, ChevronDown } from "lucide-react";
 
 export type Category = {
   _id?: string;
@@ -36,64 +37,82 @@ const CategoryForm: React.FC<Props> = ({ category, onSubmit, categories }) => {
     e.preventDefault();
     const payload: any = { ...form };
     if (imageFile) payload._imageFile = imageFile;
+    if (payload.ParentCategory) {
+      payload.isSubCategory = true;
+    }
     onSubmit(payload);
   };
 
   return (
-    <form onSubmit={submit} className="space-y-3">
-      <div>
-        <Label>اسم الفئة</Label>
-        <Input
-          value={form.Name}
-          onChange={(e) => handleChange("Name", e.target.value)}
-        />
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+      <div className="flex items-center gap-2 mb-6">
+        <Folder className="w-6 h-6 text-primary" />
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+          {category ? "تعديل الفئة" : "إضافة فئة جديدة"}
+        </h3>
       </div>
 
-      <div>
-        <Label>حالة فرعية</Label>
-        <select
-          aria-label="Parent category"
-          value={form.ParentCategory || ""}
-          onChange={(e) =>
-            handleChange("ParentCategory", e.target.value || null)
-          }
-          className="w-full border rounded p-2"
-        >
-          <option value="">لا يوجد</option>
-          {categories &&
-            categories.map((cat) => (
-              <option key={cat._id} value={cat._id}>
-                {cat.Name}
-              </option>
-            ))}
-        </select>
-      </div>
+      <form onSubmit={submit} className="space-y-6">
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Folder className="w-4 h-4" />
+            اسم الفئة
+          </Label>
+          <Input
+            value={form.Name}
+            onChange={(e) => handleChange("Name", e.target.value)}
+            placeholder="أدخل اسم الفئة"
+            className="border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary"
+          />
+        </div>
 
-      <div>
-        <Label>رابط صورة الفئة (اختياري)</Label>
-        <Input
-          value={form.Image || ""}
-          onChange={(e) => handleChange("Image", e.target.value)}
-        />
-      </div>
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <ChevronDown className="w-4 h-4" />
+            الفئة الرئيسية
+          </Label>
+          <select
+            aria-label="Parent category"
+            value={form.ParentCategory || ""}
+            onChange={(e) =>
+              handleChange("ParentCategory", e.target.value || null)
+            }
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary focus:border-primary"
+          >
+            <option value="">لا يوجد</option>
+            {categories &&
+              categories.map((cat) => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.Name}
+                </option>
+              ))}
+          </select>
+        </div>
 
-      <div>
-        <Label>تحميل صورة الفئة</Label>
-        <input
-          aria-label="upload-category-image"
-          type="file"
-          accept="image/*"
-          onChange={(e) =>
-            setImageFile(e.target.files ? e.target.files[0] : null)
-          }
-          className="w-full"
-        />
-      </div>
+        <div className="space-y-4">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <ImageIcon className="w-4 h-4" />
+            صورة الفئة
+          </Label>
 
-      <div className="flex gap-2 justify-end">
-        <Button type="submit">حفظ</Button>
-      </div>
-    </form>
+          <input
+            aria-label="upload-category-image"
+            type="file"
+            accept="image/*"
+            onChange={(e) =>
+              setImageFile(e.target.files ? e.target.files[0] : null)
+            }
+            className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/80"
+          />
+        </div>
+
+        <div className="flex gap-3 justify-end pt-4 border-t">
+          <Button type="submit" className="px-6">
+            {category ? "تحديث" : "إضافة"} الفئة
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 };
 

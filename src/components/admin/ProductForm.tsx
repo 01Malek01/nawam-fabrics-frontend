@@ -3,6 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Package,
+  DollarSign,
+  FileText,
+  Tag,
+  Image as ImageIcon,
+  Video,
+  Star,
+} from "lucide-react";
 import type { Category } from "@/components/admin/CategoryForm";
 
 type Product = {
@@ -62,87 +71,131 @@ const ProductForm: React.FC<Props> = ({ product, onSubmit, categories }) => {
   };
 
   return (
-    <form onSubmit={submit} className="space-y-3">
-      <div>
-        <Label>اسم المنتج</Label>
-        <Input
-          value={form.Name}
-          onChange={(e) => handleChange("Name", e.target.value)}
-        />
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+      <div className="flex items-center gap-2 mb-6">
+        <Package className="w-6 h-6 text-primary" />
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+          {product ? "تعديل المنتج" : "إضافة منتج جديد"}
+        </h3>
       </div>
 
-      <div>
-        <Label>سعر المتر</Label>
-        <Input
-          type="number"
-          value={String(form.PricePerMeter)}
-          onChange={(e) =>
-            handleChange("PricePerMeter", Number(e.target.value))
-          }
-        />
-      </div>
+      <form onSubmit={submit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Package className="w-4 h-4" />
+              اسم المنتج
+            </Label>
+            <Input
+              value={form.Name}
+              onChange={(e) => handleChange("Name", e.target.value)}
+              placeholder="أدخل اسم المنتج"
+              className="border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary"
+            />
+          </div>
 
-      <div>
-        <Label>الوصف</Label>
-        <Textarea
-          value={form.Description || ""}
-          onChange={(e) => handleChange("Description", e.target.value)}
-        />
-      </div>
-
-      <div>
-        <Label>الفئة الفرعية</Label>
-        <select
-          value={form.SubCategory || ""}
-          onChange={(e) => handleChange("SubCategory", e.target.value)}
-          className="w-full border rounded p-2"
-        >
-          <option value="">-- اختر --</option>
-          {categories.map((c) => (
-            <option key={c._id} value={c._id}>
-              {c.Name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <Label>صور المنتج (روابط)</Label>
-        <div className="space-y-2">
-          {(form.Image || []).map((img, idx) => (
-            <div key={idx} className="flex gap-2">
-              <Input
-                aria-label={`image-${idx}`}
-                value={img}
-                onChange={(e) => {
-                  const next = [...(form.Image || [])];
-                  next[idx] = e.target.value;
-                  handleChange("Image", next);
-                }}
-              />
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={() => {
-                  const next = [...(form.Image || [])];
-                  next.splice(idx, 1);
-                  handleChange("Image", next);
-                }}
-              >
-                حذف
-              </Button>
-            </div>
-          ))}
-          <Button
-            type="button"
-            onClick={() => handleChange("Image", [...(form.Image || []), ""])}
-          >
-            إضافة رابط صورة
-          </Button>
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <DollarSign className="w-4 h-4" />
+              سعر المتر
+            </Label>
+            <Input
+              type="number"
+              value={String(form.PricePerMeter)}
+              onChange={(e) =>
+                handleChange("PricePerMeter", Number(e.target.value))
+              }
+              placeholder="0"
+              className="border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary"
+            />
+          </div>
         </div>
 
-        <div className="mt-3">
-          <Label>تحميل صور (ملفات)</Label>
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <FileText className="w-4 h-4" />
+            الوصف
+          </Label>
+          <Textarea
+            value={form.Description || ""}
+            onChange={(e) => handleChange("Description", e.target.value)}
+            placeholder="وصف المنتج..."
+            rows={3}
+            className="border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Tag className="w-4 h-4" />
+              الفئة الرئيسية
+            </Label>
+            <select
+              value={form.MainCategory || ""}
+              onChange={(e) => {
+                handleChange("MainCategory", e.target.value || undefined);
+                // Reset SubCategory if it's not under the new MainCategory
+                if (form.SubCategory) {
+                  const validSubs = categories.filter(
+                    (c) =>
+                      c.isSubCategory && c.ParentCategory === e.target.value
+                  );
+                  if (!validSubs.find((c) => c._id === form.SubCategory)) {
+                    handleChange("SubCategory", undefined);
+                  }
+                }
+              }}
+              aria-label="الفئة الرئيسية"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary focus:border-primary"
+            >
+              <option value="">-- اختر الفئة الرئيسية --</option>
+              {categories
+                .filter((c) => !c.isSubCategory)
+                .map((c) => (
+                  <option key={c._id} value={c._id}>
+                    {c.Name}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Tag className="w-4 h-4" />
+              الفئة الفرعية (اختياري)
+            </Label>
+            <select
+              value={form.SubCategory || ""}
+              onChange={(e) =>
+                handleChange("SubCategory", e.target.value || undefined)
+              }
+              disabled={!form.MainCategory}
+              aria-label="الفئة الفرعية"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary focus:border-primary disabled:opacity-50"
+            >
+              <option value="">-- اختر الفئة الفرعية --</option>
+              {categories
+                .filter(
+                  (c) =>
+                    c.isSubCategory &&
+                    c.ParentCategory?._id === form.MainCategory
+                )
+                .map((c) => (
+                  <option key={c._id} value={c._id}>
+                    {c.Name}
+                  </option>
+                ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <ImageIcon className="w-4 h-4" />
+            صور المنتج
+          </Label>
+
           <input
             aria-label="upload-images"
             type="file"
@@ -151,46 +204,52 @@ const ProductForm: React.FC<Props> = ({ product, onSubmit, categories }) => {
             onChange={(e) =>
               setImageFiles(e.target.files ? Array.from(e.target.files) : null)
             }
-            className="w-full"
+            className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/80"
           />
         </div>
-      </div>
 
-      <div className="mt-3">
-        <Label>تحميل فيديو (اختياري)</Label>
-        <input
-          aria-label="upload-video"
-          type="file"
-          accept="video/*"
-          onChange={(e) =>
-            setVideoFile(e.target.files ? e.target.files[0] : null)
-          }
-          className="w-full"
-        />
-        <div className="mt-2">
-          <Label>أو رابط الفيديو</Label>
-          <Input
-            value={form.VideoUrl || ""}
-            onChange={(e) => handleChange("VideoUrl", e.target.value)}
+        <div className="space-y-4">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Video className="w-4 h-4" />
+            فيديو المنتج (اختياري)
+          </Label>
+
+          <input
+            aria-label="upload-video"
+            type="file"
+            accept="video/*"
+            onChange={(e) =>
+              setVideoFile(e.target.files ? e.target.files[0] : null)
+            }
+            className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/80"
           />
         </div>
-      </div>
 
-      <div className="flex items-center gap-2">
-        <input
-          aria-label="Most sold"
-          id="mostSold"
-          type="checkbox"
-          checked={!!form.MostSold}
-          onChange={(e) => handleChange("MostSold", e.target.checked)}
-        />
-        <Label htmlFor="mostSold">الأكثر مبيعا</Label>
-      </div>
+        <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-md">
+          <input
+            aria-label="Most sold"
+            id="mostSold"
+            type="checkbox"
+            checked={!!form.MostSold}
+            onChange={(e) => handleChange("MostSold", e.target.checked)}
+            className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+          />
+          <Label
+            htmlFor="mostSold"
+            className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
+            <Star className="w-4 h-4" />
+            الأكثر مبيعا
+          </Label>
+        </div>
 
-      <div className="flex gap-2 justify-end">
-        <Button type="submit">حفظ</Button>
-      </div>
-    </form>
+        <div className="flex gap-3 justify-end pt-4 border-t">
+          <Button type="submit" className="px-6">
+            {product ? "تحديث" : "إضافة"} المنتج
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 };
 

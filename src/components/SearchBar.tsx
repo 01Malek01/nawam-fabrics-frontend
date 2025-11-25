@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { airtableService } from "../services/airtable";
+import usePublicApi from "@/hooks/usePublicApi";
 
 export default function SearchBar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -13,6 +13,7 @@ export default function SearchBar() {
   >([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(false);
   const navigate = useNavigate();
+  const { getCategories } = usePublicApi();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,12 +33,12 @@ export default function SearchBar() {
     const fetchCategories = async () => {
       setIsLoadingCategories(true);
       try {
-        // Fetch categories table (so we get names and ids)
-        const allCategories = await airtableService.getAllRecords("Categories");
-        // Filter main categories (no ParentCategory) and map to {id,name}
+        // Fetch categories from API
+        const allCategories = await getCategories();
+        // Filter main categories (no ParentCategory or isSubCategory false) and map to {id,name}
         const mainCategories = allCategories
-          .filter((c: any) => !c?.ParentCategory)
-          .map((c: any) => ({ id: c.id, name: c.Name || c.name || "" }));
+          .filter((c: any) => !c?.isSubCategory)
+          .map((c: any) => ({ id: c._id, name: c.Name || "" }));
 
         if (mounted) setCategories(mainCategories.filter((c: any) => c.name));
       } catch (e) {

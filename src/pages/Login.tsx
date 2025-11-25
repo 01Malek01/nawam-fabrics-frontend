@@ -36,6 +36,7 @@ const Login = () => {
           <div>
             <label className="block text-sm text-right">اسم المستخدم</label>
             <input
+              title="username"
               type="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -46,6 +47,7 @@ const Login = () => {
           <div>
             <label className="block text-sm text-right">كلمة المرور</label>
             <input
+              title="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

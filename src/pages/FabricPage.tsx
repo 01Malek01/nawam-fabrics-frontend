@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useOrderDialog } from "@/context/OrderDialogContext";
 import type { Fabric } from "@/types";
-import { airtableService } from "@/services/airtable";
+import usePublicApi from "@/hooks/usePublicApi";
 import ImagesSlider from "@/components/Slider";
 import LazyImage from "@/components/LazyImage";
 import { optimizeImages } from "@/utils/imageOptimizer";
@@ -17,34 +17,32 @@ import { Helmet } from "react-helmet";
 export default function FabricPage() {
   const { fabricId } = useParams();
   const { isOrderDialogOpen, setOrderDialogOpen } = useOrderDialog();
+  const { getProductById } = usePublicApi();
   const [fabric, setFabric] = useState<Fabric | null>(null);
 
   useEffect(() => {
     const fetchFabric = async () => {
-      const fabricData = await airtableService.getRecordById(
-        fabricId as string
-      );
+      const fabricData = await getProductById(fabricId as string);
 
-      const rawImages =
-        fabricData.Image?.map((image: { url: string }) => image.url) || [];
+      const rawImages = fabricData?.Image || [];
       const optimizedImageUrls =
         rawImages.length > 0
           ? optimizeImages(rawImages, { width: 1200, quality: 85 })
           : [];
 
       setFabric({
-        id: fabricData.id,
+        id: fabricData._id,
         images: optimizedImageUrls,
         name: fabricData.Name,
         price: fabricData.PricePerMeter,
         description: fabricData?.Description || "",
         mainCategory: fabricData.MainCategory,
         subCategory: fabricData.SubCategory,
-        videoUrl: fabricData.VideoUrl || fabricData?.Video?.[0]?.url || "",
+        videoUrl: fabricData.VideoUrl || "",
       });
     };
-    fetchFabric();
-  }, [fabricId]);
+    if (fabricId) fetchFabric();
+  }, [fabricId, getProductById]);
 
   if (!fabric) {
     return (

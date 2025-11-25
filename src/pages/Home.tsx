@@ -1,8 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
-
 import React, { useEffect, useState } from "react";
-import { airtableService } from "../services/airtable";
+import usePublicApi from "@/hooks/usePublicApi";
 import LandingPageCard from "@/components/LandingPageCard";
 import HeroSlider from "@/components/HeroSlider";
 import Fabrics from "@/components/Fabrics";
@@ -11,7 +8,20 @@ import { optimizeImage } from "@/utils/imageOptimizer";
 import type { Category } from "@/types";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { getImageUrl } from "@/lib/utils";
+
+type ApiCategory = {
+  _id: string;
+  Name: string;
+  Description?: string;
+  Image?: string;
+  ParentCategory?: string | null;
+  isSubCategory?: boolean;
+  productsCount?: number;
+};
+
 const Home = () => {
+  const { getCategories } = usePublicApi();
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -19,51 +29,48 @@ const Home = () => {
     const fetchCategories = async () => {
       setIsLoading(true);
       try {
-        const allCategories = await airtableService.getAllRecords("Categories");
+        const allCategories = await getCategories();
 
         // Separate main categories (no parent) from subcategories
         const mainCategories = allCategories.filter(
-          (category) => !category?.ParentCategory
+          (category: ApiCategory) => category?.isSubCategory === false
         );
         const subCategories = allCategories.filter(
-          (category) => category?.ParentCategory?.length > 0
+          (category: ApiCategory) => category?.ParentCategory
         );
         // Map through main categories and attach their subcategories
-        const categoriesWithSubs = mainCategories.map((category) => {
-          const imageUrl =
-            category.Image?.[0]?.url ||
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuAgEn5bBp8A3v5TMgmG_Xy30ZssTkQ8uJQAkn9gjKJvFTKqVKFHIOVfsEWTffLVupooswoJqnDc2pwIS3RFtU8Y2nx3tuFu2A6cdTRVdJ-0zdiZBOmRiFOvmKQGlFK8ViKl_t7BjzhTIi-k9S3DqfghfDdi6L_x8J5uT-4nKcla4hFpaPprg2XU4LthpdL30Fbu88v8p-bqOjfnmxRs-Jhvu-JZQsTMUBEb-j5TB5P-GDg1712IqY5Fe-4yfiTk5UreQ_nUBDL02pY";
+        const categoriesWithSubs = mainCategories.map(
+          (category: ApiCategory) => {
+            const imageUrl =
+              getImageUrl(category?.Image) ||
+              "https://lh3.googleusercontent.com/aida-public/AB6AXuAgEn5bBp8A3v5TMgmG_Xy30ZssTkQ8uJQAkn9gjKJvFTKqVKFHIOVfsEWTffLVupooswoJqnDc2pwIS3RFtU8Y2nx3tuFu2A6cdTRVdJ-0zdiZBOmRiFOvmKQGlFK8ViKl_t7BjzhTIi-k9S3DqfghfDdi6L_x8J5uT-4nKcla4hFpaPprg2XU4LthpdL30Fbu88v8p-bqOjfnmxRs-Jhvu-JZQsTMUBEb-j5TB5P-GDg1712IqY5Fe-4yfiTk5UreQ_nUBDL02pY";
 
-          // Optimize category image
-          const optimizedImageUrl = imageUrl
-            ? optimizeImage(imageUrl, { width: 600, quality: 80 })
-            : imageUrl;
+            // Find subcategories for this main category
+            const categorySubs = subCategories
+              .filter((sub: ApiCategory) => sub.ParentCategory === category._id)
+              .map((sub: ApiCategory) => {
+                const subImageUrl = sub.Image || imageUrl;
+                return {
+                  id: sub._id,
+                  name: sub.Name,
+                  description: sub.Description,
+                  imageUrl: subImageUrl
+                    ? optimizeImage(subImageUrl, { width: 600, quality: 80 })
+                    : subImageUrl,
+                  productsCount: sub.productsCount || 0,
+                };
+              });
 
-          // Find subcategories for this main category
-          const categorySubs = subCategories
-            .filter((sub) => sub.ParentCategory.includes(category.id))
-            .map((sub) => {
-              const subImageUrl = sub.Image?.[0]?.url || imageUrl;
-              return {
-                id: sub.id,
-                name: sub.Name,
-                description: sub.Description,
-                imageUrl: subImageUrl
-                  ? optimizeImage(subImageUrl, { width: 600, quality: 80 })
-                  : subImageUrl,
-                productsCount: sub.ProductsCount || 0,
-              };
-            });
-
-          return {
-            id: category.id,
-            name: category.Name,
-            description: category.Description,
-            imageUrl: optimizedImageUrl,
-            subCategories: categorySubs,
-            productsCount: category.ProductsCount || 0,
-          };
-        });
+            return {
+              id: category._id,
+              name: category.Name,
+              description: category.Description,
+              imageUrl: imageUrl,
+              subCategories: categorySubs,
+              productsCount: category.productsCount || 0,
+            };
+          }
+        );
 
         setCategories(categoriesWithSubs);
       } catch (error) {
@@ -73,7 +80,7 @@ const Home = () => {
       }
     };
     fetchCategories();
-  }, []);
+  }, [getCategories]);
 
   if (isLoading) {
     return (

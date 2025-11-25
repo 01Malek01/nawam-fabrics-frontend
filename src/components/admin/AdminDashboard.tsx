@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import useAdminApi from "@/hooks/useAdminApi";
 import CategoryForm from "./CategoryForm";
 import ProductForm from "./ProductForm";
+import { getImageUrl } from "@/lib/utils";
 
 type Product = {
   _id?: string;
@@ -20,7 +29,7 @@ type Product = {
 type Category = {
   _id?: string;
   Name: string;
-  ParentCategory?: string | null;
+  ParentCategory?: Category | null;
   Image?: string;
   isSubCategory?: boolean;
 };
@@ -110,89 +119,116 @@ const AdminDashboard: React.FC = () => {
 
       <section className="bg-white/60 dark:bg-white/5 p-4 rounded-lg">
         <h2 className="text-lg font-semibold text-right mb-3">المنتجات</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {products.map((p) => (
-            <div
-              key={p._id}
-              className="border rounded p-3 flex justify-between items-start"
-            >
-              <div className="text-right">
-                {p.Image && p.Image.length > 0 && (
-                  <img
-                    src={p.Image[0]}
-                    alt={p.Name}
-                    className="w-28 h-20 object-cover rounded mb-2 mr-2 inline-block"
-                  />
-                )}
-                <div className="font-bold">{p.Name}</div>
-                <div className="text-sm text-gray-600">{p.Description}</div>
-                <div className="text-sm mt-1">سعر المتر: {p.PricePerMeter}</div>
-                {p.VideoUrl && (
-                  <div className="mt-2">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-right">الصورة</TableHead>
+              <TableHead className="text-right">الاسم</TableHead>
+              <TableHead className="text-right">الوصف</TableHead>
+              <TableHead className="text-right">السعر</TableHead>
+              <TableHead className="text-right">الفيديو</TableHead>
+              <TableHead className="text-right">الإجراءات</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {products.map((p) => (
+              <TableRow key={p._id}>
+                <TableCell>
+                  {
+                    (p.Image && console.log("product images", p.Image),
+                    p?.Image.length > 0 &&
+                      p?.Image.map((img, idx) => (
+                        <img
+                          key={idx}
+                          src={getImageUrl(img)}
+                          alt={p.Name}
+                          className="w-12 h-10 object-cover rounded mr-1 inline-block"
+                        />
+                      )))
+                  }
+                </TableCell>
+                <TableCell className="font-medium">{p.Name}</TableCell>
+                <TableCell className="max-w-xs truncate">
+                  {p.Description}
+                </TableCell>
+                <TableCell>{p.PricePerMeter} ج.م</TableCell>
+                <TableCell>
+                  {p.VideoUrl && (
                     <a
-                      href={p.VideoUrl}
+                      href={getImageUrl(p.VideoUrl)}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-blue-600"
+                      className="text-blue-600 hover:underline"
                     >
-                      مشاهدة الفيديو
+                      مشاهدة
                     </a>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={() => setEditingProduct(p)}>
+                      تعديل
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => p._id && handleDeleteProduct(p._id)}
+                    >
+                      حذف
+                    </Button>
                   </div>
-                )}
-              </div>
-              <div className="flex flex-col gap-2">
-                <Button size="sm" onClick={() => setEditingProduct(p)}>
-                  تعديل
-                </Button>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => p._id && handleDeleteProduct(p._id)}
-                >
-                  حذف
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </section>
 
       <section className="bg-white/60 dark:bg-white/5 p-4 rounded-lg">
         <h2 className="text-lg font-semibold text-right mb-3">الفئات</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {categories.map((c) => (
-            <div
-              key={c._id}
-              className="border rounded p-3 flex justify-between items-start"
-            >
-              <div className="text-right">
-                {c.Image && (
-                  <img
-                    src={c.Image}
-                    alt={c.Name}
-                    className="w-20 h-16 object-cover rounded mb-2 mr-2 inline-block"
-                  />
-                )}
-                <div className="font-bold">{c.Name}</div>
-                <div className="text-sm text-gray-600">
-                  {c.isSubCategory ? "فرعية" : "رئيسية"}
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <Button size="sm" onClick={() => setEditingCategory(c)}>
-                  تعديل
-                </Button>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => c._id && handleDeleteCategory(c._id)}
-                >
-                  حذف
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-right">الصورة</TableHead>
+              <TableHead className="text-right">الاسم</TableHead>
+              <TableHead className="text-right">النوع</TableHead>
+              <TableHead className="text-right">الفئة الرئيسية</TableHead>
+              <TableHead className="text-right">الإجراءات</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {categories.map((c) => (
+              <TableRow key={c._id}>
+                <TableCell>
+                  {c.Image && (
+                    <img
+                      src={getImageUrl(c.Image)}
+                      alt={c.Name}
+                      className="w-12 h-10 object-cover rounded"
+                    />
+                  )}
+                </TableCell>
+                <TableCell className="font-medium">{c.Name}</TableCell>
+                <TableCell>{c.isSubCategory ? "فرعية" : "رئيسية"}</TableCell>
+                <TableCell>{c?.ParentCategory?.Name}</TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={() => setEditingCategory(c)}>
+                      تعديل
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => c._id && handleDeleteCategory(c._id)}
+                    >
+                      حذف
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </section>
 
       {/* Edit dialogs */}
@@ -201,10 +237,11 @@ const AdminDashboard: React.FC = () => {
           <DialogContent>
             <ProductForm
               product={editingProduct}
-              onSubmit={(data) =>
-                editingProduct._id &&
-                handleUpdateProduct(editingProduct._id, data)
-              }
+              onSubmit={(data) => {
+                if (editingProduct._id) {
+                  handleUpdateProduct(editingProduct._id, data);
+                }
+              }}
               categories={categories}
             />
           </DialogContent>
@@ -216,10 +253,11 @@ const AdminDashboard: React.FC = () => {
           <DialogContent>
             <CategoryForm
               category={editingCategory}
-              onSubmit={(data) =>
-                editingCategory._id &&
-                handleUpdateCategory(editingCategory._id, data)
-              }
+              onSubmit={(data) => {
+                if (editingCategory._id) {
+                  handleUpdateCategory(editingCategory._id, data);
+                }
+              }}
               categories={categories}
             />
           </DialogContent>
