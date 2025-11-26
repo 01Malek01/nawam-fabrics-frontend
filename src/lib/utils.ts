@@ -13,3 +13,16 @@ export function getImageUrl(imagePath: string): string {
   console.log(`${base}${imagePath.startsWith("/") ? "" : "/"}${imagePath}`);
   return `${base}${imagePath.startsWith("/") ? "" : "/"}${imagePath}`;
 }
+
+export const checkSubcategoryBelongsToCategory = (
+  categoryId: string,
+  subCategoryId: string,
+  categories: Array<{
+    id: string;
+    subCategories: Array<{ id: string }>;
+  }>
+): boolean => {
+  const category = categories.find((cat) => cat.id === categoryId);
+  if (!category) return false;
+  return category.subCategories.some((sub) => sub.id === subCategoryId);
+};

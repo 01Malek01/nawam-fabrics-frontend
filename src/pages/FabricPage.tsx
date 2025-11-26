@@ -7,12 +7,13 @@ import type { Fabric } from "@/types";
 import usePublicApi from "@/hooks/usePublicApi";
 import ImagesSlider from "@/components/Slider";
 import LazyImage from "@/components/LazyImage";
-import { optimizeImages } from "@/utils/imageOptimizer";
+// import { optimizeImages } from "@/utils/imageOptimizer";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { FabricOrderForm } from "@/components/FabricOrderForm";
 import VideoIframe from "@/components/VideoIframe";
 import { Helmet } from "react-helmet";
+import { getImageUrl } from "@/lib/utils";
 
 export default function FabricPage() {
   const { fabricId } = useParams();
@@ -25,14 +26,10 @@ export default function FabricPage() {
       const fabricData = await getProductById(fabricId as string);
 
       const rawImages = fabricData?.Image || [];
-      const optimizedImageUrls =
-        rawImages.length > 0
-          ? optimizeImages(rawImages, { width: 1200, quality: 85 })
-          : [];
 
       setFabric({
         id: fabricData._id,
-        images: optimizedImageUrls,
+        images: rawImages.map((img: string) => getImageUrl(img) || "") || [],
         name: fabricData.Name,
         price: fabricData.PricePerMeter,
         description: fabricData?.Description || "",

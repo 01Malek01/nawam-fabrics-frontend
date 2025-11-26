@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import FabricCard from "./FabricCard";
 import LazyImage from "./LazyImage";
-import { optimizeImage, optimizeImages } from "@/utils/imageOptimizer";
 import type { Fabric } from "@/types";
 import { useNavigate } from "react-router-dom";
 import usePublicApi from "@/hooks/usePublicApi";
+import { getImageUrl } from "../lib/utils";
 
 const Fabrics = ({
   categoryId,
@@ -38,33 +38,17 @@ const Fabrics = ({
         // Normalize API records to the Fabric shape our components expect
         let normalized = records.map((r: any) => {
           const imagesFromImageField = r.Image || [];
-
-          // Optimize images using free API
-          const optimizedMainImage =
-            imagesFromImageField.length > 0
-              ? optimizeImage(imagesFromImageField[0], {
-                  width: 800,
-                  quality: 80,
-                })
-              : "";
-          const optimizedImages =
-            imagesFromImageField.length > 0
-              ? optimizeImages(imagesFromImageField, {
-                  width: 1200,
-                  quality: 85,
-                })
-              : [];
-
           return {
             id: r._id,
             name: r.Name || "",
             price: String(r.PricePerMeter || ""),
-            image: optimizedMainImage,
-            images: optimizedImages,
+            image: getImageUrl(imagesFromImageField[0]) || "",
+            images: imagesFromImageField,
             description: r.Description || "",
             mainCategory: r.mainCategoryName || "",
             subCategory: r.subCategoryName || "",
             videoUrl: r.VideoUrl || "",
+            MostSold: r.MostSold || false,
           } as Fabric;
         });
 

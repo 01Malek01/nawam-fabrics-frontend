@@ -1,10 +1,13 @@
 // Simple admin API hook. Replace endpoints with your real API endpoints.
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 type Product = any;
 type Category = any;
 
 export default function useAdminApi() {
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
   const BASE = (import.meta.env.VITE_NODE_BACKEND_URL as string) || "";
   const getProducts = useCallback(async () => {
     const res = await fetch(`${BASE}/admin/products`, {
@@ -16,76 +19,94 @@ export default function useAdminApi() {
 
   const createProduct = useCallback(
     async (data: Product) => {
-      // If files are present, send FormData so backend can accept files
-      if (data && (data._imageFiles || data._videoFile)) {
-        const fd = new FormData();
-        // append simple fields
-        Object.keys(data).forEach((k) => {
-          if (k === "_imageFiles" || k === "_videoFile") return;
-          const v = (data as any)[k];
-          if (v === undefined || v === null) return;
-          if (Array.isArray(v)) {
-            fd.append(k, JSON.stringify(v));
-          } else {
-            fd.append(k, String(v));
+      setStatus("loading");
+      try {
+        if (data && (data._imageFiles || data._videoFile)) {
+          const fd = new FormData();
+          Object.keys(data).forEach((k) => {
+            if (k === "_imageFiles" || k === "_videoFile") return;
+            const v = (data as any)[k];
+            if (v === undefined || v === null) return;
+            if (Array.isArray(v)) {
+              fd.append(k, JSON.stringify(v));
+            } else {
+              fd.append(k, String(v));
+            }
+          });
+          if (data._imageFiles) {
+            data._imageFiles.forEach((f: File) => fd.append("Image", f));
           }
-        });
-        if (data._imageFiles) {
-          data._imageFiles.forEach((f: File) => fd.append("images", f));
-        }
-        if (data._videoFile) {
-          fd.append("video", data._videoFile);
+          if (data._videoFile) {
+            fd.append("VideoUrl", data._videoFile);
+          }
+          await fetch(`${BASE}/admin/products`, {
+            method: "POST",
+            body: fd,
+            credentials: "include",
+          });
+          setStatus("success");
+          return;
         }
         await fetch(`${BASE}/admin/products`, {
           method: "POST",
-          body: fd,
+          headers: { "Content-Type": "application/json" },
           credentials: "include",
+          body: JSON.stringify(data),
         });
-        return;
+        setStatus("success");
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 1000);
       }
-      await fetch(`${BASE}/admin/products`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
     },
     [BASE]
   );
 
   const updateProduct = useCallback(
     async (id: string, data: Product) => {
-      if (data && (data._imageFiles || data._videoFile)) {
-        const fd = new FormData();
-        Object.keys(data).forEach((k) => {
-          if (k === "_imageFiles" || k === "_videoFile") return;
-          const v = (data as any)[k];
-          if (v === undefined || v === null) return;
-          if (Array.isArray(v)) {
-            fd.append(k, JSON.stringify(v));
-          } else {
-            fd.append(k, String(v));
+      setStatus("loading");
+      try {
+        if (data && (data._imageFiles || data._videoFile)) {
+          const fd = new FormData();
+          Object.keys(data).forEach((k) => {
+            if (k === "_imageFiles" || k === "_videoFile") return;
+            const v = (data as any)[k];
+            if (v === undefined || v === null) return;
+            if (Array.isArray(v)) {
+              fd.append(k, JSON.stringify(v));
+            } else {
+              fd.append(k, String(v));
+            }
+          });
+          if (data._imageFiles) {
+            data._imageFiles.forEach((f: File) => fd.append("Image", f));
           }
-        });
-        if (data._imageFiles) {
-          data._imageFiles.forEach((f: File) => fd.append("images", f));
-        }
-        if (data._videoFile) {
-          fd.append("video", data._videoFile);
+          if (data._videoFile) {
+            fd.append("VideoUrl", data._videoFile);
+          }
+          await fetch(`${BASE}/admin/products/${id}`, {
+            method: "PUT",
+            body: fd,
+            credentials: "include",
+          });
+          setStatus("success");
+          return;
         }
         await fetch(`${BASE}/admin/products/${id}`, {
           method: "PUT",
-          body: fd,
+          headers: { "Content-Type": "application/json" },
           credentials: "include",
+          body: JSON.stringify(data),
         });
-        return;
+        setStatus("success");
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 1000);
       }
-      await fetch(`${BASE}/admin/products/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
     },
     [BASE]
   );
@@ -110,56 +131,76 @@ export default function useAdminApi() {
 
   const createCategory = useCallback(
     async (data: Category) => {
-      if (data && data._imageFile) {
-        const fd = new FormData();
-        Object.keys(data).forEach((k) => {
-          if (k === "_imageFile") return;
-          const v = (data as any)[k];
-          if (v === undefined || v === null) return;
-          fd.append(k, String(v));
-        });
-        fd.append("image", data._imageFile);
+      setStatus("loading");
+      try {
+        if (data && data._imageFile) {
+          const fd = new FormData();
+          Object.keys(data).forEach((k) => {
+            if (k === "_imageFile") return;
+            const v = (data as any)[k];
+            if (v === undefined || v === null) return;
+            fd.append(k, String(v));
+          });
+          fd.append("Image", data._imageFile);
+          await fetch(`${BASE}/admin/categories`, {
+            method: "POST",
+            body: fd,
+            credentials: "include",
+          });
+          setStatus("success");
+          return;
+        }
         await fetch(`${BASE}/admin/categories`, {
           method: "POST",
-          body: fd,
+          headers: { "Content-Type": "application/json" },
           credentials: "include",
+          body: JSON.stringify(data),
         });
-        return;
+        setStatus("success");
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 1000);
       }
-      await fetch(`${BASE}/admin/categories`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
     },
     [BASE]
   );
 
   const updateCategory = useCallback(
     async (id: string, data: Category) => {
-      if (data && data._imageFile) {
-        const fd = new FormData();
-        Object.keys(data).forEach((k) => {
-          if (k === "_imageFile") return;
-          const v = (data as any)[k];
-          if (v === undefined || v === null) return;
-          fd.append(k, String(v));
-        });
-        fd.append("image", data._imageFile);
+      setStatus("loading");
+      try {
+        if (data && data._imageFile) {
+          const fd = new FormData();
+          Object.keys(data).forEach((k) => {
+            if (k === "_imageFile") return;
+            const v = (data as any)[k];
+            if (v === undefined || v === null) return;
+            fd.append(k, String(v));
+          });
+          fd.append("Image", data._imageFile);
+          await fetch(`${BASE}/admin/categories/${id}`, {
+            method: "PUT",
+            body: fd,
+            credentials: "include",
+          });
+          setStatus("success");
+          return;
+        }
         await fetch(`${BASE}/admin/categories/${id}`, {
           method: "PUT",
-          body: fd,
+          headers: { "Content-Type": "application/json" },
           credentials: "include",
+          body: JSON.stringify(data),
         });
-        return;
+        setStatus("success");
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 1000);
       }
-      await fetch(`${BASE}/admin/categories/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
     },
     [BASE]
   );
@@ -198,5 +239,6 @@ export default function useAdminApi() {
     createCategory,
     updateCategory,
     deleteCategory,
+    status,
   };
 }

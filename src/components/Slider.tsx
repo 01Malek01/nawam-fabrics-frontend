@@ -8,38 +8,6 @@ import { Button } from "@/components/ui/button";
 import LazyImage from "./LazyImage";
 
 // Define prop types for the arrow components
-interface ArrowProps {
-  className?: string;
-  style?: React.CSSProperties;
-  onClick?: () => void;
-}
-
-// Custom arrow components
-const NextArrow: React.FC<ArrowProps> = ({ className, style, onClick }) => {
-  return (
-    <div
-      className={`${className} !flex items-center justify-center w-10 h-10 rounded-full bg-white/80 hover:bg-white text-gray-800 shadow-lg z-10`}
-      style={{ ...style, right: "10px" }}
-      onClick={onClick}
-      aria-label="Next slide"
-    >
-      <ChevronRight className="w-6 h-6" />
-    </div>
-  );
-};
-
-const PrevArrow: React.FC<ArrowProps> = ({ className, style, onClick }) => {
-  return (
-    <div
-      className={`${className} !flex items-center justify-center w-10 h-10 rounded-full bg-white/80 hover:bg-white text-gray-800 shadow-lg z-10`}
-      style={{ ...style, left: "10px" }}
-      onClick={onClick}
-      aria-label="Previous slide"
-    >
-      <ChevronLeft className="w-6 h-6" />
-    </div>
-  );
-};
 
 const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
   const [slider1, setSlider1] = useState<Slider | null>(null);
@@ -55,8 +23,6 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
     slidesToShow: 1,
     slidesToScroll: 1,
     cssEase: "ease-in-out",
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
     dotsClass: "slick-dots !bottom-4 hidden md:block",
     customPaging: () => (
       <div className="w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-colors duration-200" />
@@ -72,8 +38,6 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
     slidesToShow: 1,
     slidesToScroll: 1,
     cssEase: "ease-in-out",
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
     initialSlide: currentSlide,
     dotsClass: "slick-dots !bottom-8",
     customPaging: () => (

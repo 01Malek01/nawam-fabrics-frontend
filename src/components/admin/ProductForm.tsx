@@ -1,4 +1,7 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-nocheck
 import React, { useEffect } from "react";
+import useAdminApi from "../../hooks/useAdminApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +16,7 @@ import {
   Star,
 } from "lucide-react";
 import type { Category } from "@/components/admin/CategoryForm";
+import toast from "react-hot-toast";
 
 type Product = {
   _id?: string;
@@ -28,11 +32,11 @@ type Product = {
 
 type Props = {
   product?: Product | null;
-  onSubmit: (data: Product) => void | Promise<void>;
   categories: Category[];
 };
 
-const ProductForm: React.FC<Props> = ({ product, onSubmit, categories }) => {
+const ProductForm: React.FC<Props> = ({ product, categories }) => {
+  const { createProduct, status } = useAdminApi();
   const [form, setForm] = React.useState<Product>(
     product || {
       Name: "",
@@ -58,16 +62,33 @@ const ProductForm: React.FC<Props> = ({ product, onSubmit, categories }) => {
   }, [product]);
 
   const handleChange = (key: keyof Product, value: any) => {
-    setForm((s) => ({ ...s, [key]: value }));
+    setForm((s: Product) => ({ ...s, [key]: value }));
   };
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    // pass files along in underscored fields so the API hook can detect them
-    const payload: any = { ...form };
+    const toastId = toast.loading("جاري رفع الصور أو حفظ المنتج...");
+    const payload: Product & { _imageFiles?: File[]; _videoFile?: File } = {
+      ...form,
+    };
     if (imageFiles && imageFiles.length > 0) payload._imageFiles = imageFiles;
     if (videoFile) payload._videoFile = videoFile;
-    onSubmit(payload);
+    Promise.resolve(createProduct(payload))
+      .then(() => {
+        toast.success("تم حفظ المنتج بنجاح", { id: toastId });
+        setForm({
+          Name: "",
+          PricePerMeter: 0,
+          Image: [],
+          VideoUrl: "",
+          MostSold: false,
+        });
+        setImageFiles(null);
+        setVideoFile(null);
+      })
+      .catch(() => {
+        toast.error("حدث خطأ أثناء الحفظ", { id: toastId });
+      });
   };
 
   return (
@@ -244,8 +265,17 @@ const ProductForm: React.FC<Props> = ({ product, onSubmit, categories }) => {
         </div>
 
         <div className="flex gap-3 justify-end pt-4 border-t">
-          <Button type="submit" className="px-6">
-            {product ? "تحديث" : "إضافة"} المنتج
+          <Button
+            type="submit"
+            className="px-6 cursor-pointer"
+            disabled={status === "loading"}
+          >
+            {status === "loading"
+              ? "جاري الحفظ..."
+              : product
+              ? "تحديث"
+              : "إضافة"}{" "}
+            المنتج
           </Button>
         </div>
       </form>
