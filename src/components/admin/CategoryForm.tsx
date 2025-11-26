@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Folder, Image as ImageIcon, ChevronDown } from "lucide-react";
 import toast from "react-hot-toast";
+import useAdminApi from "../../hooks/useAdminApi";
 
 export type Category = {
   _id?: string;
@@ -19,9 +20,15 @@ type Props = {
   category?: Category | null;
   onSubmit: (data: Category) => void | Promise<void>;
   categories: Category[];
+  onAfterSubmit?: (item: Category, isUpdate: boolean) => void;
 };
 
-const CategoryForm: React.FC<Props> = ({ category, onSubmit, categories }) => {
+const CategoryForm: React.FC<Props> = ({
+  category,
+  categories,
+  onAfterSubmit,
+}) => {
+  const { createCategory, updateCategory } = useAdminApi();
   const [form, setForm] = React.useState<Category>(
     category || { Name: "", ParentCategory: null, Image: "" }
   );
@@ -46,9 +53,16 @@ const CategoryForm: React.FC<Props> = ({ category, onSubmit, categories }) => {
     if (payload.ParentCategory) {
       payload.isSubCategory = true;
     }
-    Promise.resolve(onSubmit(payload))
-      .then(() => {
+    const action =
+      category && category._id
+        ? updateCategory(category._id, payload)
+        : createCategory(payload);
+    action
+      .then((result) => {
         toast.success("تم حفظ الفئة بنجاح", { id: toastId });
+        if (typeof onAfterSubmit === "function") {
+          onAfterSubmit(result, !!category);
+        }
       })
       .catch(() => {
         toast.error("حدث خطأ أثناء الحفظ", { id: toastId });

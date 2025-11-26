@@ -33,10 +33,11 @@ type Product = {
 type Props = {
   product?: Product | null;
   categories: Category[];
+  onAfterSubmit?: () => void;
 };
 
 const ProductForm: React.FC<Props> = ({ product, categories }) => {
-  const { createProduct, status } = useAdminApi();
+  const { createProduct, updateProduct, status } = useAdminApi();
   const [form, setForm] = React.useState<Product>(
     product || {
       Name: "",
@@ -73,18 +74,27 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
     };
     if (imageFiles && imageFiles.length > 0) payload._imageFiles = imageFiles;
     if (videoFile) payload._videoFile = videoFile;
-    Promise.resolve(createProduct(payload))
-      .then(() => {
+    const action =
+      product && product._id
+        ? updateProduct(product._id, payload)
+        : createProduct(payload);
+    action
+      .then((result) => {
         toast.success("تم حفظ المنتج بنجاح", { id: toastId });
-        setForm({
-          Name: "",
-          PricePerMeter: 0,
-          Image: [],
-          VideoUrl: "",
-          MostSold: false,
-        });
-        setImageFiles(null);
-        setVideoFile(null);
+        if (!product || !product._id) {
+          setForm({
+            Name: "",
+            PricePerMeter: 0,
+            Image: [],
+            VideoUrl: "",
+            MostSold: false,
+          });
+          setImageFiles(null);
+          setVideoFile(null);
+        }
+        if (typeof onAfterSubmit === "function") {
+          onAfterSubmit(result, !!product);
+        }
       })
       .catch(() => {
         toast.error("حدث خطأ أثناء الحفظ", { id: toastId });
@@ -92,7 +102,7 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700 overflow-auto max-h-screen md:max-h-none">
       <div className="flex items-center gap-2 mb-6">
         <Package className="w-6 h-6 text-primary" />
         <h3 className="text-xl font-semibold text-gray-900 dark:text-white">

@@ -54,15 +54,29 @@ const AdminDashboard: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleCreateProduct = async (data: Product) => {
-    await api.createProduct(data);
-    await load();
+  const updateProductState = (item: Product, isUpdate: boolean) => {
+    if (isUpdate) {
+      setProducts((prev) => prev.map((p) => (p._id === item._id ? item : p)));
+    } else {
+      setProducts((prev) => [...prev, item]);
+    }
   };
 
-  const handleUpdateProduct = async (id: string, data: Product) => {
-    await api.updateProduct(id, data);
+  const updateCategoryState = (item: Category, isUpdate: boolean) => {
+    if (isUpdate) {
+      setCategories((prev) => prev.map((c) => (c._id === item._id ? item : c)));
+    } else {
+      setCategories((prev) => [...prev, item]);
+    }
+  };
+
+  const handleCreateProduct = async () => {
+    // API call handled in ProductForm
+  };
+
+  const handleUpdateProduct = async () => {
+    // API call handled in ProductForm
     setEditingProduct(null);
-    await load();
   };
 
   const handleDeleteProduct = async (id: string) => {
@@ -71,15 +85,13 @@ const AdminDashboard: React.FC = () => {
     await load();
   };
 
-  const handleCreateCategory = async (data: Category) => {
-    await api.createCategory(data);
-    await load();
+  const handleCreateCategory = async () => {
+    // API call handled in CategoryForm
   };
 
-  const handleUpdateCategory = async (id: string, data: Category) => {
-    await api.updateCategory(id, data);
+  const handleUpdateCategory = async () => {
+    // API call handled in CategoryForm
     setEditingCategory(null);
-    await load();
   };
 
   const handleDeleteCategory = async (id: string) => {
@@ -93,6 +105,9 @@ const AdminDashboard: React.FC = () => {
       <div className="flex justify-between items-center">
         <div />
         <div className="flex gap-2">
+          <Button className="cursor-pointer" onClick={() => load()}>
+            تحديث البيانات
+          </Button>
           <Dialog>
             <DialogTrigger asChild>
               <Button className="cursor-pointer">إضافة فئة جديدة</Button>
@@ -101,6 +116,7 @@ const AdminDashboard: React.FC = () => {
               <CategoryForm
                 onSubmit={handleCreateCategory}
                 categories={categories}
+                onAfterSubmit={updateCategoryState}
               />
             </DialogContent>
           </Dialog>
@@ -113,6 +129,7 @@ const AdminDashboard: React.FC = () => {
               <ProductForm
                 onSubmit={handleCreateProduct}
                 categories={categories}
+                onAfterSubmit={updateProductState}
               />
             </DialogContent>
           </Dialog>
@@ -242,12 +259,11 @@ const AdminDashboard: React.FC = () => {
           <DialogContent>
             <ProductForm
               product={editingProduct}
-              onSubmit={(data) => {
-                if (editingProduct._id) {
-                  handleUpdateProduct(editingProduct._id, data);
-                }
+              onSubmit={() => {
+                handleUpdateProduct();
               }}
               categories={categories}
+              onAfterSubmit={updateProductState}
             />
           </DialogContent>
         </Dialog>
@@ -258,12 +274,11 @@ const AdminDashboard: React.FC = () => {
           <DialogContent>
             <CategoryForm
               category={editingCategory}
-              onSubmit={(data) => {
-                if (editingCategory._id) {
-                  handleUpdateCategory(editingCategory._id, data);
-                }
+              onSubmit={() => {
+                handleUpdateCategory();
               }}
               categories={categories}
+              onAfterSubmit={updateCategoryState}
             />
           </DialogContent>
         </Dialog>
