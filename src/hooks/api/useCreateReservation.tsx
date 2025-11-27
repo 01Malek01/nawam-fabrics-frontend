@@ -19,7 +19,7 @@ export const useCreateReservation = () => {
     setError(undefined);
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/Reservations`,
+        `${import.meta.env.VITE_TG_BOT_URL}/Reservations`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

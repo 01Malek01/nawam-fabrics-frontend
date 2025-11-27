@@ -2,48 +2,75 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import React, { useState, useEffect, useCallback } from "react";
 import Slider, { type Settings } from "react-slick";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
-import LazyImage from "./LazyImage";
+import NoDownloadImage from "@/components/NoDownloadImage";
 
-// Define prop types for the arrow components
+// No custom arrow props — using default slick controls
+
+// Arrows removed — use default slick controls or dots only
 
 const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
   const [slider1, setSlider1] = useState<Slider | null>(null);
   const [slider2, setSlider2] = useState<Slider | null>(null);
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const isRtl =
+    typeof document !== "undefined" &&
+    (document.dir === "rtl" ||
+      document.documentElement.dir === "rtl" ||
+      document.body.dir === "rtl");
+  const [nav1, setNav1] = useState<Slider | null>(null);
+  const [nav2, setNav2] = useState<Slider | null>(null);
+
+  // Sync sliders
+  useEffect(() => {
+    if (nav1 && nav2) {
+      const target = isRtl ? images.length - 1 - currentSlide : currentSlide;
+      nav1.slickGoTo(target);
+      nav2.slickGoTo(target);
+    }
+  }, [currentSlide, nav1, nav2, isRtl, images.length]);
 
   // Main slider settings
   const mainSettings: Settings = {
     dots: window.innerWidth >= 768,
+    arrows: false,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
     cssEase: "ease-in-out",
+    // default arrows (no custom arrows)
     dotsClass: "slick-dots !bottom-4 hidden md:block",
     customPaging: () => (
       <div className="w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-colors duration-200" />
     ),
-    beforeChange: (current: number, next: number) => setCurrentSlide(next),
+    beforeChange: (current: number, next: number) => {
+      const logicalNext = isRtl ? images.length - 1 - next : next;
+      setCurrentSlide(logicalNext);
+    },
   };
 
-  // Overlay slider settings
+  // Overlay slider settings - FIXED: Remove initialSlide to prevent conflict
   const overlaySettings: Settings = {
     dots: window.innerWidth >= 768,
+    arrows: false,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
     cssEase: "ease-in-out",
-    initialSlide: currentSlide,
+    // default arrows (no custom arrows)
     dotsClass: "slick-dots !bottom-8",
     customPaging: () => (
       <div className="w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-colors duration-200" />
     ),
-    afterChange: (current: number) => setCurrentSlide(current),
+    afterChange: (current: number) => {
+      const logical = isRtl ? images.length - 1 - current : current;
+      setCurrentSlide(logical);
+    },
   };
 
   // Handle browser back button to close modal instead of navigating away
@@ -69,6 +96,14 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
     };
   }, [handlePopState]);
 
+  // Ensure overlay slider navigates to the logical current slide when it opens
+  useEffect(() => {
+    if (isOverlayOpen && slider2) {
+      const target = isRtl ? images.length - 1 - currentSlide : currentSlide;
+      slider2.slickGoTo(target);
+    }
+  }, [isOverlayOpen, slider2, currentSlide, isRtl, images.length]);
+
   const handleImageClick = (index: number) => {
     setCurrentSlide(index);
     setIsOverlayOpen(true);
@@ -78,23 +113,48 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
     setIsOverlayOpen(false);
   };
 
+  const handleThumbnailClick = (index: number) => {
+    setCurrentSlide(index);
+    if (slider1) {
+      const target = isRtl ? images.length - 1 - index : index;
+      slider1.slickGoTo(target);
+    }
+  };
+
+  const handleOverlayThumbnailClick = (index: number) => {
+    setCurrentSlide(index);
+    if (slider2) {
+      const target = isRtl ? images.length - 1 - index : index;
+      slider2.slickGoTo(target);
+    }
+  };
+
   return (
     <div className="slider-container relative group">
       {/* Main Slider */}
-      <Slider {...mainSettings} ref={(slider) => setSlider1(slider)}>
-        {images.map((image, index) => (
-          <div className="px-2" key={index}>
-            <div className="relative overflow-hidden rounded-lg cursor-zoom-in">
-              <LazyImage
-                src={image}
-                alt={`Fabric ${index + 1}`}
-                className="w-full h-96 object-cover rounded-lg transition-transform duration-300 hover:scale-105"
-                onClick={() => handleImageClick(index)}
-              />
+      <div className="relative">
+        <Slider
+          {...mainSettings}
+          ref={(slider) => {
+            setSlider1(slider);
+            setNav1(slider);
+          }}
+        >
+          {images.map((image, index) => (
+            <div className="px-2" key={index}>
+              <div className="relative overflow-hidden rounded-lg cursor-zoom-in">
+                <NoDownloadImage
+                  src={image}
+                  alt={`Fabric ${index + 1}`}
+                  className="w-full h-96 object-cover rounded-lg transition-transform duration-300 hover:scale-105"
+                  loading={index === 0 ? "eager" : "lazy"}
+                  onClick={() => handleImageClick(index)}
+                />
+              </div>
             </div>
-          </div>
-        ))}
-      </Slider>
+          ))}
+        </Slider>
+      </div>
 
       {/* Thumbnail Gallery - Always Visible */}
       {images.length > 1 && (
@@ -111,15 +171,10 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
                     ? "border-[#A8511A] ring-2 ring-[#A8511A]/20"
                     : "border-gray-200 hover:border-[#A8511A]/50"
                 }`}
-                onClick={() => {
-                  if (slider1) {
-                    slider1.slickGoTo(idx);
-                    setCurrentSlide(idx);
-                  }
-                }}
+                onClick={() => handleThumbnailClick(idx)}
                 aria-label={`View image ${idx + 1}`}
               >
-                <img
+                <NoDownloadImage
                   src={image}
                   alt={`Fabric thumbnail ${idx + 1}`}
                   className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-110"
@@ -162,12 +217,15 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
               <div className="relative h-full w-full">
                 <Slider
                   {...overlaySettings}
-                  ref={(slider) => setSlider2(slider)}
+                  ref={(slider) => {
+                    setSlider2(slider);
+                    setNav2(slider);
+                  }}
                 >
                   {images.map((image, index) => (
                     <div key={index} className="outline-none">
                       <div className="flex items-center justify-center h-[70vh]">
-                        <img
+                        <NoDownloadImage
                           src={image}
                           alt={`Fabric ${index + 1} - Full view`}
                           className="max-h-full max-w-full object-contain rounded-lg"
@@ -188,13 +246,9 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
                             ? "border-white scale-110"
                             : "border-transparent hover:border-white/50"
                         }`}
-                        onClick={() => {
-                          if (slider2) {
-                            slider2.slickGoTo(idx);
-                          }
-                        }}
+                        onClick={() => handleOverlayThumbnailClick(idx)}
                       >
-                        <img
+                        <NoDownloadImage
                           src={image}
                           alt={`Thumbnail ${idx + 1}`}
                           className="w-full h-full object-cover"

@@ -274,10 +274,10 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
           </Label>
         </div>
 
-        <div className="flex gap-3 justify-end pt-4 border-t">
+        <div className="flex flex-col-reverse sm:flex-row gap-3 justify-end pt-4 border-t">
           <Button
             type="submit"
-            className="px-6 cursor-pointer"
+            className="w-full sm:w-auto px-6 cursor-pointer"
             disabled={status === "loading"}
           >
             {status === "loading"

@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { FabricOrderForm } from "./FabricOrderForm";
 import { useOrderDialog } from "@/context/OrderDialogContext";
 import LazyImage from "./LazyImage";
+import NoDownloadImage from "./NoDownloadImage";
 
 const FabricCard = ({
   fabric,
@@ -50,10 +51,10 @@ const FabricCard = ({
           >
             <X className="h-6 w-6" />
           </button>
-          <img
+          <NoDownloadImage
             src={fabric?.image}
             alt={fabric?.name}
-            className="max-h-[90vh] max-w-full object-contain "
+            className="max-h-[90vh] max-w-full object-contain"
             onClick={(e) => e.stopPropagation()}
           />
         </div>
@@ -101,9 +102,15 @@ const FabricCard = ({
                 src={fabric?.image}
                 alt={fabric?.name}
                 className="cursor-pointer h-full w-full object-cover object-center transition-all duration-300 group-hover:scale-105"
+                draggable={false}
+                onContextMenu={(e) => e.preventDefault()}
+                onDragStart={(e) => e.preventDefault()}
+                onMouseDown={(e) => {
+                  if ((e as any).button === 2) e.preventDefault();
+                }}
               />
             ) : (
-              <img
+              <NoDownloadImage
                 src={fabric?.image}
                 alt={fabric?.name}
                 className="cursor-pointer h-full w-full object-cover object-center transition-all duration-300 group-hover:scale-105"

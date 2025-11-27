@@ -68,8 +68,7 @@ const HeroSlider: React.FC = () => {
     autoplaySpeed: 5000,
     pauseOnHover: true,
     cssEase: "ease-in-out",
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
+
     dotsClass: "slick-dots !bottom-6",
     customPaging: () => (
       <div className="w-3 h-3 rounded-full bg-white/50 hover:bg-white transition-colors duration-200 mx-1" />

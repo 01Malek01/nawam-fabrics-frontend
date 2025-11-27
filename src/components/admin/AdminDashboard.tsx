@@ -2,7 +2,7 @@
 //@ts-nocheck
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -42,6 +42,8 @@ const AdminDashboard: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
+  const [isCreatingProduct, setIsCreatingProduct] = useState(false);
 
   const load = async () => {
     const [p, c] = await Promise.all([api.getProducts(), api.getCategories()]);
@@ -49,9 +51,41 @@ const AdminDashboard: React.FC = () => {
     setCategories(c || []);
   };
 
+  const openEditingProduct = (p: Product) => {
+    setEditingProduct(p);
+    try {
+      history.pushState({ nawamDialog: true }, "");
+    } catch (e) {
+      void e;
+    }
+  };
+
+  const openEditingCategory = (c: Category) => {
+    setEditingCategory(c);
+    try {
+      history.pushState({ nawamDialog: true }, "");
+    } catch (e) {
+      void e;
+    }
+  };
+
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Close forms when the browser back button is pressed.
+  useEffect(() => {
+    const handlePop = () => {
+      // Close any open dialog/form state. No-op if already closed.
+      setIsCreatingCategory(false);
+      setIsCreatingProduct(false);
+      setEditingProduct(null);
+      setEditingCategory(null);
+    };
+
+    window.addEventListener("popstate", handlePop);
+    return () => window.removeEventListener("popstate", handlePop);
   }, []);
 
   const updateProductState = (item: Product, isUpdate: boolean) => {
@@ -104,14 +138,14 @@ const AdminDashboard: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div />
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button className="cursor-pointer" onClick={() => load()}>
             تحديث البيانات
           </Button>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="cursor-pointer">إضافة فئة جديدة</Button>
-            </DialogTrigger>
+          <Dialog
+            open={isCreatingCategory}
+            onOpenChange={(open) => setIsCreatingCategory(open)}
+          >
             <DialogContent>
               <CategoryForm
                 onSubmit={handleCreateCategory}
@@ -121,10 +155,10 @@ const AdminDashboard: React.FC = () => {
             </DialogContent>
           </Dialog>
 
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="cursor-pointer">إضافة منتج جديد</Button>
-            </DialogTrigger>
+          <Dialog
+            open={isCreatingProduct}
+            onOpenChange={(open) => setIsCreatingProduct(open)}
+          >
             <DialogContent>
               <ProductForm
                 onSubmit={handleCreateProduct}
@@ -133,6 +167,35 @@ const AdminDashboard: React.FC = () => {
               />
             </DialogContent>
           </Dialog>
+
+          <Button
+            className="cursor-pointer"
+            onClick={() => {
+              setIsCreatingCategory(true);
+              // push a dummy history state so back button closes the dialog
+              try {
+                history.pushState({ nawamDialog: true }, "");
+              } catch (e) {
+                void e;
+              }
+            }}
+          >
+            إضافة فئة جديدة
+          </Button>
+
+          <Button
+            className="cursor-pointer"
+            onClick={() => {
+              setIsCreatingProduct(true);
+              try {
+                history.pushState({ nawamDialog: true }, "");
+              } catch (e) {
+                void e;
+              }
+            }}
+          >
+            إضافة منتج جديد
+          </Button>
         </div>
       </div>
 
@@ -181,7 +244,7 @@ const AdminDashboard: React.FC = () => {
                     <Button
                       size="sm"
                       className="cursor-pointer"
-                      onClick={() => setEditingProduct(p)}
+                      onClick={() => openEditingProduct(p)}
                     >
                       تعديل
                     </Button>
@@ -233,7 +296,7 @@ const AdminDashboard: React.FC = () => {
                     <Button
                       size="sm"
                       className="cursor-pointer"
-                      onClick={() => setEditingCategory(c)}
+                      onClick={() => openEditingCategory(c)}
                     >
                       تعديل
                     </Button>
