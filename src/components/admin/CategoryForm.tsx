@@ -50,24 +50,24 @@ const CategoryForm: React.FC<Props> = ({
     setIsUploading(true);
     const payload: any = { ...form };
     if (imageFile) payload._imageFile = imageFile;
-    if (payload.ParentCategory) {
+    if (payload?.ParentCategory) {
       payload.isSubCategory = true;
     }
     const action =
-      category && category._id
-        ? updateCategory(category._id, payload)
+      category && category?._id
+        ? updateCategory(category?._id, payload)
         : createCategory(payload);
     action
-      .then((result) => {
+      ?.then((result) => {
         toast.success("تم حفظ الفئة بنجاح", { id: toastId });
         if (typeof onAfterSubmit === "function") {
           onAfterSubmit(result, !!category);
         }
       })
-      .catch(() => {
+      ?.catch(() => {
         toast.error("حدث خطأ أثناء الحفظ", { id: toastId });
       })
-      .finally(() => setIsUploading(false));
+      ?.finally(() => setIsUploading(false));
   };
 
   return (
@@ -86,8 +86,8 @@ const CategoryForm: React.FC<Props> = ({
             اسم الفئة
           </Label>
           <Input
-            value={form.Name}
-            onChange={(e) => handleChange("Name", e.target.value)}
+            value={form?.Name}
+            onChange={(e) => handleChange("Name", e?.target?.value)}
             placeholder="أدخل اسم الفئة"
             className="border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary"
           />
@@ -100,17 +100,17 @@ const CategoryForm: React.FC<Props> = ({
           </Label>
           <select
             aria-label="Parent category"
-            value={form.ParentCategory || ""}
+            value={form?.ParentCategory || ""}
             onChange={(e) =>
-              handleChange("ParentCategory", e.target.value || null)
+              handleChange("ParentCategory", e?.target?.value || null)
             }
             className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary focus:border-primary"
           >
             <option value="">لا يوجد</option>
             {categories &&
-              categories.map((cat) => (
-                <option key={cat._id} value={cat._id}>
-                  {cat.Name}
+              categories?.map((cat) => (
+                <option key={cat?._id} value={cat?._id}>
+                  {cat?.Name}
                 </option>
               ))}
           </select>
@@ -127,7 +127,7 @@ const CategoryForm: React.FC<Props> = ({
             type="file"
             accept="image/*"
             onChange={(e) =>
-              setImageFile(e.target.files ? e.target.files[0] : null)
+              setImageFile(e?.target?.files ? e?.target?.files[0] : null)
             }
             className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/80"
           />

@@ -219,20 +219,20 @@ const AdminDashboard: React.FC = () => {
             {products.map((p) => (
               <TableRow key={p?._id}>
                 <TableCell className="text-center">
-                  {Array.isArray(p.Image) ? p.Image.length : 0} صورة
+                  {Array.isArray(p?.Image) ? p?.Image.length : 0} صورة
                 </TableCell>
-                <TableCell className="font-medium">{p.Name}</TableCell>
+                <TableCell className="font-medium">{p?.Name}</TableCell>
                 <TableCell className="max-w-xs truncate">
-                  {p.Description}
+                  {p?.Description}
                 </TableCell>
-                <TableCell>{p.PricePerMeter} ج.م</TableCell>
+                <TableCell>{p?.PricePerMeter} ج.م</TableCell>
                 <TableCell>
-                  {p.MostSold === true ? <span>✅</span> : <span>❌</span>}
+                  {p?.MostSold === true ? <span>✅</span> : <span>❌</span>}
                 </TableCell>
                 <TableCell>
-                  {p.VideoUrl && (
+                  {p?.VideoUrl && (
                     <a
-                      href={getImageUrl(p.VideoUrl)}
+                      href={getImageUrl(p?.VideoUrl)}
                       target="_blank"
                       rel="noreferrer"
                       className="text-blue-600 hover:underline"
@@ -254,7 +254,7 @@ const AdminDashboard: React.FC = () => {
                       size="sm"
                       className="cursor-pointer"
                       variant="destructive"
-                      onClick={() => p?._id && handleDeleteProduct(p._id)}
+                      onClick={() => p?._id && handleDeleteProduct(p?._id)}
                     >
                       حذف
                     </Button>
@@ -282,16 +282,16 @@ const AdminDashboard: React.FC = () => {
             {categories.map((c) => (
               <TableRow key={c?._id}>
                 <TableCell>
-                  {c.Image && (
+                  {c?.Image && (
                     <img
-                      src={getImageUrl(c.Image)}
-                      alt={c.Name}
+                      src={getImageUrl(c?.Image)}
+                      alt={c?.Name}
                       className="w-12 h-10 object-cover rounded"
                     />
                   )}
                 </TableCell>
-                <TableCell className="font-medium">{c.Name}</TableCell>
-                <TableCell>{c.isSubCategory ? "فرعية" : "رئيسية"}</TableCell>
+                <TableCell className="font-medium">{c?.Name}</TableCell>
+                <TableCell>{c?.isSubCategory ? "فرعية" : "رئيسية"}</TableCell>
                 <TableCell>{c?.ParentCategory?.Name}</TableCell>
                 <TableCell>
                   <div className="flex gap-2">
@@ -306,7 +306,7 @@ const AdminDashboard: React.FC = () => {
                       size="sm"
                       className="cursor-pointer"
                       variant="destructive"
-                      onClick={() => c._id && handleDeleteCategory(c._id)}
+                      onClick={() => c?._id && handleDeleteCategory(c?._id)}
                     >
                       حذف
                     </Button>
