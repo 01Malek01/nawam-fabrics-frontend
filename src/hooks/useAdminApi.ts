@@ -25,7 +25,14 @@ export default function useAdminApi() {
         if (data && (data._imageFiles || data._videoFile)) {
           const fd = new FormData();
           Object.keys(data).forEach((k) => {
-            if (k === "_imageFiles" || k === "_videoFile") return;
+            // skip internal file placeholders and server-handled file keys to avoid duplicates
+            if (
+              k === "_imageFiles" ||
+              k === "_videoFile" ||
+              k === "Image" ||
+              k === "VideoUrl"
+            )
+              return;
             const v = (data as any)[k];
             if (v === undefined || v === null) return;
             if (Array.isArray(v)) {
@@ -40,24 +47,47 @@ export default function useAdminApi() {
           if (data._videoFile) {
             fd.append("VideoUrl", data._videoFile);
           }
+          {
+            const res = await fetch(`${BASE}/admin/products`, {
+              method: "POST",
+              body: fd,
+              credentials: "include",
+            });
+            let result: any = null;
+            try {
+              result = await res.json();
+            } catch (e) {
+              // ignore JSON parse error
+            }
+            if (!res.ok) {
+              setStatus("error");
+              throw new Error(
+                result?.message ||
+                  JSON.stringify(result) ||
+                  `HTTP ${res.status}`
+              );
+            }
+            setStatus("success");
+            return result;
+          }
+        }
+        {
           const res = await fetch(`${BASE}/admin/products`, {
             method: "POST",
-            body: fd,
+            headers: { "Content-Type": "application/json" },
             credentials: "include",
+            body: JSON.stringify(data),
           });
-          const data = await res.json();
+          const result = await res.json();
+          if (!res.ok) {
+            setStatus("error");
+            throw new Error(
+              result?.message || JSON.stringify(result) || `HTTP ${res.status}`
+            );
+          }
           setStatus("success");
-          return data;
+          return result;
         }
-        const res = await fetch(`${BASE}/admin/products`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(data),
-        });
-        const result = await res.json();
-        setStatus("success");
-        return result;
       } catch (e) {
         setStatus("error");
         throw e;
@@ -75,7 +105,13 @@ export default function useAdminApi() {
         if (data && (data._imageFiles || data._videoFile)) {
           const fd = new FormData();
           Object.keys(data).forEach((k) => {
-            if (k === "_imageFiles" || k === "_videoFile") return;
+            if (
+              k === "_imageFiles" ||
+              k === "_videoFile" ||
+              k === "Image" ||
+              k === "VideoUrl"
+            )
+              return;
             const v = (data as any)[k];
             if (v === undefined || v === null) return;
             if (Array.isArray(v)) {
@@ -90,24 +126,45 @@ export default function useAdminApi() {
           if (data._videoFile) {
             fd.append("VideoUrl", data._videoFile);
           }
+          {
+            const res = await fetch(`${BASE}/admin/products/${id}`, {
+              method: "PUT",
+              body: fd,
+              credentials: "include",
+            });
+            let result: any = null;
+            try {
+              result = await res.json();
+            } catch (e) {}
+            if (!res.ok) {
+              setStatus("error");
+              throw new Error(
+                result?.message ||
+                  JSON.stringify(result) ||
+                  `HTTP ${res.status}`
+              );
+            }
+            setStatus("success");
+            return result;
+          }
+        }
+        {
           const res = await fetch(`${BASE}/admin/products/${id}`, {
             method: "PUT",
-            body: fd,
+            headers: { "Content-Type": "application/json" },
             credentials: "include",
+            body: JSON.stringify(data),
           });
           const result = await res.json();
+          if (!res.ok) {
+            setStatus("error");
+            throw new Error(
+              result?.message || JSON.stringify(result) || `HTTP ${res.status}`
+            );
+          }
           setStatus("success");
           return result;
         }
-        const res = await fetch(`${BASE}/admin/products/${id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(data),
-        });
-        const result = await res.json();
-        setStatus("success");
-        return result;
       } catch (e) {
         setStatus("error");
         throw e;
@@ -149,24 +206,37 @@ export default function useAdminApi() {
             fd.append(k, String(v));
           });
           fd.append("Image", data._imageFile);
-          const res = await fetch(`${BASE}/admin/categories`, {
-            method: "POST",
-            body: fd,
-            credentials: "include",
-          });
-          const result = await res.json();
-          setStatus("success");
-          return result;
+          {
+            const res = await fetch(`${BASE}/admin/categories`, {
+              method: "POST",
+              body: fd,
+              credentials: "include",
+            });
+            let result: any = null;
+            try {
+              result = await res.json();
+            } catch (e) {
+              /* ignore */
+            }
+            if (!res.ok) {
+              setStatus("error");
+              throw new Error(
+                result?.message ||
+                  JSON.stringify(result) ||
+                  `HTTP ${res.status}`
+              );
+            }
+            setStatus("success");
+            return result;
+          }
         }
-        const res = await fetch(`${BASE}/admin/categories`, {
+        await fetch(`${BASE}/admin/categories`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify(data),
         });
-        const result = await res.json();
         setStatus("success");
-        return result;
       } catch (e) {
         setStatus("error");
         throw e;
@@ -190,24 +260,37 @@ export default function useAdminApi() {
             fd.append(k, String(v));
           });
           fd.append("Image", data._imageFile);
-          const res = await fetch(`${BASE}/admin/categories/${id}`, {
-            method: "PUT",
-            body: fd,
-            credentials: "include",
-          });
-          const result = await res.json();
-          setStatus("success");
-          return result;
+          {
+            const res = await fetch(`${BASE}/admin/categories/${id}`, {
+              method: "PUT",
+              body: fd,
+              credentials: "include",
+            });
+            let result: any = null;
+            try {
+              result = await res.json();
+            } catch (e) {
+              /* ignore */
+            }
+            if (!res.ok) {
+              setStatus("error");
+              throw new Error(
+                result?.message ||
+                  JSON.stringify(result) ||
+                  `HTTP ${res.status}`
+              );
+            }
+            setStatus("success");
+            return result;
+          }
         }
-        const res = await fetch(`${BASE}/admin/categories/${id}`, {
+        await fetch(`${BASE}/admin/categories/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify(data),
         });
-        const result = await res.json();
         setStatus("success");
-        return result;
       } catch (e) {
         setStatus("error");
         throw e;

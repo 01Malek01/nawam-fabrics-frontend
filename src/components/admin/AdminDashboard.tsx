@@ -98,7 +98,9 @@ const AdminDashboard: React.FC = () => {
 
   const updateCategoryState = (item: Category, isUpdate: boolean) => {
     if (isUpdate) {
-      setCategories((prev) => prev.map((c) => (c._id === item._id ? item : c)));
+      setCategories((prev) =>
+        prev.map((c) => (c?._id === item?._id ? item : c))
+      );
     } else {
       setCategories((prev) => [...prev, item]);
     }
@@ -215,7 +217,7 @@ const AdminDashboard: React.FC = () => {
           </TableHeader>
           <TableBody>
             {products.map((p) => (
-              <TableRow key={p._id}>
+              <TableRow key={p?._id}>
                 <TableCell className="text-center">
                   {Array.isArray(p.Image) ? p.Image.length : 0} صورة
                 </TableCell>
@@ -252,7 +254,7 @@ const AdminDashboard: React.FC = () => {
                       size="sm"
                       className="cursor-pointer"
                       variant="destructive"
-                      onClick={() => p._id && handleDeleteProduct(p._id)}
+                      onClick={() => p?._id && handleDeleteProduct(p._id)}
                     >
                       حذف
                     </Button>
@@ -278,7 +280,7 @@ const AdminDashboard: React.FC = () => {
           </TableHeader>
           <TableBody>
             {categories.map((c) => (
-              <TableRow key={c._id}>
+              <TableRow key={c?._id}>
                 <TableCell>
                   {c.Image && (
                     <img
