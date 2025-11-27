@@ -18,14 +18,11 @@ export const useCreateReservation = () => {
     setIsLoading(true);
     setError(undefined);
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_TG_BOT_URL}/Reservations`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
+      const res = await fetch(`${import.meta.env.VITE_TG_BOT_URL}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
       if (!res.ok) {
         const text = await res.text().catch(() => "");
         throw new Error(text || `Request failed with status ${res.status}`);
