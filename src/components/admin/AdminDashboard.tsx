@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import useAdminApi from "@/hooks/useAdminApi";
+import toast from "react-hot-toast";
 import CategoryForm from "./CategoryForm";
 import ProductForm from "./ProductForm";
 import { getImageUrl } from "@/lib/utils";
@@ -68,6 +69,20 @@ const AdminDashboard: React.FC = () => {
       void e;
     }
   };
+
+  const [managingImagesProduct, setManagingImagesProduct] =
+    useState<Product | null>(null);
+
+  const openManageImages = (p: Product) => {
+    setManagingImagesProduct(p);
+    try {
+      history.pushState({ nawamDialog: true }, "");
+    } catch (e) {
+      void e;
+    }
+  };
+
+  const closeManageImages = () => setManagingImagesProduct(null);
 
   useEffect(() => {
     load();
@@ -253,6 +268,13 @@ const AdminDashboard: React.FC = () => {
                     <Button
                       size="sm"
                       className="cursor-pointer"
+                      onClick={() => openManageImages(p)}
+                    >
+                      تعديل الصور
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="cursor-pointer"
                       variant="destructive"
                       onClick={() => p?._id && handleDeleteProduct(p?._id)}
                     >
@@ -333,6 +355,81 @@ const AdminDashboard: React.FC = () => {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Manage Images dialog */}
+      <Dialog
+        open={!!managingImagesProduct}
+        onOpenChange={(open) => {
+          if (!open) closeManageImages();
+        }}
+      >
+        <DialogContent>
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">صور المنتج</h3>
+            {managingImagesProduct?.Image &&
+            managingImagesProduct.Image.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {managingImagesProduct.Image.map((img: string, idx: number) => (
+                  <div
+                    key={idx}
+                    className="relative rounded overflow-hidden bg-gray-100"
+                  >
+                    <img
+                      src={getImageUrl(img)}
+                      alt={`image-${idx}`}
+                      className="w-full h-32 object-cover"
+                    />
+                    <button
+                      aria-label={`حذف الصورة ${idx + 1}`}
+                      className="absolute top-1 right-1 rounded-full bg-red-600 text-white p-1 cursor-pointer"
+                      onClick={async () => {
+                        if (!managingImagesProduct?._id) return;
+                        try {
+                          await api.deleteProductImage(
+                            managingImagesProduct._id,
+                            idx
+                          );
+                          // update local products state
+                          setProducts((prev) =>
+                            prev.map((prod) =>
+                              prod?._id === managingImagesProduct._id
+                                ? {
+                                    ...prod,
+                                    Image: (prod.Image || []).filter(
+                                      (_: any, i: number) => i !== idx
+                                    ),
+                                  }
+                                : prod
+                            )
+                          );
+                          // also update the managingImagesProduct state so UI updates
+                          setManagingImagesProduct((cur) =>
+                            cur
+                              ? {
+                                  ...cur,
+                                  Image: (cur.Image || []).filter(
+                                    (_: any, i: number) => i !== idx
+                                  ),
+                                }
+                              : cur
+                          );
+                          toast.success("تم حذف الصورة");
+                        } catch (err) {
+                          toast.error("فشل حذف الصورة");
+                        }
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>لا توجد صور لهذا المنتج</p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {editingCategory && (
         <Dialog open onOpenChange={() => setEditingCategory(null)}>

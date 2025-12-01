@@ -185,6 +185,39 @@ export default function useAdminApi() {
     [BASE]
   );
 
+  const deleteProductImage = useCallback(
+    async (productId: string, imageIndex: number) => {
+      setStatus("loading");
+      try {
+        const res = await fetch(
+          `${BASE}/admin/products/${productId}/gallery/${imageIndex}`,
+          {
+            method: "PUT",
+            credentials: "include",
+          }
+        );
+        let result: unknown = null;
+        try {
+          result = await res.json();
+        } catch (e) {
+          // ignore parse error
+        }
+        if (!res.ok) {
+          setStatus("error");
+          throw new Error((result as any)?.message || `HTTP ${res.status}`);
+        }
+        setStatus("success");
+        return result;
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 1000);
+      }
+    },
+    [BASE]
+  );
+
   const getCategories = useCallback(async () => {
     const res = await fetch(`${BASE}/admin/categories`, {
       credentials: "include",
@@ -331,6 +364,7 @@ export default function useAdminApi() {
     createProduct,
     updateProduct,
     deleteProduct,
+    deleteProductImage,
     getCategories,
     createCategory,
     updateCategory,

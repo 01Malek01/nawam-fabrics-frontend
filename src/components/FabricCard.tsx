@@ -134,9 +134,22 @@ const FabricCard = ({
         {/* Content Section */}
         <div className="flex-1 flex flex-col mt-3 sm:mt-4">
           <div className="flex items-start sm:items-center justify-between py-2 gap-2 min-h-[3rem] sm:min-h-[3.5rem]">
-            <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white leading-tight flex-1">
-              {fabric?.name}
-            </h3>
+            <div className="flex flex-col flex-1 text-right">
+              <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white leading-tight flex-1">
+                {fabric?.name}
+              </h3>
+              <div className="mt-1 text-sm text-gray-700 dark:text-gray-300 text-right">
+                <span className="font-medium">معرض الصور: </span>
+                <span className="ml-1">
+                  {Array.isArray((fabric as any)?.images)
+                    ? (fabric as any).images.length
+                    : fabric?.image
+                    ? 1
+                    : 0}
+                  صورة
+                </span>
+              </div>
+            </div>
             <div className="text-right flex-shrink-0">
               <p className="text-lg sm:text-xl font-bold text-primary leading-tight">
                 {displayPrice || "—"}
