@@ -33,6 +33,12 @@ const FabricCard = ({
     (fabric as any)?._raw?.سعر ||
     "";
 
+  const imageCount = Array.isArray((fabric as any)?.images)
+    ? (fabric as any).images.length
+    : fabric?.image
+    ? 1
+    : 0;
+
   return (
     <div className="group relative flex flex-col h-full">
       {/* Image Overlay */}
@@ -141,12 +147,8 @@ const FabricCard = ({
               <div className="mt-1 text-sm text-gray-700 dark:text-gray-300 text-right">
                 <span className="font-medium">معرض الصور: </span>
                 <span className="ml-1">
-                  {Array.isArray((fabric as any)?.images)
-                    ? (fabric as any).images.length
-                    : fabric?.image
-                    ? 1
-                    : 0}
-                  صورة
+                  {imageCount}{" "}
+                  {imageCount === 1 || imageCount === 2 ? "صورة" : "صور"}
                 </span>
               </div>
             </div>
