@@ -363,66 +363,80 @@ const AdminDashboard: React.FC = () => {
           if (!open) closeManageImages();
         }}
       >
-        <DialogContent>
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">صور المنتج</h3>
+        <DialogContent className="w-full max-w-3xl sm:max-w-4xl max-h-[80vh] overflow-hidden">
+          <div className="flex flex-col space-y-4 p-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">صور المنتج</h3>
+              <button
+                onClick={() => closeManageImages()}
+                className="text-sm text-gray-600 hover:text-gray-800"
+                aria-label="إغلاق"
+              >
+                إغلاق
+              </button>
+            </div>
+
             {managingImagesProduct?.Image &&
             managingImagesProduct.Image.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {managingImagesProduct.Image.map((img: string, idx: number) => (
-                  <div
-                    key={idx}
-                    className="relative rounded overflow-hidden bg-gray-100"
-                  >
-                    <img
-                      src={getImageUrl(img)}
-                      alt={`image-${idx}`}
-                      className="w-full h-32 object-cover"
-                    />
-                    <button
-                      aria-label={`حذف الصورة ${idx + 1}`}
-                      className="absolute top-1 right-1 rounded-full bg-red-600 text-white p-1 cursor-pointer"
-                      onClick={async () => {
-                        if (!managingImagesProduct?._id) return;
-                        try {
-                          await api.deleteProductImage(
-                            managingImagesProduct._id,
-                            idx
-                          );
-                          // update local products state
-                          setProducts((prev) =>
-                            prev.map((prod) =>
-                              prod?._id === managingImagesProduct._id
-                                ? {
-                                    ...prod,
-                                    Image: (prod.Image || []).filter(
-                                      (_: any, i: number) => i !== idx
-                                    ),
-                                  }
-                                : prod
-                            )
-                          );
-                          // also update the managingImagesProduct state so UI updates
-                          setManagingImagesProduct((cur) =>
-                            cur
-                              ? {
-                                  ...cur,
-                                  Image: (cur.Image || []).filter(
-                                    (_: any, i: number) => i !== idx
-                                  ),
-                                }
-                              : cur
-                          );
-                          toast.success("تم حذف الصورة");
-                        } catch (err) {
-                          toast.error("فشل حذف الصورة");
-                        }
-                      }}
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
+              <div className="max-h-[62vh] overflow-y-auto">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {managingImagesProduct.Image.map(
+                    (img: string, idx: number) => (
+                      <div
+                        key={idx}
+                        className="relative rounded overflow-hidden bg-gray-100 h-24 sm:h-32"
+                      >
+                        <img
+                          src={getImageUrl(img)}
+                          alt={`image-${idx}`}
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          aria-label={`حذف الصورة ${idx + 1}`}
+                          className="absolute top-2 right-2 rounded-full bg-red-600 text-white p-1.5 sm:p-2 cursor-pointer text-xs sm:text-sm"
+                          onClick={async () => {
+                            if (!managingImagesProduct?._id) return;
+                            try {
+                              await api.deleteProductImage(
+                                managingImagesProduct._id,
+                                idx
+                              );
+                              // update local products state
+                              setProducts((prev) =>
+                                prev.map((prod) =>
+                                  prod?._id === managingImagesProduct._id
+                                    ? {
+                                        ...prod,
+                                        Image: (prod.Image || []).filter(
+                                          (_: any, i: number) => i !== idx
+                                        ),
+                                      }
+                                    : prod
+                                )
+                              );
+                              // also update the managingImagesProduct state so UI updates
+                              setManagingImagesProduct((cur) =>
+                                cur
+                                  ? {
+                                      ...cur,
+                                      Image: (cur.Image || []).filter(
+                                        (_: any, i: number) => i !== idx
+                                      ),
+                                    }
+                                  : cur
+                              );
+                              toast.success("تم حذف الصورة");
+                            } catch (err) {
+                              toast.error("فشل حذف الصورة");
+                            }
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    )
+                  )}
+                </div>
               </div>
             ) : (
               <p>لا توجد صور لهذا المنتج</p>
