@@ -45,7 +45,7 @@ export default function useAdminApi() {
             data._imageFiles.forEach((f: File) => fd.append("Image", f));
           }
           if (data._videoFile) {
-            fd.append("VideoUrl", data._videoFile);
+            fd.append("Image", data._videoFile);
           }
           {
             const res = await fetch(`${BASE}/admin/products`, {
@@ -124,7 +124,7 @@ export default function useAdminApi() {
             data._imageFiles.forEach((f: File) => fd.append("Image", f));
           }
           if (data._videoFile) {
-            fd.append("VideoUrl", data._videoFile);
+            fd.append("Image", data._videoFile);
           }
           {
             const res = await fetch(`${BASE}/admin/products/${id}`, {
