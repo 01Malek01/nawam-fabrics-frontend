@@ -14,7 +14,6 @@ import { FabricOrderForm } from "@/components/FabricOrderForm";
 import VideoIframe from "@/components/VideoIframe";
 import { Helmet } from "react-helmet";
 import { getImageUrl } from "@/lib/utils";
-import { getResponsiveImageUrls } from "@/utils/imageOptimizer";
 
 export default function FabricPage() {
   const { fabricId } = useParams();
@@ -126,7 +125,7 @@ export default function FabricPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               مقطع الفيديو للمنتج
             </h2>
-            <VideoIframe videoUrl={getResponsiveImageUrls(fabric.videoUrl)} />
+            <VideoIframe videoUrl={getImageUrl(fabric.videoUrl)} />
           </div>
         )}
       </div>

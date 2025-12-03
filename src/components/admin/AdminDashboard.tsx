@@ -245,16 +245,47 @@ const AdminDashboard: React.FC = () => {
                   {p?.MostSold === true ? <span>✅</span> : <span>❌</span>}
                 </TableCell>
                 <TableCell>
-                  {p?.VideoUrl && (
-                    <a
-                      href={getImageUrl(p?.VideoUrl)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      مشاهدة
-                    </a>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {p?.VideoUrl ? (
+                      <>
+                        <a
+                          href={getImageUrl(p?.VideoUrl)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          مشاهدة
+                        </a>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="cursor-pointer"
+                          onClick={async () => {
+                            if (!p?._id) return;
+                            if (!confirm("هل تريد حذف هذا الفيديو؟")) return;
+                            try {
+                              await api.deleteProductVideo(p._id);
+                              // update local state to remove video url
+                              setProducts((prev) =>
+                                prev.map((prod) =>
+                                  prod?._id === p._id
+                                    ? { ...prod, VideoUrl: undefined }
+                                    : prod
+                                )
+                              );
+                              toast.success("تم حذف الفيديو");
+                            } catch (err) {
+                              toast.error("فشل حذف الفيديو");
+                            }
+                          }}
+                        >
+                          حذف
+                        </Button>
+                      </>
+                    ) : (
+                      <span className="text-gray-500">لا يوجد</span>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-2">

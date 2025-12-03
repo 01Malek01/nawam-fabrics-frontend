@@ -7,6 +7,7 @@ import { FabricOrderForm } from "./FabricOrderForm";
 import { useOrderDialog } from "@/context/OrderDialogContext";
 import LazyImage from "./LazyImage";
 import NoDownloadImage from "./NoDownloadImage";
+import { getImageUrl } from "@/lib/utils";
 
 const FabricCard = ({
   fabric,
@@ -136,6 +137,27 @@ const FabricCard = ({
             />
           )}
         </div>
+
+        {/* Thumbnail Gallery */}
+        {fabric?.images && fabric.images.length > 1 && (
+          <div className="mt-2 px-2">
+            <div className="grid grid-cols-3 gap-1">
+              {fabric.images.slice(1, 4).map((img, idx) => (
+                <div
+                  key={idx}
+                  className="aspect-square overflow-hidden rounded bg-gray-100 cursor-pointer"
+                  onClick={() => setIsImageExpanded(true)}
+                >
+                  <NoDownloadImage
+                    src={getImageUrl(img)}
+                    alt={`thumbnail ${idx + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Content Section */}
         <div className="flex-1 flex flex-col mt-3 sm:mt-4">

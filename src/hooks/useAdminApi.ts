@@ -359,12 +359,43 @@ export default function useAdminApi() {
     [BASE]
   );
 
+  const deleteProductVideo = useCallback(
+    async (id: string) => {
+      setStatus("loading");
+      try {
+        const res = await fetch(`${BASE}/admin/products/${id}/video`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+        let result: unknown = null;
+        try {
+          result = await res.json();
+        } catch (e) {
+          /* ignore */
+        }
+        if (!res.ok) {
+          setStatus("error");
+          throw new Error((result as any)?.message || `HTTP ${res.status}`);
+        }
+        setStatus("success");
+        return result;
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 1000);
+      }
+    },
+    [BASE]
+  );
+
   return {
     getProducts,
     createProduct,
     updateProduct,
     deleteProduct,
     deleteProductImage,
+    deleteProductVideo,
     getCategories,
     createCategory,
     updateCategory,

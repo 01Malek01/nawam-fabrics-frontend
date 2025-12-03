@@ -3,8 +3,7 @@ import { Menu } from "lucide-react";
 import { useState } from "react";
 import MobileMenu from "./MobileMenu";
 import SearchBar from "./SearchBar";
-import LazyImage from "./LazyImage";
-
+import logo from "@/assets/logo.webp";
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -35,7 +34,7 @@ const Navbar = () => {
           >
             <img
               className="h-64 md:h-64 w-auto object-contain"
-              src=" logo.png"
+              src={logo}
               alt="el Nawam fabrics image"
             />
           </Link>

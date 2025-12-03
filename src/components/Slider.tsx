@@ -6,11 +6,7 @@ import { X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
 import NoDownloadImage from "@/components/NoDownloadImage";
-
-// No custom arrow props — using default slick controls
-
-// Arrows removed — use default slick controls or dots only
-
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
   const [slider1, setSlider1] = useState<Slider | null>(null);
   const [slider2, setSlider2] = useState<Slider | null>(null);
@@ -225,11 +221,15 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
                   {images.map((image, index) => (
                     <div key={index} className="outline-none">
                       <div className="flex items-center justify-center h-[70vh]">
-                        <NoDownloadImage
-                          src={image}
-                          alt={`Fabric ${index + 1} - Full view`}
-                          className="max-h-full max-w-full object-contain rounded-lg"
-                        />
+                        <TransformWrapper>
+                          <TransformComponent>
+                            <NoDownloadImage
+                              src={image}
+                              alt={`Fabric ${index + 1} - Full view`}
+                              className="max-h-full max-w-full object-contain rounded-lg"
+                            />
+                          </TransformComponent>
+                        </TransformWrapper>
                       </div>
                     </div>
                   ))}
