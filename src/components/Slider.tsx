@@ -137,7 +137,7 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
           }}
         >
           {images.map((image, index) => (
-            <div className="px-2" key={index}>
+            <div className="lg:px-2" key={index}>
               <div className="relative overflow-hidden rounded-lg cursor-zoom-in">
                 <NoDownloadImage
                   src={image}

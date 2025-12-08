@@ -67,7 +67,7 @@ export default function FabricPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Product Images */}
-          <div className="bg-white p-4 rounded-lg shadow lg:order-2">
+          <div className="bg-white  rounded-lg shadow lg:order-2 lg:p-4">
             {fabric.images && fabric.images.length > 0 ? (
               <ImagesSlider images={fabric.images} />
             ) : (
