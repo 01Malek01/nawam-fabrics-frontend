@@ -7,15 +7,16 @@ import type { Fabric } from "@/types";
 import usePublicApi from "@/hooks/usePublicApi";
 import ImagesSlider from "@/components/Slider";
 import LazyImage from "@/components/LazyImage";
-// import { optimizeImages } from "@/utils/imageOptimizer";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { FabricOrderForm } from "@/components/FabricOrderForm";
 import VideoIframe from "@/components/VideoIframe";
 import { Helmet } from "react-helmet";
 import { getImageUrl } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 export default function FabricPage() {
+  const navigate = useNavigate();
   const { fabricId } = useParams();
   const { isOrderDialogOpen, setOrderDialogOpen } = useOrderDialog();
   const { getProductById } = usePublicApi();
@@ -41,6 +42,11 @@ export default function FabricPage() {
     if (fabricId) fetchFabric();
   }, [fabricId, getProductById]);
 
+  const navigateToPreviousPage = () => {
+    navigate(
+      `/categories/${fabric?.mainCategory._id / fabric?.subCategory._id}`
+    );
+  };
   if (!fabric) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background-light dark:bg-background-dark">
@@ -69,7 +75,10 @@ export default function FabricPage() {
           {/* Product Images */}
           <div className="bg-white  rounded-lg shadow lg:order-2 lg:p-4">
             {fabric.images && fabric.images.length > 0 ? (
-              <ImagesSlider images={fabric.images} />
+              <ImagesSlider
+                images={fabric.images}
+                onBackClick={navigateToPreviousPage}
+              />
             ) : (
               <div className="w-full h-64 bg-gray-100 flex items-center justify-center">
                 <span>No images available</span>

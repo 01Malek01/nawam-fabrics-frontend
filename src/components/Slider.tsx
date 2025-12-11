@@ -1,13 +1,17 @@
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useHistoryContext } from "@/context/HistoryContext";
 import Slider, { type Settings } from "react-slick";
 import { X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
 import NoDownloadImage from "@/components/NoDownloadImage";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
+
+const ImagesSlider: React.FC<{
+  images: string[];
+}> = ({ images, ...props }) => {
   const [slider1, setSlider1] = useState<Slider | null>(null);
   const [slider2, setSlider2] = useState<Slider | null>(null);
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
@@ -69,28 +73,8 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
     },
   };
 
-  // Handle browser back button to close modal instead of navigating away
-  const handlePopState = useCallback(() => {
-    if (isOverlayOpen) {
-      setIsOverlayOpen(false);
-      window.history.pushState(null, "", window.location.href);
-    } else {
-      window.history.back();
-    }
-  }, [isOverlayOpen]);
-
-  useEffect(() => {
-    if (isOverlayOpen) {
-      window.history.pushState({ modalOpen: true }, "", window.location.href);
-    }
-  }, [isOverlayOpen]);
-
-  useEffect(() => {
-    window.addEventListener("popstate", handlePopState);
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, [handlePopState]);
+  const { pushModal, popModal } = useHistoryContext();
+  const modalKeyRef = useRef<string | null>(null);
 
   // Ensure overlay slider navigates to the logical current slide when it opens
   useEffect(() => {
@@ -103,10 +87,23 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
   const handleImageClick = (index: number) => {
     setCurrentSlide(index);
     setIsOverlayOpen(true);
+    const key = `image-popup`;
+    modalKeyRef.current = key;
+    pushModal(key, () => {
+      // provider-triggered close
+      modalKeyRef.current = null;
+      setIsOverlayOpen(false);
+    });
   };
 
   const handleCloseOverlay = () => {
+    // immediate UI close
     setIsOverlayOpen(false);
+    // remove modal entry from history if we pushed one
+    if (modalKeyRef.current) {
+      modalKeyRef.current = null;
+      popModal();
+    }
   };
 
   const handleThumbnailClick = (index: number) => {
@@ -115,6 +112,8 @@ const ImagesSlider: React.FC<{ images: string[] }> = ({ images }) => {
       const target = isRtl ? images.length - 1 - index : index;
       slider1.slickGoTo(target);
     }
+    // open overlay for thumbnail click
+    handleImageClick(index);
   };
 
   const handleOverlayThumbnailClick = (index: number) => {
