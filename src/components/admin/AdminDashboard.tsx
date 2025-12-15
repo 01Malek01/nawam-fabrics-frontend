@@ -1,6 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-nocheck
 import React, { useEffect, useState } from "react";
+import ReservationsManager from "./ReservationsManager";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
@@ -37,7 +38,14 @@ type Category = {
   isSubCategory?: boolean;
 };
 
+const TABS = [
+  { key: "products", label: "المنتجات" },
+  { key: "categories", label: "الفئات" },
+  { key: "reservations", label: "الحجوزات" },
+];
+
 const AdminDashboard: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<string>(TABS[0].key);
   const api = useAdminApi();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -153,223 +161,265 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div />
-        <div className="flex flex-wrap gap-2">
-          <Button className="cursor-pointer" onClick={() => load()}>
-            تحديث البيانات
-          </Button>
-          <Dialog
-            open={isCreatingCategory}
-            onOpenChange={(open) => setIsCreatingCategory(open)}
+      {/* Tabs */}
+      <div className="flex gap-2 border-b pb-2 mb-4">
+        {TABS.map((tab) => (
+          <button
+            key={tab.key}
+            className={`px-4 py-2 rounded-t-md font-semibold focus:outline-none transition-colors duration-150 ${
+              activeTab === tab.key
+                ? "bg-primary text-white"
+                : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+            }`}
+            onClick={() => setActiveTab(tab.key)}
           >
-            <DialogContent>
-              <CategoryForm
-                onSubmit={handleCreateCategory}
-                categories={categories}
-                onAfterSubmit={updateCategoryState}
-              />
-            </DialogContent>
-          </Dialog>
-
-          <Dialog
-            open={isCreatingProduct}
-            onOpenChange={(open) => setIsCreatingProduct(open)}
-          >
-            <DialogContent>
-              <ProductForm
-                onSubmit={handleCreateProduct}
-                categories={categories}
-                onAfterSubmit={updateProductState}
-              />
-            </DialogContent>
-          </Dialog>
-
-          <Button
-            className="cursor-pointer"
-            onClick={() => {
-              setIsCreatingCategory(true);
-              // push a dummy history state so back button closes the dialog
-              try {
-                history.pushState({ nawamDialog: true }, "");
-              } catch (e) {
-                void e;
-              }
-            }}
-          >
-            إضافة فئة جديدة
-          </Button>
-
-          <Button
-            className="cursor-pointer"
-            onClick={() => {
-              setIsCreatingProduct(true);
-              try {
-                history.pushState({ nawamDialog: true }, "");
-              } catch (e) {
-                void e;
-              }
-            }}
-          >
-            إضافة منتج جديد
-          </Button>
-        </div>
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      <section className="bg-white/60 dark:bg-white/5 p-4 rounded-lg">
-        <h2 className="text-lg font-semibold text-right mb-3">المنتجات</h2>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="text-right">الصورة</TableHead>
-              <TableHead className="text-right">الاسم</TableHead>
-              <TableHead className="text-right">الوصف</TableHead>
-              <TableHead className="text-right">السعر</TableHead>
-              <TableHead className="text-right">الاكثر مبيعا</TableHead>
-              <TableHead className="text-right">الفيديو</TableHead>
-              <TableHead className="text-right">الإجراءات</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {products.map((p) => (
-              <TableRow key={p?._id}>
-                <TableCell className="text-center">
-                  {Array.isArray(p?.Image) ? p?.Image.length : 0} صورة
-                </TableCell>
-                <TableCell className="font-medium">{p?.Name}</TableCell>
-                <TableCell className="max-w-xs truncate">
-                  {p?.Description}
-                </TableCell>
-                <TableCell>{p?.PricePerMeter} ج.م</TableCell>
-                <TableCell>
-                  {p?.MostSold === true ? <span>✅</span> : <span>❌</span>}
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    {p?.VideoUrl ? (
-                      <>
-                        <a
-                          href={getImageUrl(p?.VideoUrl)}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-blue-600 hover:underline"
-                        >
-                          مشاهدة
-                        </a>
+      {/* Tab Content */}
+      {activeTab === "products" && (
+        <>
+          <div className="flex justify-between items-center mb-4">
+            <div />
+            <div className="flex flex-wrap gap-2">
+              <Button className="cursor-pointer" onClick={() => load()}>
+                تحديث البيانات
+              </Button>
+              <Dialog
+                open={isCreatingProduct}
+                onOpenChange={(open) => setIsCreatingProduct(open)}
+              >
+                <DialogContent>
+                  <ProductForm
+                    onSubmit={handleCreateProduct}
+                    categories={categories}
+                    onAfterSubmit={updateProductState}
+                  />
+                </DialogContent>
+              </Dialog>
+              <Button
+                className="cursor-pointer"
+                onClick={() => {
+                  setIsCreatingProduct(true);
+                  try {
+                    history.pushState({ nawamDialog: true }, "");
+                  } catch (e) {
+                    void e;
+                  }
+                }}
+              >
+                إضافة منتج جديد
+              </Button>
+            </div>
+          </div>
+          {/* Products Table (same as before) */}
+          <section className="bg-white/60 dark:bg-white/5 p-4 rounded-lg">
+            <h2 className="text-lg font-semibold text-right mb-3">المنتجات</h2>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-right">الصورة</TableHead>
+                  <TableHead className="text-right">الاسم</TableHead>
+                  <TableHead className="text-right">الوصف</TableHead>
+                  <TableHead className="text-right">السعر</TableHead>
+                  <TableHead className="text-right">الاكثر مبيعا</TableHead>
+                  <TableHead className="text-right">الفيديو</TableHead>
+                  <TableHead className="text-right">الإجراءات</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {products.map((p) => (
+                  <TableRow key={p?._id}>
+                    <TableCell className="text-center">
+                      {Array.isArray(p?.Image) ? p?.Image.length : 0} صورة
+                    </TableCell>
+                    <TableCell className="font-medium">{p?.Name}</TableCell>
+                    <TableCell className="max-w-xs truncate">
+                      {p?.Description}
+                    </TableCell>
+                    <TableCell>{p?.PricePerMeter} ج.م</TableCell>
+                    <TableCell>
+                      {p?.MostSold === true ? <span>✅</span> : <span>❌</span>}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {p?.VideoUrl ? (
+                          <>
+                            <a
+                              href={getImageUrl(p?.VideoUrl)}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-blue-600 hover:underline"
+                            >
+                              مشاهدة
+                            </a>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="cursor-pointer"
+                              onClick={async () => {
+                                if (!p?._id) return;
+                                if (!confirm("هل تريد حذف هذا الفيديو؟"))
+                                  return;
+                                try {
+                                  await api.deleteProductVideo(p._id);
+                                  // update local state to remove video url
+                                  setProducts((prev) =>
+                                    prev.map((prod) =>
+                                      prod?._id === p._id
+                                        ? { ...prod, VideoUrl: undefined }
+                                        : prod
+                                    )
+                                  );
+                                  toast.success("تم حذف الفيديو");
+                                } catch (err) {
+                                  toast.error("فشل حذف الفيديو");
+                                }
+                              }}
+                            >
+                              حذف
+                            </Button>
+                          </>
+                        ) : (
+                          <span className="text-gray-500">لا يوجد</span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
                         <Button
                           size="sm"
-                          variant="destructive"
                           className="cursor-pointer"
-                          onClick={async () => {
-                            if (!p?._id) return;
-                            if (!confirm("هل تريد حذف هذا الفيديو؟")) return;
-                            try {
-                              await api.deleteProductVideo(p._id);
-                              // update local state to remove video url
-                              setProducts((prev) =>
-                                prev.map((prod) =>
-                                  prod?._id === p._id
-                                    ? { ...prod, VideoUrl: undefined }
-                                    : prod
-                                )
-                              );
-                              toast.success("تم حذف الفيديو");
-                            } catch (err) {
-                              toast.error("فشل حذف الفيديو");
-                            }
-                          }}
+                          onClick={() => openEditingProduct(p)}
+                        >
+                          تعديل
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="cursor-pointer"
+                          onClick={() => openManageImages(p)}
+                        >
+                          تعديل الصور
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="cursor-pointer"
+                          variant="destructive"
+                          onClick={() => p?._id && handleDeleteProduct(p?._id)}
                         >
                           حذف
                         </Button>
-                      </>
-                    ) : (
-                      <span className="text-gray-500">لا يوجد</span>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      className="cursor-pointer"
-                      onClick={() => openEditingProduct(p)}
-                    >
-                      تعديل
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="cursor-pointer"
-                      onClick={() => openManageImages(p)}
-                    >
-                      تعديل الصور
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="cursor-pointer"
-                      variant="destructive"
-                      onClick={() => p?._id && handleDeleteProduct(p?._id)}
-                    >
-                      حذف
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </section>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </section>
+        </>
+      )}
 
-      <section className="bg-white/60 dark:bg-white/5 p-4 rounded-lg">
-        <h2 className="text-lg font-semibold text-right mb-3">الفئات</h2>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="text-right">الصورة</TableHead>
-              <TableHead className="text-right">الاسم</TableHead>
-              <TableHead className="text-right">النوع</TableHead>
-              <TableHead className="text-right">الفئة الرئيسية</TableHead>
-              <TableHead className="text-right">الإجراءات</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {categories.map((c) => (
-              <TableRow key={c?._id}>
-                <TableCell>
-                  {c?.Image && (
-                    <img
-                      src={getImageUrl(c?.Image)}
-                      alt={c?.Name}
-                      className="w-12 h-10 object-cover rounded"
-                    />
-                  )}
-                </TableCell>
-                <TableCell className="font-medium">{c?.Name}</TableCell>
-                <TableCell>{c?.isSubCategory ? "فرعية" : "رئيسية"}</TableCell>
-                <TableCell>{c?.ParentCategory?.Name}</TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      className="cursor-pointer"
-                      onClick={() => openEditingCategory(c)}
-                    >
-                      تعديل
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="cursor-pointer"
-                      variant="destructive"
-                      onClick={() => c?._id && handleDeleteCategory(c?._id)}
-                    >
-                      حذف
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </section>
+      {activeTab === "categories" && (
+        <>
+          <div className="flex justify-between items-center mb-4">
+            <div />
+            <div className="flex flex-wrap gap-2">
+              <Button className="cursor-pointer" onClick={() => load()}>
+                تحديث البيانات
+              </Button>
+              <Dialog
+                open={isCreatingCategory}
+                onOpenChange={(open) => setIsCreatingCategory(open)}
+              >
+                <DialogContent>
+                  <CategoryForm
+                    onSubmit={handleCreateCategory}
+                    categories={categories}
+                    onAfterSubmit={updateCategoryState}
+                  />
+                </DialogContent>
+              </Dialog>
+              <Button
+                className="cursor-pointer"
+                onClick={() => {
+                  setIsCreatingCategory(true);
+                  try {
+                    history.pushState({ nawamDialog: true }, "");
+                  } catch (e) {
+                    void e;
+                  }
+                }}
+              >
+                إضافة فئة جديدة
+              </Button>
+            </div>
+          </div>
+          {/* Categories Table (same as before) */}
+          <section className="bg-white/60 dark:bg-white/5 p-4 rounded-lg">
+            <h2 className="text-lg font-semibold text-right mb-3">الفئات</h2>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-right">الصورة</TableHead>
+                  <TableHead className="text-right">الاسم</TableHead>
+                  <TableHead className="text-right">النوع</TableHead>
+                  <TableHead className="text-right">الفئة الرئيسية</TableHead>
+                  <TableHead className="text-right">الإجراءات</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {categories.map((c) => (
+                  <TableRow key={c?._id}>
+                    <TableCell>
+                      {c?.Image && (
+                        <img
+                          src={getImageUrl(c?.Image)}
+                          alt={c?.Name}
+                          className="w-12 h-10 object-cover rounded"
+                        />
+                      )}
+                    </TableCell>
+                    <TableCell className="font-medium">{c?.Name}</TableCell>
+                    <TableCell>
+                      {c?.isSubCategory ? "فرعية" : "رئيسية"}
+                    </TableCell>
+                    <TableCell>{c?.ParentCategory?.Name}</TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          className="cursor-pointer"
+                          onClick={() => openEditingCategory(c)}
+                        >
+                          تعديل
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="cursor-pointer"
+                          variant="destructive"
+                          onClick={() => c?._id && handleDeleteCategory(c?._id)}
+                        >
+                          حذف
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </section>
+        </>
+      )}
+
+      {activeTab === "reservations" && (
+        <section className="bg-white/60 dark:bg-white/5 p-4 rounded-lg">
+          <ReservationsManager />
+        </section>
+      )}
+
+      {/* Edit dialogs and manage images dialog remain unchanged */}
 
       {/* Edit dialogs */}
       {editingProduct && (

@@ -62,7 +62,7 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
       customerPhone: "",
       quantityMeters: 1,
       customerAddress: "",
-      productRecordId: fabric.id,
+      productRecordId: fabric._id,
       Images: [],
     },
   });

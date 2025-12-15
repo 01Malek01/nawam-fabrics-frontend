@@ -18,19 +18,58 @@ export const useCreateReservation = () => {
     setIsLoading(true);
     setError(undefined);
     try {
-      const res = await fetch(`${import.meta.env.VITE_TG_BOT_URL}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        const text = await res.text().catch(() => "");
-        throw new Error(text || `Request failed with status ${res.status}`);
+      // 1) Create reservation in our backend first
+      const nodeRes = await fetch(
+        `${import.meta.env.VITE_NODE_BACKEND_URL}/reservations`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!nodeRes.ok) {
+        const text = await nodeRes.text().catch(() => "");
+        throw new Error(text || `Request failed with status ${nodeRes.status}`);
       }
-      const json = (await res.json().catch(() => undefined)) as unknown;
-      setData(json);
+
+      const reservation = (await nodeRes.json().catch(() => undefined)) as
+        | unknown
+        | undefined;
+
+      // store primary result
+      setData(reservation);
       setIsSuccess(true);
-      return json;
+
+      // 2) Notify telegram bot (best-effort). Attach reservation info if available.
+      try {
+        const tgBody = { ...payload, reservation };
+        const res = await fetch(`${import.meta.env.VITE_TG_BOT_URL}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(tgBody),
+        });
+
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          const tgErr = new Error(
+            text || `Telegram request failed ${res.status}`
+          );
+          // surface telegram error but do not rollback reservation
+          setError(tgErr);
+          return { reservation, telegramError: tgErr } as unknown;
+        }
+
+        const tgJson = (await res.json().catch(() => undefined)) as unknown;
+        return { reservation, telegram: tgJson } as unknown;
+      } catch (tgErr) {
+        const e =
+          tgErr instanceof Error
+            ? tgErr
+            : new Error("Telegram notification failed");
+        setError(e);
+        return { reservation, telegramError: e } as unknown;
+      }
     } catch (err) {
       const e = err instanceof Error ? err : new Error("Unknown error");
       setError(e);
