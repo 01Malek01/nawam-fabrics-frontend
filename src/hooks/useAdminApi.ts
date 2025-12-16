@@ -389,6 +389,91 @@ export default function useAdminApi() {
     [BASE]
   );
 
+  /* Reservations admin endpoints */
+  const getReservations = useCallback(async () => {
+    setStatus("loading");
+    try {
+      const res = await fetch(`${BASE}/admin/reservations`, {
+        credentials: "include",
+      });
+      let result: unknown = null;
+      try {
+        result = await res.json();
+      } catch (e) {
+        /* ignore parse error */
+      }
+      if (!res.ok) {
+        setStatus("error");
+        throw new Error((result as any)?.message || `HTTP ${res.status}`);
+      }
+      setStatus("success");
+      return result;
+    } catch (e) {
+      setStatus("error");
+      throw e;
+    } finally {
+      setTimeout(() => setStatus("idle"), 500);
+    }
+  }, [BASE]);
+
+  const updateReservationStatus = useCallback(
+    async (id: string, statusBody: { status: string }) => {
+      setStatus("loading");
+      try {
+        const res = await fetch(`${BASE}/admin/reservations/${id}/status`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(statusBody),
+        });
+        let result: unknown = null;
+        try {
+          result = await res.json();
+        } catch (e) {}
+        if (!res.ok) {
+          setStatus("error");
+          throw new Error((result as any)?.message || `HTTP ${res.status}`);
+        }
+        setStatus("success");
+        return result;
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 500);
+      }
+    },
+    [BASE]
+  );
+
+  const deleteReservation = useCallback(
+    async (id: string) => {
+      setStatus("loading");
+      try {
+        const res = await fetch(`${BASE}/admin/reservations/${id}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+        let result: unknown = null;
+        try {
+          result = await res.json();
+        } catch (e) {}
+        if (!res.ok) {
+          setStatus("error");
+          throw new Error((result as any)?.message || `HTTP ${res.status}`);
+        }
+        setStatus("success");
+        return result;
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 500);
+      }
+    },
+    [BASE]
+  );
+
   return {
     getProducts,
     createProduct,
@@ -401,5 +486,10 @@ export default function useAdminApi() {
     updateCategory,
     deleteCategory,
     status,
+    uploadVideo,
+    // reservations
+    getReservations,
+    updateReservationStatus,
+    deleteReservation,
   };
 }
