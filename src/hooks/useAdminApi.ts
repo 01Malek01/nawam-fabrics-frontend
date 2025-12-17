@@ -446,6 +446,120 @@ export default function useAdminApi() {
     [BASE]
   );
 
+  const getReservationNote = useCallback(
+    async (id: string) => {
+      setStatus("loading");
+      try {
+        const res = await fetch(`${BASE}/admin/reservations/${id}/note`, {
+          credentials: "include",
+        });
+        let result: unknown = null;
+        try {
+          result = await res.json();
+        } catch (e) {}
+        if (!res.ok) {
+          setStatus("error");
+          throw new Error((result as any)?.message || `HTTP ${res.status}`);
+        }
+        setStatus("success");
+        return result;
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 300);
+      }
+    },
+    [BASE]
+  );
+
+  const updateReservationNote = useCallback(
+    async (id: string, body: { note: string }) => {
+      setStatus("loading");
+      try {
+        const res = await fetch(`${BASE}/admin/reservations/${id}/note`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(body),
+        });
+        let result: unknown = null;
+        try {
+          result = await res.json();
+        } catch (e) {}
+        if (!res.ok) {
+          setStatus("error");
+          throw new Error((result as any)?.message || `HTTP ${res.status}`);
+        }
+        setStatus("success");
+        return result;
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 300);
+      }
+    },
+    [BASE]
+  );
+
+  const getReservationSummary = useCallback(
+    async (id: string) => {
+      setStatus("loading");
+      try {
+        const res = await fetch(`${BASE}/admin/reservations/${id}/summary`, {
+          credentials: "include",
+        });
+        let result: unknown = null;
+        try {
+          result = await res.json();
+        } catch (e) {}
+        if (!res.ok) {
+          setStatus("error");
+          throw new Error((result as any)?.message || `HTTP ${res.status}`);
+        }
+        setStatus("success");
+        return result;
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 300);
+      }
+    },
+    [BASE]
+  );
+
+  const updateReservationSummary = useCallback(
+    async (id: string, body: { summary: string }) => {
+      setStatus("loading");
+      try {
+        const res = await fetch(`${BASE}/admin/reservations/${id}/summary`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(body),
+        });
+        let result: unknown = null;
+        try {
+          result = await res.json();
+        } catch (e) {}
+        if (!res.ok) {
+          setStatus("error");
+          throw new Error((result as any)?.message || `HTTP ${res.status}`);
+        }
+        setStatus("success");
+        return result;
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 300);
+      }
+    },
+    [BASE]
+  );
+
   const deleteReservation = useCallback(
     async (id: string) => {
       setStatus("loading");
@@ -491,5 +605,9 @@ export default function useAdminApi() {
     getReservations,
     updateReservationStatus,
     deleteReservation,
+    getReservationNote,
+    updateReservationNote,
+    getReservationSummary,
+    updateReservationSummary,
   };
 }

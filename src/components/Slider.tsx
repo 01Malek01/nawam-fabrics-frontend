@@ -7,8 +7,11 @@ import { X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
 import NoDownloadImage from "@/components/NoDownloadImage";
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Zoom, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/zoom";
+import "swiper/css/pagination";
 const ImagesSlider: React.FC<{
   images: string[];
 }> = ({ images, ...props }) => {
@@ -27,9 +30,26 @@ const ImagesSlider: React.FC<{
   // Sync sliders
   useEffect(() => {
     if (nav1 && nav2) {
-      const target = isRtl ? images.length - 1 - currentSlide : currentSlide;
-      nav1.slickGoTo(target);
-      nav2.slickGoTo(target);
+      const targetForSlick = isRtl
+        ? images.length - 1 - currentSlide
+        : currentSlide;
+      const targetForSwiper = currentSlide;
+      // nav1 is react-slick
+      try {
+        nav1.slickGoTo(targetForSlick);
+      } catch (e) {
+        /* ignore */
+      }
+      try {
+        // nav2 may be swiper or react-slick - call the appropriate method
+        if (typeof (nav2 as any).slideTo === "function") {
+          (nav2 as any).slideTo(targetForSwiper);
+        } else if (typeof (nav2 as any).slickGoTo === "function") {
+          (nav2 as any).slickGoTo(targetForSlick);
+        }
+      } catch (e) {
+        /* ignore */
+      }
     }
   }, [currentSlide, nav1, nav2, isRtl, images.length]);
 
@@ -79,8 +99,15 @@ const ImagesSlider: React.FC<{
   // Ensure overlay slider navigates to the logical current slide when it opens
   useEffect(() => {
     if (isOverlayOpen && slider2) {
-      const target = isRtl ? images.length - 1 - currentSlide : currentSlide;
-      slider2.slickGoTo(target);
+      const targetForSlick = isRtl
+        ? images.length - 1 - currentSlide
+        : currentSlide;
+      const targetForSwiper = currentSlide; // do NOT apply RTL mapping for Swiper overlay
+      if (typeof (slider2 as any).slideTo === "function") {
+        (slider2 as any).slideTo(targetForSwiper);
+      } else if (typeof (slider2 as any).slickGoTo === "function") {
+        (slider2 as any).slickGoTo(targetForSlick);
+      }
     }
   }, [isOverlayOpen, slider2, currentSlide, isRtl, images.length]);
 
@@ -119,8 +146,13 @@ const ImagesSlider: React.FC<{
   const handleOverlayThumbnailClick = (index: number) => {
     setCurrentSlide(index);
     if (slider2) {
-      const target = isRtl ? images.length - 1 - index : index;
-      slider2.slickGoTo(target);
+      // In overlay thumbnails do NOT apply RTL mapping — use direct index
+      const target = index;
+      if (typeof (slider2 as any).slideTo === "function") {
+        (slider2 as any).slideTo(target);
+      } else if (typeof (slider2 as any).slickGoTo === "function") {
+        (slider2 as any).slickGoTo(target);
+      }
     }
   };
 
@@ -210,29 +242,37 @@ const ImagesSlider: React.FC<{
               </p>
 
               <div className="relative h-full w-full">
-                <Slider
-                  {...overlaySettings}
-                  ref={(slider) => {
-                    setSlider2(slider);
-                    setNav2(slider);
+                <Swiper
+                  onSwiper={(s) => {
+                    setSlider2(s as any);
+                    setNav2(s as any);
+                  }}
+                  modules={[Zoom, Pagination]}
+                  zoom={{ maxRatio: 3 }}
+                  pagination={{ clickable: window.innerWidth >= 768 }}
+                  spaceBetween={10}
+                  slidesPerView={1}
+                  className="h-[70vh]"
+                  onSlideChange={(s) => {
+                    // For Swiper overlay do NOT apply RTL mapping — use direct index
+                    const idx = (s as any).realIndex;
+                    setCurrentSlide(idx);
                   }}
                 >
                   {images.map((image, index) => (
-                    <div key={index} className="outline-none">
-                      <div className="flex items-center justify-center h-[70vh]">
-                        <TransformWrapper>
-                          <TransformComponent>
-                            <NoDownloadImage
-                              src={image}
-                              alt={`Fabric ${index + 1} - Full view`}
-                              className="max-h-full max-w-full object-contain rounded-lg"
-                            />
-                          </TransformComponent>
-                        </TransformWrapper>
+                    <SwiperSlide key={index} className="outline-none">
+                      <div className="flex items-center justify-center h-[70vh] w-full">
+                        <div className="swiper-zoom-container">
+                          <img
+                            src={image}
+                            alt={`Fabric ${index + 1} - Full view`}
+                            className="max-h-full max-w-full object-contain rounded-lg"
+                          />
+                        </div>
                       </div>
-                    </div>
+                    </SwiperSlide>
                   ))}
-                </Slider>
+                </Swiper>
 
                 {/* Thumbnail navigation */}
                 <div className="mt-4 px-8">

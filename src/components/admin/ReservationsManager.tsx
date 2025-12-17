@@ -35,6 +35,44 @@ const ReservationsManager: React.FC = () => {
     setGalleryImages(images || []);
     setGalleryIndex(idx || 0);
   };
+  const [notesDialogId, setNotesDialogId] = useState<string | null>(null);
+  const [noteText, setNoteText] = useState("");
+  const [summaryText, setSummaryText] = useState("");
+  const [notesLoading, setNotesLoading] = useState(false);
+
+  const openNotesDialog = async (id: string) => {
+    setNotesDialogId(id);
+    setNotesLoading(true);
+    try {
+      const n = await api.getReservationNote(id).catch(() => null);
+      const s = await api.getReservationSummary(id).catch(() => null);
+      setNoteText((n as any)?.note || "");
+      setSummaryText((s as any)?.summary || "");
+    } catch (e) {
+      console.error(e);
+      toast.error("فشل جلب الملاحظات");
+    } finally {
+      setNotesLoading(false);
+    }
+  };
+
+  const saveNotes = async () => {
+    if (!notesDialogId) return;
+    setNotesLoading(true);
+    try {
+      await api.updateReservationNote(notesDialogId, { note: noteText });
+      await api.updateReservationSummary(notesDialogId, {
+        summary: summaryText,
+      });
+      toast.success("تم حفظ الملاحظات");
+      setNotesDialogId(null);
+    } catch (e) {
+      console.error(e);
+      toast.error("فشل حفظ الملاحظات");
+    } finally {
+      setNotesLoading(false);
+    }
+  };
   const load = async () => {
     setLoading(true);
     try {
@@ -184,6 +222,13 @@ const ReservationsManager: React.FC = () => {
                           تأكيد
                         </Button>
                       )}
+                      <Button
+                        size="sm"
+                        className="cursor-pointer"
+                        onClick={() => openNotesDialog(r._id)}
+                      >
+                        ملاحظة
+                      </Button>
                       {r.status !== "cancelled" && (
                         <Button
                           size="sm"
@@ -257,6 +302,61 @@ const ReservationsManager: React.FC = () => {
             ) : (
               <div>لا توجد صور</div>
             )}
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={!!notesDialogId}
+        onOpenChange={() => setNotesDialogId(null)}
+      >
+        <DialogContent className="w-full max-w-2xl">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold">ملاحظات وحالة الدردشة</h3>
+              <button
+                onClick={() => setNotesDialogId(null)}
+                className="text-sm"
+              >
+                إغلاق
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium">
+                  ملاحظة داخلية
+                </label>
+                <textarea
+                  value={noteText}
+                  onChange={(e) => setNoteText(e.target.value)}
+                  className="w-full p-2 border rounded min-h-[80px]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium">
+                  ملخص المحادثة مع العميل
+                </label>
+                <textarea
+                  value={summaryText}
+                  onChange={(e) => setSummaryText(e.target.value)}
+                  className="w-full p-2 border rounded min-h-[120px]"
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  className="cursor-pointer"
+                  onClick={() => setNotesDialogId(null)}
+                >
+                  إلغاء
+                </Button>
+                <Button
+                  className="cursor-pointer"
+                  onClick={() => saveNotes()}
+                  disabled={notesLoading}
+                >
+                  {notesLoading ? "جارٍ الحفظ..." : "حفظ"}
+                </Button>
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
