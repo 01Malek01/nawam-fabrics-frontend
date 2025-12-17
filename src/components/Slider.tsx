@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-nocheck
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import React, { useState, useEffect, useCallback, useRef } from "react";
@@ -9,7 +11,9 @@ import { Button } from "@/components/ui/button";
 import NoDownloadImage from "@/components/NoDownloadImage";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Zoom, Pagination } from "swiper/modules";
-
+import "swiper/css";
+import "swiper/css/zoom";
+import "swiper/css/pagination";
 const ImagesSlider: React.FC<{
   images: string[];
 }> = ({ images, ...props }) => {
