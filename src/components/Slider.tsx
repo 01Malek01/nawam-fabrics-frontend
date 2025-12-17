@@ -9,9 +9,7 @@ import { Button } from "@/components/ui/button";
 import NoDownloadImage from "@/components/NoDownloadImage";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Zoom, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/zoom";
-import "swiper/css/pagination";
+
 const ImagesSlider: React.FC<{
   images: string[];
 }> = ({ images, ...props }) => {
