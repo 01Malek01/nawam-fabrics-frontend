@@ -18,7 +18,12 @@ import { useNavigate } from "react-router-dom";
 export default function FabricPage() {
   const navigate = useNavigate();
   const { fabricId } = useParams();
-  const { isOrderDialogOpen, setOrderDialogOpen } = useOrderDialog();
+  const {
+    isOrderDialogOpen,
+    selectedFabricId,
+    openOrderDialogFor,
+    closeOrderDialog,
+  } = useOrderDialog();
   const { getProductById } = usePublicApi();
   const [fabric, setFabric] = useState<Fabric | null>(null);
 
@@ -112,15 +117,17 @@ export default function FabricPage() {
             <div className="pt-4 border-t border-gray-200">
               <Button
                 className="w-full md:w-auto cursor-pointer"
-                onClick={() => setOrderDialogOpen(true)}
+                onClick={() => openOrderDialogFor(fabric.id)}
               >
                 طلب الآن
               </Button>
 
               {/* Order Form Dialog */}
               <Dialog
-                open={isOrderDialogOpen}
-                onOpenChange={setOrderDialogOpen}
+                open={isOrderDialogOpen && selectedFabricId === fabric.id}
+                onOpenChange={(open) => {
+                  if (!open) closeOrderDialog();
+                }}
               >
                 <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
                   {fabric && <FabricOrderForm fabric={fabric} />}

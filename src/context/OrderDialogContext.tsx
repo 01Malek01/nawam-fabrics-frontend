@@ -6,6 +6,8 @@ type OrderDialogContextValue = {
   openOrderDialog: () => void;
   closeOrderDialog: () => void;
   setOrderDialogOpen: (open: boolean) => void;
+  selectedFabricId?: string | null;
+  openOrderDialogFor: (fabricId: string) => void;
 };
 
 const OrderDialogContext = createContext<OrderDialogContextValue | undefined>(
@@ -14,13 +16,23 @@ const OrderDialogContext = createContext<OrderDialogContextValue | undefined>(
 
 export const OrderDialogProvider = ({ children }: { children: ReactNode }) => {
   const [isOrderDialogOpen, setOrderDialogOpen] = useState(false);
+  const [selectedFabricId, setSelectedFabricId] = useState<string | null>(null);
 
   const value = useMemo<OrderDialogContextValue>(() => {
     return {
       isOrderDialogOpen,
+      // open for a specific fabric id
       openOrderDialog: () => setOrderDialogOpen(true),
-      closeOrderDialog: () => setOrderDialogOpen(false),
+      openOrderDialogFor: (fabricId: string) => {
+        setSelectedFabricId(fabricId);
+        setOrderDialogOpen(true);
+      },
+      closeOrderDialog: () => {
+        setOrderDialogOpen(false);
+        setSelectedFabricId(null);
+      },
       setOrderDialogOpen,
+      selectedFabricId,
     };
   }, [isOrderDialogOpen]);
 

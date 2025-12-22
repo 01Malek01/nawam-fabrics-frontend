@@ -22,7 +22,12 @@ const FabricCard = ({
   buttonAction: () => void;
   isLazyLoaded?: boolean;
 }) => {
-  const { isOrderDialogOpen, closeOrderDialog } = useOrderDialog();
+  const {
+    isOrderDialogOpen,
+    closeOrderDialog,
+    selectedFabricId,
+    openOrderDialogFor,
+  } = useOrderDialog();
   const [isImageExpanded, setIsImageExpanded] = useState(false);
   // Determine a safe display price. Airtable records sometimes have different
   // field names or the normalized `price` might be empty — fall back to the
@@ -68,7 +73,7 @@ const FabricCard = ({
       )}
 
       {/* Order Form Overlay */}
-      {isOrderDialogOpen && (
+      {isOrderDialogOpen && selectedFabricId === fabric.id && (
         <div
           className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
           onClick={() => closeOrderDialog()}
@@ -78,7 +83,9 @@ const FabricCard = ({
       {/* Order Form Dialog */}
       <div
         className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-200 ${
-          isOrderDialogOpen ? "opacity-100" : "pointer-events-none opacity-0"
+          isOrderDialogOpen && selectedFabricId === fabric.id
+            ? "opacity-100"
+            : "pointer-events-none opacity-0"
         }`}
       >
         <div
