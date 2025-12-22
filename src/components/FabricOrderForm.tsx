@@ -19,6 +19,7 @@ import type { Fabric } from "@/types";
 import useCreateReservation from "@/hooks/api/useCreateReservation";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { useOrderDialog } from "@/context/OrderDialogContext";
 import LazyImage from "./LazyImage";
 // Form validation schema
 const formSchema = z.object({
@@ -51,6 +52,7 @@ interface FabricOrderFormProps {
 export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
   const { createReservation, isLoading, isSuccess, error } =
     useCreateReservation();
+  const { closeOrderDialog } = useOrderDialog();
   useEffect(() => {
     console.log(fabric);
   }, [fabric]);
@@ -70,6 +72,8 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
   async function onSubmit(values: FormValues) {
     try {
       await createReservation(values);
+      //close dialog
+
       // Reset form only on successful submission
       form.reset();
     } catch (err) {
@@ -97,7 +101,13 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
         <p className="text-gray-700 dark:text-gray-300 mb-4">
           عذراً، حدث خطأ أثناء معالجة طلبك. يرجى المحاولة مرة أخرى لاحقاً.
         </p>
-        <Button onClick={() => navigate("/")} className="mt-4">
+        <Button
+          onClick={() => {
+            closeOrderDialog();
+            navigate("/");
+          }}
+          className="mt-4"
+        >
           المحاولة مرة أخرى
         </Button>
       </div>
@@ -114,7 +124,13 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
         <p className="text-gray-700 dark:text-gray-300 mb-4">
           سنتواصل معك قريباً لتأكيد الطلب وتفاصيل الدفع.
         </p>
-        <Button onClick={() => navigate("/")} className="mt-4">
+        <Button
+          onClick={() => {
+            closeOrderDialog();
+            navigate("/");
+          }}
+          className="mt-4"
+        >
           العودة للصفحة الرئيسية
         </Button>
       </div>
