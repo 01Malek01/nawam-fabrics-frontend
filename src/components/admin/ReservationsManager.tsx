@@ -88,7 +88,12 @@ const ReservationsManager: React.FC = () => {
 
   useEffect(() => {
     void load();
+    // refetch every 3 minutes
+    const interval = setInterval(() => {
+      void load();
+    }, 3 * 60 * 1000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => clearInterval(interval);
   }, []);
 
   const changeStatus = async (id: string, status: string) => {
