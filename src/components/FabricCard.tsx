@@ -117,11 +117,9 @@ const FabricCard = ({
             {/* Discount badge */}
             {discountText && (
               <div className="absolute top-3 right-3 flex flex-col items-end gap-1 z-20">
-                {discountValue > 0 && (
                   <span className="bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-lg">
                     {discountText}
                   </span>
-                )}
               </div>
             )}
             {isLazyLoaded ? (
