@@ -115,15 +115,10 @@ const FabricCard = ({
             onClick={() => setIsImageExpanded(true)}
           >
             {/* Discount badge */}
-            {(discountValue > 0 || discountText) && (
+            {discountText && (
               <div className="absolute top-3 right-3 flex flex-col items-end gap-1 z-20">
                 {discountValue > 0 && (
                   <span className="bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-lg">
-                    {discountValue}% خصم
-                  </span>
-                )}
-                {discountText && (
-                  <span className="bg-black/60 text-white text-[11px] px-2 py-0.5 rounded-md">
                     {discountText}
                   </span>
                 )}
