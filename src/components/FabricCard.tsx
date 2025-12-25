@@ -44,7 +44,7 @@ const FabricCard = ({
     : fabric?.image
     ? 1
     : 0;
-
+  console.log(fabric);
   const discountValue = Number((fabric as any)?.discount || 0);
   const discountText = (fabric as any)?.discountText || "";
 
@@ -117,9 +117,9 @@ const FabricCard = ({
             {/* Discount badge */}
             {discountText && (
               <div className="absolute top-3 right-3 flex flex-col items-end gap-1 z-20">
-                  <span className="bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-lg">
-                    {discountText}
-                  </span>
+                <span className="bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-lg">
+                  {discountText}
+                </span>
               </div>
             )}
             {isLazyLoaded ? (

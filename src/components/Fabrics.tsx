@@ -54,6 +54,8 @@ const Fabrics = ({
             videoUrl: r.VideoUrl || "",
             MostSold: r.MostSold || false,
             isNewArrival: r.isNewArrival || r.isNew || false,
+            discountText: r.discountText || "",
+
             discount:
               typeof r.discount === "number"
                 ? r.discount
