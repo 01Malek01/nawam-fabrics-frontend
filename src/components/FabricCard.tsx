@@ -1,4 +1,4 @@
-import { X, Maximize2 } from "lucide-react";
+import { X, Maximize2, Image as ImageIcon } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import type { Fabric } from "@/types";
@@ -22,199 +22,150 @@ const FabricCard = ({
   buttonAction: () => void;
   isLazyLoaded?: boolean;
 }) => {
-  const {
-    isOrderDialogOpen,
-    closeOrderDialog,
-    selectedFabricId,
-    openOrderDialogFor,
-  } = useOrderDialog();
+  const { isOrderDialogOpen, closeOrderDialog, selectedFabricId } =
+    useOrderDialog();
   const [isImageExpanded, setIsImageExpanded] = useState(false);
-  // Determine a safe display price. Airtable records sometimes have different
-  // field names or the normalized `price` might be empty — fall back to the
-  // raw record fields if available.
+
   const displayPrice =
     fabric?.price ||
     (fabric as any)?._raw?.Price ||
     (fabric as any)?._raw?.price ||
     (fabric as any)?._raw?.سعر ||
-    "";
+    "—";
 
-  const imageCount = Array.isArray((fabric as any)?.images)
-    ? (fabric as any).images.length
-    : fabric?.image
-    ? 1
-    : 0;
-  console.log(fabric);
-  const discountValue = Number((fabric as any)?.discount || 0);
+  const images = (fabric as any)?.images || [];
+  const imageCount = images.length || (fabric?.image ? 1 : 0);
   const discountText = (fabric as any)?.discountText || "";
 
   return (
-    <div className="group relative flex flex-col h-full bg-white dark:bg-gray-800 rounded-lg shadow-md  dark:border-gray-700 overflow-hidden p-1">
-      {/* Image Overlay */}
+    <div className="group relative flex flex-col h-full bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:shadow-lg overflow-hidden">
+      {/* 1. Full-screen Image Modal */}
       {isImageExpanded && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-md p-2"
           onClick={() => setIsImageExpanded(false)}
         >
           <button
-            title="Close"
+            className="absolute right-6 top-6 z-[110] rounded-full bg-white/10 p-3 text-white transition-colors hover:bg-white/20"
             onClick={(e) => {
               e.stopPropagation();
               setIsImageExpanded(false);
             }}
-            className="cursor-pointer absolute right-4 top-4 z-50 rounded-full bg-white/10 p-2 text-white backdrop-blur-sm hover:bg-white/20"
           >
             <X className="h-6 w-6" />
           </button>
           <NoDownloadImage
             src={fabric?.image}
             alt={fabric?.name}
-            className="max-h-[90vh] max-w-full object-contain"
-            onClick={(e) => e.stopPropagation()}
+            className="max-h-[85vh] w-auto object-contain rounded-lg"
           />
         </div>
       )}
 
-      {/* Order Form Overlay */}
+      {/* 2. Order Dialog Overlay logic remains similar but with z-index safety */}
       {isOrderDialogOpen && selectedFabricId === fabric.id && (
-        <div
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
-          onClick={() => closeOrderDialog()}
-        ></div>
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={closeOrderDialog}
+          />
+          <div className="relative w-full max-w-md rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <button
+              onClick={closeOrderDialog}
+              className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <FabricOrderForm fabric={fabric} />
+          </div>
+        </div>
       )}
 
-      {/* Order Form Dialog */}
-      <div
-        className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-200 ${
-          isOrderDialogOpen && selectedFabricId === fabric.id
-            ? "opacity-100"
-            : "pointer-events-none opacity-0"
-        }`}
-      >
-        <div
-          className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-gray-800"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <button
-            title="Close"
-            onClick={() => closeOrderDialog()}
-            className="cursor-pointer absolute left-4 top-4 rounded-full p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-          >
-            <X className="h-5 w-5" />
-          </button>
-          <FabricOrderForm fabric={fabric} />
+      {/* 3. Main Card Image Section */}
+      <div className="relative overflow-hidden aspect-[4/3] sm:aspect-square">
+        <div className="absolute top-2 right-2 z-20 bg-black/40 backdrop-blur-md px-2 py-1 rounded-md flex items-center gap-1.5">
+          <ImageIcon className="w-3 h-3 text-white" />
+          <span className="text-[10px] text-white font-medium">
+            {imageCount}
+          </span>
         </div>
-      </div>
-
-      {/* Product Card */}
-      <div className="relative flex flex-col h-full">
-        {/* Image Section */}
-        <div className="flex-shrink-0">
-          <div
-            className="group relative aspect-square overflow-hidden rounded-lg bg-gray-100"
-            onClick={() => setIsImageExpanded(true)}
-          >
-            {/* Discount badge */}
-            {discountText && (
-              <div className="absolute top-3 right-3 flex flex-col items-end gap-1 z-20">
-                <span className="bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-lg">
-                  {discountText}
-                </span>
-              </div>
-            )}
-            {isLazyLoaded ? (
-              <LazyImage
-                src={fabric?.image}
-                alt={fabric?.name}
-                className="cursor-pointer h-full w-full object-cover object-center transition-all duration-300 group-hover:scale-105"
-                draggable={false}
-                onContextMenu={(e) => e.preventDefault()}
-                onDragStart={(e) => e.preventDefault()}
-                onMouseDown={(e) => {
-                  if ((e as any).button === 2) e.preventDefault();
-                }}
-              />
-            ) : (
-              <NoDownloadImage
-                src={fabric?.image}
-                alt={fabric?.name}
-                className="cursor-pointer h-full w-full object-cover object-center transition-all duration-300 group-hover:scale-105"
-              />
-            )}
-
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100">
-              <Maximize2 className="h-8 w-8 text-white" />
-            </div>
+        {discountText && (
+          <div className="absolute top-2 left-2 z-20">
+            <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm">
+              {discountText}
+            </span>
           </div>
+        )}
 
-          {href && (
-            <Link
-              to={href}
-              className="absolute inset-0 z-10"
-              aria-label={`View ${fabric.name}`}
+        <div
+          className="h-full w-full cursor-zoom-in"
+          onClick={() => setIsImageExpanded(true)}
+        >
+          {isLazyLoaded ? (
+            <LazyImage
+              src={fabric?.image}
+              alt={fabric?.name}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+          ) : (
+            <NoDownloadImage
+              src={fabric?.image}
+              alt={fabric?.name}
+              className="h-full w-full object-cover"
             />
           )}
         </div>
 
-        {/* Thumbnail Gallery */}
-        {fabric?.images && fabric.images.length > 1 && (
-          <div className="mt-2 px-2">
-            <div className="grid grid-cols-3 gap-1">
-              {fabric.images.slice(1, 4).map((img, idx) => (
-                <div
-                  key={idx}
-                  className="aspect-square overflow-hidden rounded bg-gray-100 cursor-pointer"
-                  onClick={() => setIsImageExpanded(true)}
-                >
-                  <NoDownloadImage
-                    src={getImageUrl(img)}
-                    alt={`thumbnail ${idx + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
+        {href && <Link to={href} className="absolute inset-0 z-10 sm:hidden" />}
+      </div>
+
+      {/* 4. Details Section */}
+      <div className="flex flex-col flex-1 p-3 sm:p-4 text-right" dir="rtl">
+        <div className="flex flex-col gap-1 mb-3">
+          <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 line-clamp-1 leading-tight">
+            {fabric?.name}
+          </h3>
+        </div>
+
+        {/* Pricing Block */}
+        <div className="flex items-baseline gap-1 mb-4">
+          <span className="text-xl sm:text-2xl font-black text-green-600">
+            {displayPrice}
+          </span>
+          <span className="text-xs font-medium text-gray-500">جنيه / متر</span>
+        </div>
+
+        {/* Thumbnails - Hidden on very small screens to save vertical space, or kept small */}
+        {images.length > 1 && (
+          <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1 no-scrollbar">
+            {images.slice(1, 4).map((img: any, idx: number) => (
+              <div
+                key={idx}
+                className="h-10 w-10 flex-shrink-0 rounded-md overflow-hidden border border-gray-100 dark:border-gray-700"
+                onClick={() => setIsImageExpanded(true)}
+              >
+                <NoDownloadImage
+                  src={getImageUrl(img)}
+                  alt="thumb"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            ))}
           </div>
         )}
 
-        {/* Content Section */}
-        <div className="flex-1 flex flex-col mt-3 sm:mt-4">
-          <div className="flex items-start sm:items-center justify-between py-2 gap-2 min-h-[3rem] sm:min-h-[3.5rem]">
-            <div className="flex flex-col flex-1 text-right">
-              <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white leading-tight flex-1">
-                {fabric?.name}
-              </h3>
-              <div className="mt-1 text-[10px] md:text-sm text-gray-700 dark:text-gray-300 text-right">
-                <span className="md:font-medium">معرض الصور: </span>
-                <span className="ml-1">
-                  {imageCount}{" "}
-                  {imageCount === 1 || imageCount === 2 ? "صورة" : "صور"}
-                </span>
-              </div>
-            </div>
-            <div className="text-right flex-shrink-0">
-              <p className="text-md sm:text-xl font-bold text-primary leading-tight">
-                {displayPrice || "—"}
-              </p>
-              <div className="flex items-center justify-end gap-1 text-sm">
-                <span className="text-green-600">جنيه</span>
-                <span className="font-medium text-gray-500">/ متر</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex-1 flex items-end">
-            <Button
-              onClick={(e) => {
-                buttonAction();
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-              className="w-full cursor-pointer rounded-lg p-3 sm:p-4 text-base sm:text-lg font-bold mt-auto"
-            >
-              {buttonTitle}
-            </Button>
-          </div>
+        {/* Action Button */}
+        <div className="mt-auto">
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              buttonAction();
+            }}
+            className="w-full h-11 sm:h-12 text-sm sm:text-base font-bold shadow-sm active:scale-[0.98] transition-transform"
+          >
+            {buttonTitle}
+          </Button>
         </div>
       </div>
     </div>
