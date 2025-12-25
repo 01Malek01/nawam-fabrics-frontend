@@ -13,11 +13,15 @@ const Fabrics = ({
   subCategoryId,
   searchQuery,
   showMostSold,
+  showNewArrival,
+  showDiscounts,
 }: {
   categoryId?: string;
   subCategoryId?: string;
   searchQuery?: string;
   showMostSold?: boolean;
+  showNewArrival?: boolean;
+  showDiscounts?: boolean;
 }) => {
   const navigate = useNavigate();
   const { getProducts } = usePublicApi();
@@ -49,6 +53,13 @@ const Fabrics = ({
             subCategory: r.subCategoryName || "",
             videoUrl: r.VideoUrl || "",
             MostSold: r.MostSold || false,
+            isNewArrival: r.isNewArrival || r.isNew || false,
+            discount:
+              typeof r.discount === "number"
+                ? r.discount
+                : r.discount
+                ? Number(r.discount)
+                : 0,
           } as Fabric;
         });
 
@@ -67,6 +78,20 @@ const Fabrics = ({
         // Filter for most sold products if showMostSold is true
         if (showMostSold) {
           normalized = normalized.filter((fabric) => fabric.MostSold === true);
+        }
+
+        // Filter for new arrivals
+        if (showNewArrival) {
+          normalized = normalized.filter(
+            (fabric) => fabric.isNewArrival === true
+          );
+        }
+
+        // Filter for discounted products
+        if (showDiscounts) {
+          normalized = normalized.filter((fabric) => {
+            return typeof fabric.discount === "number" && fabric.discount > 0;
+          });
         }
 
         setFabrics(normalized);
@@ -107,20 +132,26 @@ const Fabrics = ({
     );
   }
 
+  const isCarousel = !!(showMostSold || showNewArrival || showDiscounts);
+
   return (
     <div
       className={
-        showMostSold
-          ? "flex overflow-x-auto gap-4 pb-4 snap-x"
+        isCarousel
+          ? "flex overflow-x-auto gap-3 pb-4 snap-x snap-mandatory scroll-pl-4 px-2"
           : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4"
       }
+      role={isCarousel ? "list" : undefined}
     >
       {fabrics.map((fabric: Fabric) => (
         <div
           key={fabric.id}
           className={
-            showMostSold ? "flex-none w-[280px] snap-start" : undefined
+            isCarousel
+              ? "flex-none w-[48%] sm:w-[240px] md:w-[280px] snap-start rounded-xl"
+              : undefined
           }
+          role={isCarousel ? "listitem" : undefined}
         >
           <FabricCard
             fabric={fabric}

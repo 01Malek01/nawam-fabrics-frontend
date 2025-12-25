@@ -265,7 +265,7 @@ const ImagesSlider: React.FC<{
                     <SwiperSlide key={index} className="outline-none">
                       <div className="flex items-center justify-center h-[70vh] w-full">
                         <div className="swiper-zoom-container">
-                          <img
+                          <NoDownloadImage
                             src={image}
                             alt={`Fabric ${index + 1} - Full view`}
                             className="max-h-full max-w-full object-contain rounded-lg"

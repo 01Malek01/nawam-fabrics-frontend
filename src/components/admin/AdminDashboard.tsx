@@ -28,6 +28,9 @@ type Product = {
   MainCategory?: string;
   VideoUrl?: string;
   MostSold?: boolean;
+  discount?: number;
+  discountText?: string;
+  isNewArrival?: boolean;
 };
 
 type Category = {
@@ -36,6 +39,7 @@ type Category = {
   ParentCategory?: Category | null;
   Image?: string;
   isSubCategory?: boolean;
+  priority?: number;
 };
 
 const TABS = [
@@ -224,6 +228,9 @@ const AdminDashboard: React.FC = () => {
                   <TableHead className="text-right">الاسم</TableHead>
                   <TableHead className="text-right">الوصف</TableHead>
                   <TableHead className="text-right">السعر</TableHead>
+                  <TableHead className="text-right">الخصم</TableHead>
+                  <TableHead className="text-right">نص الخصم</TableHead>
+                  <TableHead className="text-right">جديد</TableHead>
                   <TableHead className="text-right">الاكثر مبيعا</TableHead>
                   <TableHead className="text-right">الفيديو</TableHead>
                   <TableHead className="text-right">الإجراءات</TableHead>
@@ -240,6 +247,21 @@ const AdminDashboard: React.FC = () => {
                       {p?.Description}
                     </TableCell>
                     <TableCell>{p?.PricePerMeter} ج.م</TableCell>
+                    <TableCell>
+                      {typeof p?.discount === "number" && p.discount > 0
+                        ? `${p.discount}%`
+                        : "-"}
+                    </TableCell>
+                    <TableCell className="max-w-xs truncate">
+                      {p?.discountText || "-"}
+                    </TableCell>
+                    <TableCell>
+                      {p?.isNewArrival === true ? (
+                        <span>✅</span>
+                      ) : (
+                        <span>❌</span>
+                      )}
+                    </TableCell>
                     <TableCell>
                       {p?.MostSold === true ? <span>✅</span> : <span>❌</span>}
                     </TableCell>
@@ -366,6 +388,7 @@ const AdminDashboard: React.FC = () => {
                   <TableHead className="text-right">الاسم</TableHead>
                   <TableHead className="text-right">النوع</TableHead>
                   <TableHead className="text-right">الفئة الرئيسية</TableHead>
+                  <TableHead className="text-right">الأولوية</TableHead>
                   <TableHead className="text-right">الإجراءات</TableHead>
                 </TableRow>
               </TableHeader>
@@ -386,6 +409,9 @@ const AdminDashboard: React.FC = () => {
                       {c?.isSubCategory ? "فرعية" : "رئيسية"}
                     </TableCell>
                     <TableCell>{c?.ParentCategory?.Name}</TableCell>
+                    <TableCell>
+                      {typeof c?.priority === "number" ? c.priority : "-"}
+                    </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
                         <Button

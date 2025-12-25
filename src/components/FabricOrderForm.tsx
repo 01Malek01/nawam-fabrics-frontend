@@ -22,26 +22,39 @@ import { useEffect } from "react";
 import { useOrderDialog } from "@/context/OrderDialogContext";
 import LazyImage from "./LazyImage";
 // Form validation schema
-const formSchema = z.object({
-  customerName: z.string().min(2, {
-    message: "الاسم يجب أن يكون على الأقل حرفين",
-  }),
-  customerPhone: z.string().regex(/^\+?[0-9\s-]{10,}$/, {
-    message: "رقم الهاتف غير صالح",
-  }),
-  quantityMeters: z.string().min(1, {
-    message: "الكمية مطلوبة، ولا يمكن أن تكون فارغة",
-  }),
-  customerAddress: z.string().min(5, {
-    message: "العنوان يجب أن يكون على الأقل 5 أحرف",
-  }),
-  productRecordId: z.string().min(1, {
-    message: "المنتج يجب أن يكون على الأقل 1 حرف",
-  }),
-  Images: z.array(z.string()).min(1, {
-    message: "يجب اختيار صورة واحدة على الأقل",
-  }),
-});
+const formSchema = z
+  .object({
+    customerName: z.string().min(2, {
+      message: "الاسم يجب أن يكون على الأقل حرفين",
+    }),
+    customerPhone: z.string().regex(/^01\d{9}$/, {
+      message: "رقم الهاتف يجب أن يكون 11 رقمًا يبدأ بـ 01",
+    }),
+    confirmPhone: z.string().min(1, {
+      message: "يرجى إعادة إدخال رقم الهاتف",
+    }),
+    quantityMeters: z.string().min(1, {
+      message: "الكمية مطلوبة، ولا يمكن أن تكون فارغة",
+    }),
+    customerAddress: z.string().min(5, {
+      message: "العنوان يجب أن يكون على الأقل 5 أحرف",
+    }),
+    productRecordId: z.string().min(1, {
+      message: "المنتج يجب أن يكون على الأقل 1 حرف",
+    }),
+    Images: z.array(z.string()).min(1, {
+      message: "يجب اختيار صورة واحدة على الأقل",
+    }),
+  })
+  .superRefine((data, ctx) => {
+    if (data.customerPhone !== data.confirmPhone) {
+      ctx.addIssue({
+        path: ["confirmPhone"],
+        code: z.ZodIssueCode.custom,
+        message: "أرقام الهاتف غير متطابقة",
+      });
+    }
+  });
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -62,6 +75,7 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
     defaultValues: {
       customerName: "",
       customerPhone: "",
+      confirmPhone: "",
       quantityMeters: 1,
       customerAddress: "",
       productRecordId: fabric.id,
@@ -124,6 +138,11 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
         <p className="text-gray-700 dark:text-gray-300 mb-4">
           سنتواصل معك قريباً لتأكيد الطلب وتفاصيل الدفع.
         </p>
+        <p>
+          ملحوظة هامة: عند تأكيد الطلب أونلاين، يتم دفع عربون 10% من قيمة الطلب
+          لضمان الجدية وتجهيز القماش. بعد إرسال الطلب، سيتم التواصل معكم من خلال
+          واتساب المحل لاستكمال التفاصيل.
+        </p>
         <Button
           onClick={() => {
             closeOrderDialog();
@@ -167,6 +186,24 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
                 <FormLabel>رقم الهاتف</FormLabel>
                 <FormControl>
                   <Input type="tel" placeholder="أدخل رقم هاتفك" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="confirmPhone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>أعد إدخال رقم الهاتف</FormLabel>
+                <FormControl>
+                  <Input
+                    type="tel"
+                    placeholder="أعد إدخال رقم هاتفك"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -269,6 +306,14 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
             <Button type="submit" className="w-full sm:w-auto cursor-pointer">
               تأكيد الطلب
             </Button>
+          </div>
+          <div className="mt-3 text-sm text-gray-700 dark:text-gray-300 text-right">
+            <p className="font-semibold">ملحوظة هامة:</p>
+            <p>
+              عند تأكيد الطلب أونلاين، يتم دفع عربون 10% من قيمة الطلب لضمان
+              الجدية وتجهيز القماش. بعد إرسال الطلب، سيتم التواصل معكم من خلال
+              واتساب المحل لاستكمال التفاصيل.
+            </p>
           </div>
         </form>
       </Form>

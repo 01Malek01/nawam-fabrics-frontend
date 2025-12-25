@@ -28,6 +28,9 @@ type Product = {
   MainCategory?: string;
   VideoUrl?: string;
   MostSold?: boolean;
+  discount?: number;
+  discountText?: string;
+  isNewArrival?: boolean;
 };
 
 type Props = {
@@ -45,6 +48,9 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
       Image: [],
       VideoUrl: "",
       MostSold: false,
+      discount: 0,
+      discountText: "",
+      isNewArrival: false,
     }
   );
   const [imageFiles, setImageFiles] = React.useState<File[] | null>(null);
@@ -58,6 +64,9 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
         Image: [],
         VideoUrl: "",
         MostSold: false,
+        discount: 0,
+        discountText: "",
+        isNewArrival: false,
       }
     );
   }, [product]);
@@ -88,6 +97,9 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
             Image: [],
             VideoUrl: "",
             MostSold: false,
+            discount: 0,
+            discountText: "",
+            isNewArrival: false,
           });
           setImageFiles(null);
           setVideoFile(null);
@@ -102,7 +114,7 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700 overflow-auto max-h-screen md:max-h-none">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700 overflow-auto max-h-screen md:max-h-[90vh]">
       <div className="flex items-center gap-2 mb-6">
         <Package className="w-6 h-6 text-primary" />
         <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -219,6 +231,53 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
                 ))}
             </select>
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <DollarSign className="w-4 h-4" />
+              الخصم بالجنيه
+            </Label>
+            <Input
+              type="number"
+              value={String(form.discount || 0)}
+              onChange={(e) => handleChange("discount", Number(e.target.value))}
+              placeholder="مثال: 10"
+              className="border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Tag className="w-4 h-4" />
+              نص الخصم
+            </Label>
+            <Input
+              value={form.discountText || ""}
+              onChange={(e) => handleChange("discountText", e.target.value)}
+              placeholder="مثال: خصم رأس السنة"
+              className="border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-md">
+          <input
+            aria-label="is new arrival"
+            id="isNewArrival"
+            type="checkbox"
+            checked={!!form.isNewArrival}
+            onChange={(e) => handleChange("isNewArrival", e.target.checked)}
+            className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+          />
+          <Label
+            htmlFor="isNewArrival"
+            className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
+            <Star className="w-4 h-4" />
+            منتج جديد
+          </Label>
         </div>
 
         <div className="space-y-4">

@@ -121,21 +121,68 @@ const Home = () => {
           ))}
         </div>
         {/* Most Sold Products Section */}
-        <div className="bg-gradient-to-b from-amber-50 to-white dark:from-amber-900/10 dark:to-gray-900/50 mt-16">
-          <div className="max-w-7xl mx-auto px-4 py-12 rounded-lg">
-            <div className="relative">
-              <h2 className="text-3xl font-bold mb-8 text-[#A8511A] dark:text-[#A8511A] text-center">
-                الأكثر مبيعا
-              </h2>
-            </div>
-            <div className="w-full backdrop-blur-sm bg-white/30 dark:bg-black/30 p-6 rounded-xl shadow-xl overflow-hidden">
-              {/* Custom scrollbar track */}
-              <div className="overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-amber-500/20 hover:scrollbar-thumb-amber-500/30 pb-2">
-                <Fabrics showMostSold={true} />
+        <section className="mt-16">
+          <div className="max-w-7xl mx-auto ">
+            <div className="bg-gradient-to-b from-amber-50 to-white dark:from-amber-900/10 dark:to-gray-900/50 rounded-2xl p-0 md:p-10 shadow-lg">
+              <div className="text-center mb-6">
+                <h2 className="text-3xl font-extrabold text-[#A8511A] dark:text-[#A8511A]">
+                  الأكثر مبيعا
+                </h2>
+                <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                  أفضل المنتجات مبيعاً من النوام
+                </p>
+                <div className="mx-auto mt-4 h-1 w-24 rounded-full bg-amber-200" />
+              </div>
+              <div className="w-full bg-white/60 dark:bg-black/40 p-0 md:p-6 rounded-xl shadow-inner">
+                <div className="overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-amber-500/20 hover:scrollbar-thumb-amber-500/30 pb-2">
+                  <Fabrics showMostSold={true} />
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
+        {/* New Arrivals Section */}
+        <section className="mt-8">
+          <div className="max-w-7xl mx-auto ">
+            <div className="bg-gradient-to-b from-white to-amber-50 dark:from-gray-900/50 dark:to-amber-900/10 rounded-2xl p-0 md:p-10 shadow-lg">
+              <div className="text-center mb-6">
+                <h2 className="text-3xl font-extrabold text-[#A8511A] dark:text-[#A8511A]">
+                  جديدنا
+                </h2>
+                <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                  اكتشف أحدث الإضافات إلى تشكيلتنا
+                </p>
+                <div className="mx-auto mt-4 h-1 w-24 rounded-full bg-amber-200" />
+              </div>
+              <div className="w-full bg-white/60 dark:bg-black/40 p-4 md:p-6 rounded-xl shadow-inner">
+                <div className="overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-amber-500/20 hover:scrollbar-thumb-amber-500/30 pb-2">
+                  <Fabrics showNewArrival={true} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        {/* Discounts & Offers Section */}
+        <section className="mt-8 mb-16">
+          <div className="max-w-7xl mx-auto ">
+            <div className="bg-gradient-to-b from-amber-50 to-white dark:from-amber-900/10 dark:to-gray-900/50 rounded-2xl p-0 md:p-10 shadow-lg">
+              <div className="text-center mb-6">
+                <h2 className="text-3xl font-extrabold text-[#A8511A] dark:text-[#A8511A]">
+                  عروضنا
+                </h2>
+                <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                  استفد من أحدث التخفيضات والعروض الخاصة
+                </p>
+                <div className="mx-auto mt-4 h-1 w-24 rounded-full bg-amber-200" />
+              </div>
+              <div className="w-full bg-white/60 dark:bg-black/40 p-4 md:p-6 rounded-xl shadow-inner">
+                <div className="overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-amber-500/20 hover:scrollbar-thumb-amber-500/30 pb-2">
+                  <Fabrics showDiscounts={true} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </>
   );

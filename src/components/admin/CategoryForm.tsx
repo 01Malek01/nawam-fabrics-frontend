@@ -14,6 +14,7 @@ export type Category = {
   ParentCategory?: Category | null;
   Image?: string;
   isSubCategory?: boolean;
+  priority?: number;
 };
 
 type Props = {
@@ -30,11 +31,11 @@ const CategoryForm: React.FC<Props> = ({
 }) => {
   const { createCategory, updateCategory } = useAdminApi();
   const [form, setForm] = React.useState<Category>(
-    category || { Name: "", ParentCategory: null, Image: "" }
+    category || { Name: "", ParentCategory: null, Image: "", priority: 0 }
   );
 
   React.useEffect(
-    () => setForm(category || { Name: "", ParentCategory: null }),
+    () => setForm(category || { Name: "", ParentCategory: null, priority: 0 }),
     [category]
   );
 
@@ -71,7 +72,7 @@ const CategoryForm: React.FC<Props> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700 overflow-auto max-h-screen md:max-h-none">
       <div className="flex items-center gap-2 mb-6">
         <Folder className="w-6 h-6 text-primary" />
         <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -91,6 +92,23 @@ const CategoryForm: React.FC<Props> = ({
             placeholder="أدخل اسم الفئة"
             className="border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary"
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Folder className="w-4 h-4" />
+            أولوية العرض (الأقل تظهر أولًا)
+          </Label>
+          <Input
+            type="number"
+            value={String(form?.priority ?? 0)}
+            onChange={(e) => handleChange("priority", Number(e?.target?.value))}
+            placeholder="مثال: 10"
+            className="border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary"
+          />
+          <p className="text-sm text-gray-500">
+            القيمة الأكبر تعرض الفئة قبل الأخرى في الصفحة الرئيسية.
+          </p>
         </div>
 
         <div className="space-y-2">

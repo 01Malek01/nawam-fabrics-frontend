@@ -45,8 +45,11 @@ const FabricCard = ({
     ? 1
     : 0;
 
+  const discountValue = Number((fabric as any)?.discount || 0);
+  const discountText = (fabric as any)?.discountText || "";
+
   return (
-    <div className="group relative flex flex-col h-full">
+    <div className="group relative flex flex-col h-full bg-white dark:bg-gray-800 rounded-lg shadow-md  dark:border-gray-700 overflow-hidden p-1">
       {/* Image Overlay */}
       {isImageExpanded && (
         <div
@@ -111,6 +114,21 @@ const FabricCard = ({
             className="group relative aspect-square overflow-hidden rounded-lg bg-gray-100"
             onClick={() => setIsImageExpanded(true)}
           >
+            {/* Discount badge */}
+            {(discountValue > 0 || discountText) && (
+              <div className="absolute top-3 right-3 flex flex-col items-end gap-1 z-20">
+                {discountValue > 0 && (
+                  <span className="bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-lg">
+                    {discountValue}% خصم
+                  </span>
+                )}
+                {discountText && (
+                  <span className="bg-black/60 text-white text-[11px] px-2 py-0.5 rounded-md">
+                    {discountText}
+                  </span>
+                )}
+              </div>
+            )}
             {isLazyLoaded ? (
               <LazyImage
                 src={fabric?.image}
@@ -173,8 +191,8 @@ const FabricCard = ({
               <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white leading-tight flex-1">
                 {fabric?.name}
               </h3>
-              <div className="mt-1 text-sm text-gray-700 dark:text-gray-300 text-right">
-                <span className="font-medium">معرض الصور: </span>
+              <div className="mt-1 text-[10px] md:text-sm text-gray-700 dark:text-gray-300 text-right">
+                <span className="md:font-medium">معرض الصور: </span>
                 <span className="ml-1">
                   {imageCount}{" "}
                   {imageCount === 1 || imageCount === 2 ? "صورة" : "صور"}
@@ -182,7 +200,7 @@ const FabricCard = ({
               </div>
             </div>
             <div className="text-right flex-shrink-0">
-              <p className="text-lg sm:text-xl font-bold text-primary leading-tight">
+              <p className="text-md sm:text-xl font-bold text-primary leading-tight">
                 {displayPrice || "—"}
               </p>
               <div className="flex items-center justify-end gap-1 text-sm">
