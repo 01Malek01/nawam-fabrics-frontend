@@ -30,7 +30,6 @@ export default function FabricPage() {
   useEffect(() => {
     const fetchFabric = async () => {
       const fabricData = await getProductById(fabricId as string);
-      console.log(fabricData);
       const rawImages = fabricData?.Image || [];
 
       setFabric({

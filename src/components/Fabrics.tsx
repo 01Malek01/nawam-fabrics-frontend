@@ -37,7 +37,6 @@ const Fabrics = ({
         if (subCategoryId) params.subcategory = subCategoryId;
 
         const records = await getProducts(params);
-        console.log(records);
 
         // Normalize API records to the Fabric shape our components expect
         let normalized = records.map((r: any) => {

@@ -110,7 +110,6 @@ const Home = () => {
               key={category.id}
               category={category}
               onClick={() => {
-                console.log("Selected:", category);
                 // Handle navigation or state update
                 if (category?.subCategories?.length === 0) {
                   navigate(`/categories/${category.id}`);
