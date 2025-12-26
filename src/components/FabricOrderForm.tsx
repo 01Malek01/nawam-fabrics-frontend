@@ -66,9 +66,7 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
   const { createReservation, isLoading, isSuccess, error } =
     useCreateReservation();
   const { closeOrderDialog } = useOrderDialog();
-  useEffect(() => {
-    console.log(fabric);
-  }, [fabric]);
+
   const navigate = useNavigate();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -86,7 +84,9 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
   async function onSubmit(values: FormValues) {
     try {
       await createReservation(values);
-      //close dialog
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      closeOrderDialog();
 
       // Reset form only on successful submission
       form.reset();
