@@ -18,7 +18,6 @@ import { Textarea } from "./ui/textarea";
 import type { Fabric } from "@/types";
 import useCreateReservation from "@/hooks/api/useCreateReservation";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { useOrderDialog } from "@/context/OrderDialogContext";
 import LazyImage from "./LazyImage";
 // Form validation schema
@@ -65,10 +64,9 @@ interface FabricOrderFormProps {
 export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
   const { createReservation, isLoading, isSuccess, error } =
     useCreateReservation();
-  const { closeOrderDialog } = useOrderDialog();
+  const { closeOrderDialog, setHasSubmitted } = useOrderDialog();
 
   const navigate = useNavigate();
-  const [countdown, setCountdown] = useState<number | null>(null);
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -85,39 +83,14 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
   async function onSubmit(values: FormValues) {
     try {
       await createReservation(values);
-
-      // Reset form only on successful submission; closing handled by countdown
+      // Reset form only on successful submission; context will auto-close after 10s
       form.reset();
+      setHasSubmitted(true);
     } catch (err) {
       // Error is already handled by the useCreateReservation hook
       console.error("Error submitting form:", err);
     }
   }
-
-  useEffect(() => {
-    let intervalId: any = null;
-    if (isSuccess) {
-      setCountdown(4);
-      intervalId = setInterval(() => {
-        setCountdown((c) => {
-          if (c === null) return c;
-          if (c > 1) return c - 1;
-          // c <= 1 -> time to close
-          // clear interval and close dialog
-          if (intervalId) clearInterval(intervalId);
-          closeOrderDialog();
-          navigate("/");
-          return 0;
-        });
-      }, 1000);
-    } else {
-      setCountdown(null);
-    }
-
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [isSuccess, closeOrderDialog, navigate]);
 
   if (isLoading) {
     return (
@@ -166,12 +139,7 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
           لضمان الجدية وتجهيز القماش. بعد إرسال الطلب، سيتم التواصل معكم من خلال
           واتساب المحل لاستكمال التفاصيل.
         </p>
-        {countdown !== null && (
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-            سيتم إغلاق النموذج بعد {countdown} ثانية{countdown > 1 ? "" : ""}.
-          </p>
-        )}
-
+        <p>سيتم الغلق هذه النافذة تلقائياً خلال 10 ثواني</p>
         <Button
           onClick={() => {
             closeOrderDialog();
