@@ -38,7 +38,7 @@ const FabricCard = ({
   const discountText = (fabric as any)?.discountText || "";
 
   return (
-    <div className="group relative flex flex-col h-full bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:shadow-lg overflow-hidden">
+    <div className="group relative flex flex-col h-full fabric-card rounded-xl shadow-sm border-(--color-border-accent) transition-all duration-300 hover:shadow-lg overflow-hidden">
       {/* 1. Full-screen Image Modal */}
       {isImageExpanded && (
         <div
@@ -89,6 +89,7 @@ const FabricCard = ({
             {imageCount}
           </span>
         </div>
+
         {discountText && (
           <div className="absolute top-2 left-2 z-20">
             <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm">
@@ -96,7 +97,6 @@ const FabricCard = ({
             </span>
           </div>
         )}
-
         <div
           className="h-full w-full cursor-zoom-in"
           onClick={() => setIsImageExpanded(true)}
@@ -115,21 +115,20 @@ const FabricCard = ({
             />
           )}
         </div>
-
         {href && <Link to={href} className="absolute inset-0 z-10 sm:hidden" />}
       </div>
 
       {/* 4. Details Section */}
       <div className="flex flex-col flex-1 p-3 sm:p-4 text-right" dir="rtl">
         <div className="flex flex-col gap-1 mb-3">
-          <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 line-clamp-1 leading-tight">
+          <h3 className="text-base sm:text-lg font-bold text-(--color-secondary) dark:text-gray-100  leading-tight">
             {fabric?.name}
           </h3>
         </div>
 
         {/* Pricing Block */}
         <div className="flex items-baseline gap-1 mb-4">
-          <span className="text-xl sm:text-2xl font-black text-green-600">
+          <span className="text-2xl sm:text-2xl font-black text-(--color-text-tertiary)">
             {displayPrice}
           </span>
           <span className="text-xs font-medium text-gray-500">جنيه / متر</span>

@@ -42,5 +42,40 @@ export default function usePublicApi() {
     [BASE]
   );
 
-  return { getProducts, getCategories, getProductById };
+  const getLastPieces = useCallback(
+    async (queries) => {
+      const res = await fetch(
+        `${BASE}/lastpieces?length=${queries?.length}&category=${queries?.category} `,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: { Accept: "application/json" },
+        }
+      );
+      if (!res.ok) return [];
+      return res.json();
+    },
+    [BASE]
+  );
+
+  const getLastPieceById = useCallback(
+    async (id: string) => {
+      const res = await fetch(`${BASE}/lastpieces/${id}`, {
+        method: "GET",
+        credentials: "include",
+        headers: { Accept: "application/json" },
+      });
+      if (!res.ok) return null;
+      return res.json();
+    },
+    [BASE]
+  );
+
+  return {
+    getProducts,
+    getCategories,
+    getProductById,
+    getLastPieces,
+    getLastPieceById,
+  };
 }

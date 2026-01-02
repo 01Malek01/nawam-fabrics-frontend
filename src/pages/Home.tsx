@@ -3,7 +3,9 @@ import usePublicApi from "@/hooks/usePublicApi";
 import LandingPageCard from "@/components/LandingPageCard";
 import HeroSlider from "@/components/HeroSlider";
 import Fabrics from "@/components/Fabrics";
+import FabricCard from "@/components/FabricCard";
 import LazyImage from "@/components/LazyImage";
+import { Star, Sparkles, Tag, Scissors } from "lucide-react";
 // import { optimizeImage } from "@/utils/imageOptimizer"; // Removed unused import
 import type { Category } from "@/types";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +25,9 @@ type ApiCategory = {
 
 const Home = () => {
   const { getCategories } = usePublicApi();
+  const { getLastPieces } = usePublicApi();
   const [categories, setCategories] = useState<Category[]>([]);
+  const [lastPieces, setLastPieces] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   useEffect(() => {
@@ -61,6 +65,12 @@ const Home = () => {
           }
         );
         setCategories(categoriesWithSubs);
+        try {
+          const lps = await getLastPieces();
+          setLastPieces(Array.isArray(lps) ? lps.slice(0, 6) : []);
+        } catch (e) {
+          console.warn("Failed to load last pieces", e);
+        }
       } catch (error) {
         console.error("Error fetching categories:", error);
       } finally {
@@ -97,13 +107,28 @@ const Home = () => {
           content="أقمشة, قماش, ملابس, نوام, fabrics, textile"
         />
       </Helmet>
-      <div className="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200 min-h-screen">
+      <div className="bg-background-light dark:bg-background-dark  font-display text-gray-800 dark:text-gray-200 min-h-screen border-(--color-border-accent)">
         {/* Hero Slider */}
         <HeroSlider />
         {/* Main Categories */}
-        <h2 className="text-3xl font-bold mb-6  text-[#A8511A] dark:text-[#A8511A] text-center">
-          الأصناف الرئيسية
-        </h2>{" "}
+        <div className="text-center mb-12 relative">
+          <div className="inline-block">
+            <span className="absolute -top-6 right-1/2 transform translate-x-1/2 text-amber-300/40 dark:text-amber-600/20 text-9xl md:text-[12rem] font-arabic font-bold select-none">
+              الأصناف
+            </span>
+            <h2 className="relative text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-[#A8511A] dark:text-amber-300 font-arabic tracking-tight">
+              الأصناف الرئيسية
+            </h2>
+          </div>
+          <div className="relative">
+            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 font-light mb-6 max-w-2xl mx-auto leading-relaxed">
+              اكتشف مجموعتنا المتميزة من الأقمشة المصنفة بعناية لتلبية جميع
+              أذواقك
+            </p>
+            <div className="mx-auto mt-4 h-1 w-24 rounded-full bg-(--color-wood)" />
+          </div>
+        </div>
+
         <div className="grid grid-cols-2 gap-4 max-w-7xl mx-auto px-4 py-8">
           {categories?.map((category) => (
             <LandingPageCard
@@ -120,19 +145,22 @@ const Home = () => {
           ))}
         </div>
         {/* Most Sold Products Section */}
-        <section className="mt-16">
+        <section className="mt-16 ">
           <div className="max-w-7xl mx-auto ">
-            <div className="bg-gradient-to-b from-amber-50 to-white dark:from-amber-900/10 dark:to-gray-900/50 rounded-2xl p-0 md:p-10 shadow-lg">
+            <div className="bg-(--color-bg-dark)  p-0 py-2 md:p-10 shadow-lg lg:rounded-2xl lg:overflow-hidden">
               <div className="text-center mb-6">
-                <h2 className="text-3xl font-extrabold text-[#A8511A] dark:text-[#A8511A]">
-                  الأكثر مبيعا
-                </h2>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                <div className="flex items-center justify-center gap-3">
+                  <Star className="w-8 h-8 text-amber-300" />
+                  <h2 className="text-4xl md:text-5xl font-extrabold text-[#A8511A] dark:text-[#A8511A]">
+                    الأكثر مبيعا
+                  </h2>
+                </div>
+                <p className="mt-2 text-lg md:text-xl section-lead font-medium">
                   أفضل المنتجات مبيعاً من النوام
                 </p>
                 <div className="mx-auto mt-4 h-1 w-24 rounded-full bg-amber-200" />
               </div>
-              <div className="w-full bg-white/60 dark:bg-black/40 p-0 md:p-6 rounded-xl shadow-inner">
+              <div className="w-full dark:bg-black/40 p-0 md:p-6 lg:rounded-xl shadow-inner">
                 <div className="overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-amber-500/20 hover:scrollbar-thumb-amber-500/30 pb-2">
                   <Fabrics showMostSold={true} />
                 </div>
@@ -143,19 +171,83 @@ const Home = () => {
         {/* New Arrivals Section */}
         <section className="mt-8">
           <div className="max-w-7xl mx-auto ">
-            <div className="bg-gradient-to-b from-white to-amber-50 dark:from-gray-900/50 dark:to-amber-900/10 rounded-2xl p-0 md:p-10 shadow-lg">
+            <div className="bg-(--color-bg-dark)  p-0 py-2 md:p-10 shadow-lg lg:rounded-2xl lg:overflow-hidden">
               <div className="text-center mb-6">
-                <h2 className="text-3xl font-extrabold text-[#A8511A] dark:text-[#A8511A]">
-                  جديدنا
-                </h2>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                <div className="flex items-center justify-center gap-3">
+                  <Sparkles className="w-8 h-8 text-amber-300" />
+                  <h2 className="text-4xl md:text-5xl font-extrabold text-[#A8511A] dark:text-[#A8511A]">
+                    جديدنا
+                  </h2>
+                </div>
+                <p className="mt-2 text-lg md:text-xl section-lead font-medium">
                   اكتشف أحدث الإضافات إلى تشكيلتنا
                 </p>
                 <div className="mx-auto mt-4 h-1 w-24 rounded-full bg-amber-200" />
               </div>
-              <div className="w-full bg-white/60 dark:bg-black/40 p-4 md:p-6 rounded-xl shadow-inner">
+              <div className="w-full  dark:bg-black/40 py-4 md:p-6 lg:rounded-xl shadow-inner">
                 <div className="overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-amber-500/20 hover:scrollbar-thumb-amber-500/30 pb-2">
                   <Fabrics showNewArrival={true} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        {/* Last Pieces Section */}
+        <section className="mt-8">
+          <div className="max-w-7xl mx-auto ">
+            <div className="bg-(--color-bg-dark)  p-2  md:p-10 shadow-lg lg:rounded-2xl lg:overflow-hidden">
+              <div className="text-center mb-6">
+                <div className="flex items-center justify-center gap-3">
+                  <Scissors className="w-8 h-8 text-amber-300" />
+                  <h2 className="text-4xl md:text-5xl font-extrabold text-[#A8511A] dark:text-[#A8511A]">
+                    خصم اخر قطعة
+                  </h2>
+                </div>
+                <p className="mt-2 text-lg md:text-xl section-lead font-medium">
+                  قطع متبقية بعروض خاصة
+                </p>
+                <div className="mx-auto mt-4 h-1 w-24 rounded-full bg-amber-200" />
+              </div>
+              <div className="w-full  dark:bg-black/40 py-4 md:p-6 lg:rounded-xl shadow-inner">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  {lastPieces && lastPieces.length > 0 ? (
+                    lastPieces.map((lp: any) => {
+                      console.log(getImageUrl(lp.image));
+                      const fabric = {
+                        _id: lp._id,
+                        id: lp._id,
+                        name: lp.name,
+                        image: getImageUrl(lp.image),
+                        images: lp.Image ? [getImageUrl(lp.image)] : [],
+                        price: lp.price,
+                      };
+                      const goTo = lp?.product?._id
+                        ? `/fabric/${lp.product._id}`
+                        : lp?.product
+                        ? `/fabric/${lp.product}`
+                        : `/lastpieces/${lp._id}`;
+                      return (
+                        <FabricCard
+                          key={lp._id}
+                          fabric={fabric}
+                          buttonTitle="عرض"
+                          buttonAction={() => navigate(goTo)}
+                        />
+                      );
+                    })
+                  ) : (
+                    <div className="col-span-full text-center text-gray-500 py-6">
+                      لا توجد قطع أخيرة حالياً
+                    </div>
+                  )}
+                </div>
+                <div className="mt-4 text-center">
+                  <button
+                    onClick={() => navigate("/lastpieces")}
+                    className="px-4 py-2 bg-primary text-white rounded-md cursor-pointer  "
+                  >
+                    عرض كل القطع
+                  </button>
                 </div>
               </div>
             </div>
@@ -164,17 +256,20 @@ const Home = () => {
         {/* Discounts & Offers Section */}
         <section className="mt-8 mb-16">
           <div className="max-w-7xl mx-auto ">
-            <div className="bg-gradient-to-b from-amber-50 to-white dark:from-amber-900/10 dark:to-gray-900/50 rounded-2xl p-0 md:p-10 shadow-lg">
+            <div className="bg-(--color-bg-dark) p-0 py-2 md:p-10 shadow-lg lg:rounded-2xl lg:overflow-hidden">
               <div className="text-center mb-6">
-                <h2 className="text-3xl font-extrabold text-[#A8511A] dark:text-[#A8511A]">
-                  عروضنا
-                </h2>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                <div className="flex items-center justify-center gap-3">
+                  <Tag className="w-8 h-8 text-amber-300" />
+                  <h2 className="text-4xl md:text-5xl font-extrabold text-[#A8511A] dark:text-[#A8511A]">
+                    عروضنا
+                  </h2>
+                </div>
+                <p className="mt-2 text-lg md:text-xl section-lead font-medium">
                   استفد من أحدث التخفيضات والعروض الخاصة
                 </p>
                 <div className="mx-auto mt-4 h-1 w-24 rounded-full bg-amber-200" />
               </div>
-              <div className="w-full bg-white/60 dark:bg-black/40 p-4 md:p-6 rounded-xl shadow-inner">
+              <div className="w-full  dark:bg-black/40 py-4 md:p-6 lg:rounded-xl shadow-inner">
                 <div className="overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-amber-500/20 hover:scrollbar-thumb-amber-500/30 pb-2">
                   <Fabrics showDiscounts={true} />
                 </div>

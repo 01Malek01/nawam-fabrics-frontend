@@ -3,7 +3,7 @@ import { Menu } from "lucide-react";
 import { useState } from "react";
 import MobileMenu from "./MobileMenu";
 import SearchBar from "./SearchBar";
-import logo from "@/assets/logo.webp";
+import logo from "@/assets/logo-transparent.png";
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -30,10 +30,10 @@ const Navbar = () => {
         <div className="flex-1 flex items-center justify-center md:justify-start">
           <Link
             to="/"
-            className="flex items-center gap-4 text-[#A8511A] dark:text-[#A8511A]"
+            className="flex items-center gap-4 text-[#A8511A] dark:text-[#A8511A] logo-bg p-2"
           >
             <img
-              className="h-64 md:h-64 w-auto object-contain"
+              className="h-64 md:h-64 w-auto object-cover "
               src={logo}
               alt="el Nawam fabrics image"
             />
@@ -51,7 +51,7 @@ const Navbar = () => {
         <nav className="hidden md:flex items-center gap-9">
           <Link
             to="/"
-            className={`text-base font-medium ${
+            className={`text-2xl font-medium ${
               isActive("/")
                 ? "font-bold text-[#A8511A] dark:text-[#A8511A]"
                 : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
@@ -61,7 +61,7 @@ const Navbar = () => {
           </Link>
           <Link
             to="/about"
-            className={`text-base font-medium ${
+            className={`text-2xl font-medium ${
               isActive("/about")
                 ? "font-bold text-black dark:text-white"
                 : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
@@ -71,7 +71,7 @@ const Navbar = () => {
           </Link>
           <Link
             to="/faq"
-            className={`text-base font-medium ${
+            className={`text-2xl font-medium ${
               isActive("/faq")
                 ? "font-bold text-black dark:text-white"
                 : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
@@ -81,7 +81,7 @@ const Navbar = () => {
           </Link>
           <Link
             to="/contact"
-            className={`text-base font-medium ${
+            className={`text-2xl font-medium ${
               isActive("/contact")
                 ? "font-bold text-black dark:text-white"
                 : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"

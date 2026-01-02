@@ -158,7 +158,7 @@ const ReservationsManager: React.FC = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              reservations.map((r) => (
+              reservations?.map((r) => (
                 <TableRow key={r._id}>
                   <TableCell className="text-right">
                     {new Date(r.createdAt).toLocaleString()}

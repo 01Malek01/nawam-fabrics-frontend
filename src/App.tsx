@@ -20,11 +20,13 @@ import Branches from "./pages/Branches";
 import WashingInstructions from "./pages/WashingInstructions";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
+import LastPieces from "./pages/LastPieces";
+import LastPiecePage from "./pages/LastPiecePage";
 function App() {
   return (
     <Router>
       <ScrollToTop />
-      <div className="min-h-screen flex flex-col px-2 md:px-10">
+      <div className="min-h-screen flex flex-col  md:px-10">
         <Navbar />
         <main className="flex-1">
           <Routes>
@@ -39,6 +41,8 @@ function App() {
               element={<ProductsPage />}
             />
             <Route path="/categories/:categoryId" element={<ProductsPage />} />
+            <Route path="/lastpieces" element={<LastPieces />} />
+            <Route path="/lastpieces/:id" element={<LastPiecePage />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/return-policy" element={<ReturnPolicy />} />

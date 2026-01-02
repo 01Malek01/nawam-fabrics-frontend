@@ -8,6 +8,49 @@ body {
   direction: rtl;
 }
 
+/* font */
+.lateef-extralight {
+  font-family: "Lateef", serif;
+  font-weight: 200;
+  font-style: normal;
+}
+
+.lateef-light {
+  font-family: "Lateef", serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.lateef-regular {
+  font-family: "Lateef", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.lateef-medium {
+  font-family: "Lateef", serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.lateef-semibold {
+  font-family: "Lateef", serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.lateef-bold {
+  font-family: "Lateef", serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.lateef-extrabold {
+  font-family: "Lateef", serif;
+  font-weight: 800;
+  font-style: normal;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -48,37 +91,39 @@ body {
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Map core theme tokens to the luxury palette */
+  --background: var(--color-cream);
+  --foreground: var(--color-text-primary);
+  --card: var(--color-bg-white);
+  --card-foreground: var(--color-text-primary);
+  --popover: var(--color-bg-white);
+  --popover-foreground: var(--color-text-primary);
+  --primary: var(--color-gold-rich);
+  --primary-foreground: var(--color-text-light);
+  --secondary: var(--color-gold-light);
+  --secondary-foreground: var(--color-text-primary);
+  --muted: var(--color-bg-light);
+  --muted-foreground: var(--color-text-tertiary);
+  --accent: var(--color-gold-light);
+  --accent-foreground: var(--color-text-light);
+  --destructive: #c23d3d;
+  --border: var(--color-border-light);
+  --input: var(--color-bg-white);
+  --ring: rgba(187, 153, 54, 0.12);
+  --chart-1: #b8860b;
+  --chart-2: #8b5e34;
+  --chart-3: #6b4a2a;
+  --chart-4: #c9a15a;
+  --chart-5: #a67c2b;
+  --sidebar: var(--color-bg-dark);
+  --sidebar-foreground: var(--color-text-light);
+  --sidebar-primary: var(--color-gold-light);
+  --sidebar-primary-foreground: var(--color-text-light);
+  --sidebar-accent: var(--color-gold-light);
+  --sidebar-accent-foreground: var(--color-text-light);
+  --sidebar-border: rgba(0, 0, 0, 0.04);
+  --sidebar-ring: rgba(187, 153, 54, 0.14);
 }
 
 .dark {
@@ -122,4 +167,326 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* custom  */
+/* ============================================
+   LUXURY FABRICS STORE - COLOR VARIABLES
+   Palette: "Warm Luxe & Comfort"
+   ============================================ */
+
+:root {
+  /* ============================================
+     PRIMARY BRAND COLORS (Existing)
+     ============================================ */
+
+  /* Rich Gold - Main brand color */
+  /* Usage: Primary buttons, key accents, important CTAs */
+  --color-gold-rich: #805d0d;
+  --color-wood: #946137;
+
+  /* Light Gold - Secondary brand color */
+  /* Usage: Secondary elements, borders, icons */
+  --color-gold-light: #bb9936;
+
+  /* Cream Slider - Primary background */
+  /* Usage: Hero sections, light backgrounds, cards */
+  --color-cream: #f7ecdf;
+
+  /* ============================================
+     TEXT COLORS
+     ============================================ */
+
+  /* Primary Text - Main content */
+  /* Usage: Body text, paragraphs on light backgrounds */
+  --color-text-primary: #2c2c2c;
+
+  /* Secondary Text - Headlines */
+  /* Usage: H2, H3, product titles on light backgrounds */
+  --color-text-secondary: #4a3a21;
+
+  /* Tertiary Text - Supporting content */
+  /* Usage: Captions, meta info, less important text */
+  --color-text-tertiary: #5c4b32;
+
+  /* Light Text - For dark backgrounds */
+  /* Usage: Text on dark sections, buttons on colored BG */
+  --color-text-light: #ffffff;
+
+  /* ============================================
+     BACKGROUND COLORS
+     ============================================ */
+
+  /* White Background */
+  /* Usage: Clean sections, header, main content areas */
+  --color-bg-white: #ffffff;
+
+  /* Dark Background - Brighter for improved contrast */
+  /* Usage: Footer, featured sections, contrast areas */
+  --color-bg-dark: #4b4540;
+
+  /* Light Grey Background - Subtle */
+  /* Usage: Alternate sections, testimonials, subtle BG */
+  --color-bg-light: #f5f3f0;
+
+  /* ============================================
+     BORDER & DIVIDER COLORS
+     ============================================ */
+
+  /* Light Border - Subtle dividers */
+  /* Usage: Card borders, light separators */
+  --color-border-light: #e8e0d1;
+
+  /* Medium Border - Noticeable dividers */
+  /* Usage: Section dividers, focused borders */
+  --color-border-medium: #d4c6a8;
+
+  /* Accent Border - Gold highlights */
+  /* Usage: Active states, important borders */
+  --color-border-accent: #bb9936;
+
+  /* ============================================
+     BUTTON STATES
+     ============================================ */
+
+  /* Primary Button - Default */
+  --color-btn-primary: #805d0d;
+  --color-btn-primary-text: #ffffff;
+
+  /* Primary Button - Hover */
+  --color-btn-primary-hover: #6e4f0b;
+  --color-btn-primary-hover-text: #ffffff;
+
+  /* Primary Button - Active */
+  --color-btn-primary-active: #5c4209;
+
+  /* Secondary Button - Default */
+  --color-btn-secondary: transparent;
+  --color-btn-secondary-text: #805d0d;
+  --color-btn-secondary-border: #805d0d;
+
+  /* Secondary Button - Hover */
+  --color-btn-secondary-hover: rgba(128, 93, 13, 0.08);
+  --color-btn-secondary-hover-text: #805d0d;
+
+  /* ============================================
+     SHADOWS (Gold-tinted for luxury feel)
+     ============================================ */
+
+  /* Subtle Shadow - Light elevation */
+  --shadow-subtle: 0 2px 8px rgba(128, 93, 13, 0.08);
+
+  /* Medium Shadow - Hover states */
+  --shadow-medium: 0 4px 16px rgba(128, 93, 13, 0.12);
+
+  /* Luxury Shadow - Premium elements */
+  --shadow-luxury: 0 8px 32px rgba(128, 93, 13, 0.15);
+
+  /* ============================================
+     OVERLAYS (For images and effects)
+     ============================================ */
+
+  /* Dark Overlay - Image overlays */
+  --overlay-dark: rgba(30, 26, 21, 0.5);
+
+  /* Gold Overlay - Accent overlays */
+  --overlay-gold: rgba(128, 93, 13, 0.1);
+
+  /* Cream Overlay - Subtle lightening */
+  --overlay-cream: rgba(247, 236, 223, 0.3);
+}
+
+/* ============================================
+   Global luxury components and utilities
+   These utilities reference the palette above so
+   components using simple classes pick up the look.
+   ============================================ */
+
+@layer components {
+  html,
+  body {
+    font-family: "Lateef";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--background);
+    color: var(--foreground);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--color-text-secondary);
+    letter-spacing: -0.01em;
+  }
+
+  a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.18s ease, border-color 0.18s ease, opacity 0.18s ease;
+  }
+  a:hover {
+    color: var(--color-gold-light);
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: calc(var(--radius) - 2px);
+    padding: 0.56rem 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--color-border-medium);
+  }
+
+  .btn-primary {
+    background: linear-gradient(
+      180deg,
+      var(--color-btn-primary),
+      var(--color-btn-primary-active)
+    );
+    color: var(--color-btn-primary-text);
+    box-shadow: var(--shadow-luxury);
+    border: none;
+  }
+  .btn-primary:hover {
+    background: linear-gradient(
+      180deg,
+      var(--color-btn-primary-hover),
+      var(--color-btn-primary-active)
+    );
+    box-shadow: var(--shadow-medium);
+  }
+
+  .btn-secondary {
+    background: var(--color-btn-secondary);
+    color: var(--color-btn-secondary-text);
+    border: 1px solid var(--color-btn-secondary-border);
+  }
+  .btn-secondary:hover {
+    background: var(--color-btn-secondary-hover);
+  }
+
+  /* Card */
+  .card {
+    background: var(--card);
+    color: var(--card-foreground);
+    border-radius: var(--radius);
+    padding: 1rem;
+    box-shadow: var(--shadow-subtle);
+    border: 1px solid var(--color-border-light);
+  }
+
+  /* Fabric card: slightly warmer white on light, deep on dark */
+  .fabric-card {
+    background: var(--card);
+    color: var(--card-foreground);
+    border: 1px solid var(--color-border-light);
+  }
+
+  /* Admin dashboard tables: increase readability */
+  .admin-dashboard table,
+  .admin-dashboard th,
+  .admin-dashboard td {
+    font-size: 1rem; /* 16px */
+    line-height: 1.5;
+  }
+
+  @media (min-width: 768px) {
+    .admin-dashboard table,
+    .admin-dashboard th,
+    .admin-dashboard td {
+      font-size: 1.125rem; /* 18px on md+ */
+    }
+  }
+
+  /* Navbar / header */
+  .navbar,
+  header {
+    background: transparent;
+    color: var(--foreground);
+  }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(180deg, var(--overlay-cream), transparent),
+      var(--background);
+    color: var(--foreground);
+    padding: 2.5rem 1.25rem;
+    border-bottom: 1px solid var(--color-border-medium);
+  }
+
+  /* Small badge with gold gradient */
+  .luxury-badge {
+    background: linear-gradient(
+      90deg,
+      var(--color-gold-light),
+      var(--color-gold-rich)
+    );
+    color: var(--color-text-light);
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: inline-block;
+  }
+
+  img.cover {
+    box-shadow: var(--shadow-medium);
+    border-radius: 8px;
+  }
+
+  /* Form controls */
+  input,
+  textarea,
+  select {
+    background: var(--input);
+    color: var(--foreground);
+    border: 1px solid var(--color-border-light);
+    padding: 0.5rem;
+    border-radius: 6px;
+  }
+
+  /* Paragraph style for dark section backgrounds */
+  .section-lead {
+    color: rgba(255, 255, 255, 0.92);
+    font-weight: 400;
+  }
+
+  /* utility for subtle gold underline on hover */
+  .gold-underline {
+    position: relative;
+  }
+  .gold-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 2px;
+    width: 0;
+    background: linear-gradient(
+      90deg,
+      var(--color-gold-light),
+      var(--color-gold-rich)
+    );
+    transition: width 0.22s ease;
+  }
+  .gold-underline:hover::after {
+    width: 100%;
+  }
+}
+
+/* Share sheet small styles */
+.share-sheet .share-option {
+  font-size: 0.875rem;
+}
+.share-sheet a.share-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

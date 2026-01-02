@@ -2,6 +2,7 @@
 //@ts-nocheck
 import React, { useEffect, useState } from "react";
 import ReservationsManager from "./ReservationsManager";
+import LastPieceForm from "./LastPieceForm";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
@@ -45,6 +46,7 @@ type Category = {
 const TABS = [
   { key: "products", label: "المنتجات" },
   { key: "categories", label: "الفئات" },
+  { key: "lastpieces", label: "قطع أخيرة" },
   { key: "reservations", label: "الحجوزات" },
 ];
 
@@ -53,19 +55,36 @@ const AdminDashboard: React.FC = () => {
   const api = useAdminApi();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [lastPieces, setLastPieces] = useState<any[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [editingLastPiece, setEditingLastPiece] = useState<any | null>(null);
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [isCreatingProduct, setIsCreatingProduct] = useState(false);
+  const [isCreatingLastPiece, setIsCreatingLastPiece] = useState(false);
 
   const load = async () => {
-    const [p, c] = await Promise.all([api.getProducts(), api.getCategories()]);
+    const [p, c, lp] = await Promise.all([
+      api.getProducts(),
+      api.getCategories(),
+      api.getAdminLastPieces(),
+    ]);
     setProducts(p || []);
     setCategories(c || []);
+    setLastPieces(lp || []);
   };
 
   const openEditingProduct = (p: Product) => {
     setEditingProduct(p);
+    try {
+      history.pushState({ nawamDialog: true }, "");
+    } catch (e) {
+      void e;
+    }
+  };
+
+  const openEditingLastPiece = (lp: any) => {
+    setEditingLastPiece(lp);
     try {
       history.pushState({ nawamDialog: true }, "");
     } catch (e) {
@@ -133,6 +152,14 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const updateLastPieceState = (item: any, isUpdate: boolean) => {
+    if (isUpdate) {
+      setLastPieces((prev) => prev.map((p) => (p._id === item._id ? item : p)));
+    } else {
+      setLastPieces((prev) => [...prev, item]);
+    }
+  };
+
   const handleCreateProduct = async () => {
     // API call handled in ProductForm
   };
@@ -163,8 +190,14 @@ const AdminDashboard: React.FC = () => {
     await load();
   };
 
+  const handleDeleteLastPiece = async (id: string) => {
+    if (!confirm("هل أنت متأكد أنك تريد حذف هذه القطعة؟")) return;
+    await api.deleteLastPiece(id);
+    await load();
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-lg md:text-2xl admin-dashboard">
       {/* Tabs */}
       <div className="flex gap-2 border-b pb-2 mb-4">
         {TABS.map((tab) => (
@@ -439,6 +472,108 @@ const AdminDashboard: React.FC = () => {
         </>
       )}
 
+      {activeTab === "lastpieces" && (
+        <>
+          <div className="flex justify-between items-center mb-4">
+            <div />
+            <div className="flex flex-wrap gap-2">
+              <Button className="cursor-pointer" onClick={() => load()}>
+                تحديث البيانات
+              </Button>
+              <Dialog
+                open={isCreatingLastPiece}
+                onOpenChange={(open) => setIsCreatingLastPiece(open)}
+              >
+                <DialogContent>
+                  <LastPieceForm
+                    products={products}
+                    categories={categories}
+                    onAfterSubmit={updateLastPieceState}
+                  />
+                </DialogContent>
+              </Dialog>
+              <Button
+                className="cursor-pointer"
+                onClick={() => {
+                  setIsCreatingLastPiece(true);
+                  try {
+                    history.pushState({ nawamDialog: true }, "");
+                  } catch (e) {
+                    void e;
+                  }
+                }}
+              >
+                إضافة قطعة أخيرة
+              </Button>
+            </div>
+          </div>
+
+          <section className="bg-white/60 dark:bg-white/5 p-4 rounded-lg">
+            <h2 className="text-lg font-semibold text-right mb-3">قطع أخيرة</h2>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-right">الصورة</TableHead>
+                  <TableHead className="text-right">الاسم</TableHead>
+                  <TableHead className="text-right">الطول</TableHead>
+                  <TableHead className="text-right">السعر</TableHead>
+                  <TableHead className="text-right">المنتج</TableHead>
+                  <TableHead className="text-right">الفئة</TableHead>
+                  <TableHead className="text-right">الإجراءات</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {lastPieces.map((lp) => (
+                  <TableRow key={lp?._id}>
+                    <TableCell>
+                      {lp?.Image ? (
+                        <img
+                          src={getImageUrl(lp.Image)}
+                          alt={lp?.name}
+                          className="w-20 h-12 object-cover rounded"
+                        />
+                      ) : (
+                        <span className="text-gray-500">لا يوجد</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="font-medium">{lp?.name}</TableCell>
+                    <TableCell>{lp?.length ?? "-"}</TableCell>
+                    <TableCell>{lp?.price ?? "-"}</TableCell>
+                    <TableCell>
+                      {lp?.product?.Name || lp?.product || "-"}
+                    </TableCell>
+                    <TableCell>
+                      {lp?.category?.Name || lp?.category || "-"}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          className="cursor-pointer"
+                          onClick={() => openEditingLastPiece(lp)}
+                        >
+                          تعديل
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="cursor-pointer"
+                          variant="destructive"
+                          onClick={() =>
+                            lp?._id && handleDeleteLastPiece(lp._id)
+                          }
+                        >
+                          حذف
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </section>
+        </>
+      )}
+
       {activeTab === "reservations" && (
         <section className="bg-white/60 dark:bg-white/5 p-4 rounded-lg">
           <ReservationsManager />
@@ -562,6 +697,19 @@ const AdminDashboard: React.FC = () => {
               }}
               categories={categories}
               onAfterSubmit={updateCategoryState}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {editingLastPiece && (
+        <Dialog open onOpenChange={() => setEditingLastPiece(null)}>
+          <DialogContent>
+            <LastPieceForm
+              lastPiece={editingLastPiece}
+              products={products}
+              categories={categories}
+              onAfterSubmit={updateLastPieceState}
             />
           </DialogContent>
         </Dialog>

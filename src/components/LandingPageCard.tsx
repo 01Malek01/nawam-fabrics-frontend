@@ -64,10 +64,9 @@ export default function LandingPageCard({
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-10 text-white">
-        <h2 className="text-3xl sm:text-5xl font-bold mb-3 drop-shadow-lg">
+        <p className="text-3xl sm:text-5xl font-bold mb-3 drop-shadow-lg">
           {category.name}
-        </h2>
-        <div className="w-16 h-1 bg-white mb-4 rounded-full" />
+        </p>
       </div>
 
       {/* Subcategories Overlay - Full Screen */}

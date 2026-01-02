@@ -588,6 +588,193 @@ export default function useAdminApi() {
     [BASE]
   );
 
+  /* LastPiece admin endpoints */
+  const getAdminLastPieces = useCallback(async () => {
+    setStatus("loading");
+    try {
+      const res = await fetch(`${BASE}/admin/lastpieces`, {
+        credentials: "include",
+      });
+      let result: unknown = null;
+      try {
+        result = await res.json();
+      } catch (e) {}
+      if (!res.ok) {
+        setStatus("error");
+        throw new Error((result as any)?.message || `HTTP ${res.status}`);
+      }
+      setStatus("success");
+      return result;
+    } catch (e) {
+      setStatus("error");
+      throw e;
+    } finally {
+      setTimeout(() => setStatus("idle"), 500);
+    }
+  }, [BASE]);
+
+  const getAdminLastPieceById = useCallback(
+    async (id: string) => {
+      setStatus("loading");
+      try {
+        const res = await fetch(`${BASE}/admin/lastpieces/${id}`, {
+          credentials: "include",
+        });
+        let result: unknown = null;
+        try {
+          result = await res.json();
+        } catch (e) {}
+        if (!res.ok) {
+          setStatus("error");
+          throw new Error((result as any)?.message || `HTTP ${res.status}`);
+        }
+        setStatus("success");
+        return result;
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 300);
+      }
+    },
+    [BASE]
+  );
+
+  const createLastPiece = useCallback(
+    async (data: any) => {
+      setStatus("loading");
+      try {
+        if (data && data._imageFile) {
+          const fd = new FormData();
+          // append allowed fields
+          if (data.name) fd.append("name", String(data.name));
+          if (data.length !== undefined)
+            fd.append("length", String(data.length));
+          if (data.price !== undefined) fd.append("price", String(data.price));
+          if (data.product) fd.append("product", String(data.product));
+          if (data.category) fd.append("category", String(data.category));
+          fd.append("Image", data._imageFile);
+          const res = await fetch(`${BASE}/admin/lastpieces`, {
+            method: "POST",
+            body: fd,
+            credentials: "include",
+          });
+          let result: any = null;
+          try {
+            result = await res.json();
+          } catch (e) {}
+          if (!res.ok) {
+            setStatus("error");
+            throw new Error(result?.message || `HTTP ${res.status}`);
+          }
+          setStatus("success");
+          return result;
+        }
+        const res = await fetch(`${BASE}/admin/lastpieces`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(data),
+        });
+        const result = await res.json();
+        if (!res.ok) {
+          setStatus("error");
+          throw new Error(result?.message || `HTTP ${res.status}`);
+        }
+        setStatus("success");
+        return result;
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 500);
+      }
+    },
+    [BASE]
+  );
+
+  const updateLastPiece = useCallback(
+    async (id: string, data: any) => {
+      setStatus("loading");
+      try {
+        if (data && data._imageFile) {
+          const fd = new FormData();
+          if (data.name !== undefined) fd.append("name", String(data.name));
+          if (data.length !== undefined)
+            fd.append("length", String(data.length));
+          if (data.price !== undefined) fd.append("price", String(data.price));
+          if (data.product !== undefined)
+            fd.append("product", String(data.product));
+          if (data.category !== undefined)
+            fd.append("category", String(data.category));
+          fd.append("Image", data._imageFile);
+          const res = await fetch(`${BASE}/admin/lastpieces/${id}`, {
+            method: "PUT",
+            body: fd,
+            credentials: "include",
+          });
+          let result: any = null;
+          try {
+            result = await res.json();
+          } catch (e) {}
+          if (!res.ok) {
+            setStatus("error");
+            throw new Error(result?.message || `HTTP ${res.status}`);
+          }
+          setStatus("success");
+          return result;
+        }
+        const res = await fetch(`${BASE}/admin/lastpieces/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(data),
+        });
+        const result = await res.json();
+        if (!res.ok) {
+          setStatus("error");
+          throw new Error(result?.message || `HTTP ${res.status}`);
+        }
+        setStatus("success");
+        return result;
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 500);
+      }
+    },
+    [BASE]
+  );
+
+  const deleteLastPiece = useCallback(
+    async (id: string) => {
+      setStatus("loading");
+      try {
+        const res = await fetch(`${BASE}/admin/lastpieces/${id}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+        let result: unknown = null;
+        try {
+          result = await res.json();
+        } catch (e) {}
+        if (!res.ok) {
+          setStatus("error");
+          throw new Error((result as any)?.message || `HTTP ${res.status}`);
+        }
+        setStatus("success");
+        return result;
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 500);
+      }
+    },
+    [BASE]
+  );
+
   return {
     getProducts,
     createProduct,
@@ -609,5 +796,11 @@ export default function useAdminApi() {
     updateReservationNote,
     getReservationSummary,
     updateReservationSummary,
+    // lastpieces
+    getAdminLastPieces,
+    getAdminLastPieceById,
+    createLastPiece,
+    updateLastPiece,
+    deleteLastPiece,
   };
 }

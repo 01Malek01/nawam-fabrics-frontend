@@ -112,7 +112,7 @@ export default function SearchBar() {
           variant="ghost"
           size="icon"
           onClick={() => setIsSearchOpen(true)}
-          className="hover:bg-transparent"
+          className=""
         >
           <Search className="h-5 w-5" />
         </Button>
