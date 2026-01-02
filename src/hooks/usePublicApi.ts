@@ -42,21 +42,15 @@ export default function usePublicApi() {
     [BASE]
   );
 
-  const getLastPieces = useCallback(
-    async (queries) => {
-      const res = await fetch(
-        `${BASE}/lastpieces?length=${queries?.length}&category=${queries?.category} `,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: { Accept: "application/json" },
-        }
-      );
-      if (!res.ok) return [];
-      return res.json();
-    },
-    [BASE]
-  );
+  const getLastPieces = useCallback(async () => {
+    const res = await fetch(`${BASE}/lastpieces `, {
+      method: "GET",
+      credentials: "include",
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) return [];
+    return res.json();
+  }, [BASE]);
 
   const getLastPieceById = useCallback(
     async (id: string) => {
