@@ -191,7 +191,7 @@ body {
 
   /* Cream Slider - Primary background */
   /* Usage: Hero sections, light backgrounds, cards */
-  --color-cream: #f7ecdf;
+  --color-cream: #fef9f5;
 
   /* ============================================
      TEXT COLORS
@@ -223,7 +223,7 @@ body {
 
   /* Dark Background - Brighter for improved contrast */
   /* Usage: Footer, featured sections, contrast areas */
-  --color-bg-dark: #4b4540;
+  --color-bg-dark: #f5e1d0;
 
   /* Light Grey Background - Subtle */
   /* Usage: Alternate sections, testimonials, subtle BG */

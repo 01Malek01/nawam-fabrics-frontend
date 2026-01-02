@@ -115,9 +115,6 @@ const Home = () => {
         {/* Main Categories */}
         <div className="text-center mb-12 relative">
           <div className="inline-block">
-            <span className="absolute -top-6 right-1/2 transform translate-x-1/2 text-amber-300/40 dark:text-amber-600/20 text-9xl md:text-[12rem] font-arabic font-bold select-none">
-              الأصناف
-            </span>
             <h2 className="relative text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-[#A8511A] dark:text-amber-300 font-arabic tracking-tight">
               الأصناف الرئيسية
             </h2>
@@ -157,7 +154,7 @@ const Home = () => {
                     الأكثر مبيعا
                   </h2>
                 </div>
-                <p className="mt-2 text-lg md:text-xl section-lead font-medium">
+                <p className="mt-2 text-lg md:text-xl section-lead font-medium text-gray-900 dark:text-gray-200">
                   أفضل المنتجات مبيعاً من النوام
                 </p>
                 <div className="mx-auto mt-4 h-1 w-24 rounded-full bg-amber-200" />
@@ -181,7 +178,7 @@ const Home = () => {
                     جديدنا
                   </h2>
                 </div>
-                <p className="mt-2 text-lg md:text-xl section-lead font-medium">
+                <p className="mt-2 text-lg md:text-xl section-lead font-medium text-gray-900 dark:text-gray-200">
                   اكتشف أحدث الإضافات إلى تشكيلتنا
                 </p>
                 <div className="mx-auto mt-4 h-1 w-24 rounded-full bg-amber-200" />
@@ -205,7 +202,7 @@ const Home = () => {
                     خصم اخر قطعة
                   </h2>
                 </div>
-                <p className="mt-2 text-lg md:text-xl section-lead font-medium">
+                <p className="mt-2 text-lg md:text-xl section-lead font-medium text-gray-900 dark:text-gray-200">
                   قطع متبقية بعروض خاصة
                 </p>
                 <div className="mx-auto mt-4 h-1 w-24 rounded-full bg-amber-200" />
@@ -266,7 +263,7 @@ const Home = () => {
                     عروضنا
                   </h2>
                 </div>
-                <p className="mt-2 text-lg md:text-xl section-lead font-medium">
+                <p className="mt-2 text-lg md:text-xl section-lead font-medium text-gray-900 dark:text-gray-200">
                   استفد من أحدث التخفيضات والعروض الخاصة
                 </p>
                 <div className="mx-auto mt-4 h-1 w-24 rounded-full bg-amber-200" />

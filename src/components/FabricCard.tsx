@@ -84,15 +84,15 @@ const FabricCard = ({
       {/* 3. Main Card Image Section */}
       <div className="relative overflow-hidden aspect-[4/3] sm:aspect-square">
         <div className="absolute top-2 right-2 z-20 bg-black/40 backdrop-blur-md px-2 py-1 rounded-md flex items-center gap-1.5">
-          <ImageIcon className="w-3 h-3 text-white" />
-          <span className="text-[10px] text-white font-medium">
+          <ImageIcon className="w-4 h-4 text-white" />
+          <span className="text-base text-white font-semibold">
             {imageCount}
           </span>
         </div>
 
         {discountText && (
           <div className="absolute top-2 left-2 z-20">
-            <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm">
+            <span className="bg-red-500 text-white text-base font-bold px-3 py-1 rounded-full shadow-sm">
               {discountText}
             </span>
           </div>
@@ -121,17 +121,19 @@ const FabricCard = ({
       {/* 4. Details Section */}
       <div className="flex flex-col flex-1 p-3 sm:p-4 text-right" dir="rtl">
         <div className="flex flex-col gap-1 mb-3">
-          <h3 className="text-base sm:text-lg font-bold text-(--color-secondary) dark:text-gray-100  leading-tight">
+          <h3 className="text-2xl sm:text-3xl font-bold text-(--color-secondary) dark:text-gray-100 leading-tight">
             {fabric?.name}
           </h3>
         </div>
 
         {/* Pricing Block */}
         <div className="flex items-baseline gap-1 mb-4">
-          <span className="text-2xl sm:text-2xl font-black text-(--color-text-tertiary)">
+          <span className="text-3xl sm:text-4xl font-black text-(--color-text-tertiary)">
             {displayPrice}
           </span>
-          <span className="text-xs font-medium text-gray-500">جنيه / متر</span>
+          <span className="text-base font-medium text-gray-500">
+            جنيه / متر
+          </span>
         </div>
 
         {/* Thumbnails - Hidden on very small screens to save vertical space, or kept small */}
@@ -161,7 +163,7 @@ const FabricCard = ({
               e.stopPropagation();
               buttonAction();
             }}
-            className="w-full h-11 sm:h-12 text-sm sm:text-base font-bold shadow-sm active:scale-[0.98] transition-transform"
+            className="w-full h-12 sm:h-14 text-lg sm:text-xl font-bold shadow-sm active:scale-[0.98] transition-transform"
           >
             {buttonTitle}
           </Button>

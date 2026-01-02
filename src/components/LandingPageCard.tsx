@@ -64,7 +64,7 @@ export default function LandingPageCard({
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-10 text-white">
-        <p className="text-3xl sm:text-5xl font-bold mb-3 drop-shadow-lg">
+        <p className="lg:text-5xl text-4xl font-bold mb-3 drop-shadow-lg">
           {category.name}
         </p>
       </div>

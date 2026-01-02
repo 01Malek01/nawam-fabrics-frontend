@@ -107,14 +107,14 @@ export default function FabricPage() {
 
             {fabric.description && (
               <div className="mt-6">
-                <h2 className="text-xl font-medium text-gray-900">الوصف</h2>
-                <p className="mt-2 text-gray-600 whitespace-pre-line">
+                <h2 className="text-3xl font-medium text-gray-900">الوصف</h2>
+                <p className="mt-2 text-gray-600 whitespace-pre-line text-2xl">
                   {fabric.description}
                 </p>
               </div>
             )}
 
-            <div className="pt-4 border-t border-gray-200">
+            <div className="pt-4 border-t border-gray-200 space-x-2">
               <Button
                 className="w-full md:w-auto cursor-pointer"
                 onClick={() => openOrderDialogFor(fabric.id)}
