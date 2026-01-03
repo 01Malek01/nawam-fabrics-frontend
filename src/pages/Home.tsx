@@ -110,6 +110,7 @@ const Home = () => {
       <div className="bg-background-light dark:bg-background-dark  font-display text-gray-800 dark:text-gray-200 min-h-screen border-(--color-border-accent)">
         <HeroSlider />
         <MainCategories categories={categories} />
+        <MostSold />
         <NewArrivals />
         <LastPieces lastPieces={lastPieces} />
         <Offers />
