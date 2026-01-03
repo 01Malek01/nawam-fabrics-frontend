@@ -83,11 +83,9 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
   async function onSubmit(values: FormValues) {
     try {
       await createReservation(values);
-      // Reset form only on successful submission; context will auto-close after 10s
       form.reset();
       setHasSubmitted(true);
     } catch (err) {
-      // Error is already handled by the useCreateReservation hook
       console.error("Error submitting form:", err);
     }
   }

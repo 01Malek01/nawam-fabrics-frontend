@@ -5,6 +5,7 @@ import usePublicApi from "@/hooks/usePublicApi";
 import { Helmet } from "react-helmet";
 import { getImageUrl } from "@/lib/utils";
 import FabricCard from "@/components/FabricCard";
+import CategoriesFilter from "@/components/home/CategoriesFilter";
 import { useNavigate } from "react-router-dom";
 
 const LastPieces: React.FC = () => {
@@ -98,24 +99,11 @@ const LastPieces: React.FC = () => {
 
                 {/* Category Filter */}
                 {categories.length > 0 && (
-                  <div>
-                    <div className="text-2xl text-gray-500 mb-2">الفئة:</div>
-                    <select
-                      value={selectedCategory || ""}
-                      onChange={(e) => {
-                        setSelectedCategory(e.target.value || null);
-                        console.log(e.target.value);
-                      }}
-                      className="rounded-md p-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white min-w-[150px]"
-                    >
-                      <option value="">كل الفئات</option>
-                      {categories.map((c: any) => (
-                        <option key={c._id} value={c._id}>
-                          {c.Name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <CategoriesFilter
+                    categories={categories}
+                    value={selectedCategory}
+                    onChange={(v) => setSelectedCategory(v)}
+                  />
                 )}
               </div>
             </div>

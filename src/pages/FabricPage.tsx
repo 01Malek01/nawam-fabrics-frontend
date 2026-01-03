@@ -14,6 +14,7 @@ import VideoIframe from "@/components/VideoIframe";
 import { Helmet } from "react-helmet";
 import { getImageUrl } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import ShareSheet from "@/components/ShareSheet";
 
 export default function FabricPage() {
   const navigate = useNavigate();
@@ -170,78 +171,13 @@ export default function FabricPage() {
           </div>
         )}
         {/* Fallback share sheet for non-supporting devices */}
-        {isShareOpen && (
-          <div className="share-sheet fixed inset-x-4 bottom-4 z-50 md:hidden">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3">
-              <div className="flex items-center justify-between mb-2">
-                <div className="font-medium">مشاركة</div>
-                <button
-                  className="text-sm text-gray-600 dark:text-gray-300"
-                  onClick={() => setIsShareOpen(false)}
-                >
-                  إغلاق
-                </button>
-              </div>
-              <div className="grid grid-cols-4 gap-3 text-center">
-                <a
-                  href={`https://wa.me/?text=${encodeURIComponent(
-                    fabric.name + " - " + window.location.href
-                  )}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="share-option p-2 rounded-lg bg-emerald-50 hover:bg-emerald-100"
-                >
-                  واتساب
-                </a>
-                <a
-                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                    window.location.href
-                  )}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="share-option p-2 rounded-lg bg-blue-50 hover:bg-blue-100"
-                >
-                  فيسبوك
-                </a>
-                <a
-                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                    fabric.name
-                  )}&url=${encodeURIComponent(window.location.href)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="share-option p-2 rounded-lg bg-sky-50 hover:bg-sky-100"
-                >
-                  تويتر
-                </a>
-                <a
-                  href={`https://t.me/share/url?url=${encodeURIComponent(
-                    window.location.href
-                  )}&text=${encodeURIComponent(fabric.name)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="share-option p-2 rounded-lg bg-indigo-50 hover:bg-indigo-100"
-                >
-                  تليجرام
-                </a>
-              </div>
-              <div className="mt-3">
-                <button
-                  className="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700"
-                  onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(window.location.href);
-                      alert("تم نسخ رابط المنتج");
-                    } catch (err) {
-                      alert("فشل نسخ الرابط");
-                    }
-                  }}
-                >
-                  نسخ الرابط
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <ShareSheet
+          open={isShareOpen}
+          onClose={() => setIsShareOpen(false)}
+          name={fabric.name}
+          url={typeof window !== "undefined" ? window.location.href : undefined}
+          description={fabric.description}
+        />
       </div>
     </>
   );

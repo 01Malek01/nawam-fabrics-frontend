@@ -1,4 +1,4 @@
-import { X, Maximize2, Image as ImageIcon } from "lucide-react";
+import { X, Image as ImageIcon } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import type { Fabric } from "@/types";

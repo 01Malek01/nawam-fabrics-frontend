@@ -1,4 +1,3 @@
-export * from "./airtable";
 // Export other types
 
 export interface Fabric {
