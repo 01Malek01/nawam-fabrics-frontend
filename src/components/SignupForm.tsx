@@ -34,7 +34,8 @@ export const SignupForm: React.FC<Props> = ({ onSubmit }) => {
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
   const submit = async (data: FormValues) => {
-    if (onSubmit) await onSubmit({ username: data.username, password: data.password });
+    if (onSubmit)
+      await onSubmit({ username: data.username, password: data.password });
   };
 
   return (
