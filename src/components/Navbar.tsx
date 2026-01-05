@@ -89,6 +89,16 @@ const Navbar = () => {
           >
             تواصل معنا
           </Link>
+          <Link
+            to="/login"
+            className={`text-2xl font-medium ${
+              isActive("/login")
+                ? "font-bold text-black dark:text-white"
+                : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
+            }`}
+          >
+            تسجيل الدخول
+          </Link>
           <SearchBar />
         </nav>
       </div>

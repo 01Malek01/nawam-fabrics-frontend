@@ -22,6 +22,7 @@ import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import LastPieces from "./pages/LastPieces";
 import LastPiecePage from "./pages/LastPiecePage";
+import Signup from "./pages/Signup";
 function App() {
   return (
     <Router>
@@ -32,6 +33,8 @@ function App() {
           <Routes>
             <Route path="/admin" element={<Admin />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />

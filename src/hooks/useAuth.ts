@@ -44,6 +44,25 @@ export default function useAuth() {
       credentials: "include",
     });
   }, [BASE]);
+  const signup = useCallback(
+    async (payload: { username: string; password: string }) => {
+      const res = await fetch(`${BASE}/auth/signup`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Signup failed");
+      }
+      return res.json();
+    },
+    [BASE]
+  );
 
-  return { checkAuth, login, logout };
+  return { checkAuth, login, logout, signup };
 }

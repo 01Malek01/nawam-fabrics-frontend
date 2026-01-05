@@ -8,13 +8,17 @@ import usePublicApi from "@/hooks/usePublicApi";
 import ImagesSlider from "@/components/Slider";
 import LazyImage from "@/components/LazyImage";
 import { Button } from "@/components/ui/button";
+import useCartApi from "@/hooks/useCartApi";
+import toast from "react-hot-toast";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { FabricOrderForm } from "@/components/FabricOrderForm";
 import VideoIframe from "@/components/VideoIframe";
 import { Helmet } from "react-helmet";
 import { getImageUrl } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import useAuth from "@/hooks/useAuth";
 import ShareSheet from "@/components/ShareSheet";
+import AddToCartForm from "@/components/AddToCartForm";
 
 export default function FabricPage() {
   const navigate = useNavigate();
@@ -28,6 +32,10 @@ export default function FabricPage() {
   const { getProductById } = usePublicApi();
   const [fabric, setFabric] = useState<Fabric | null>(null);
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const { addItemToCart } = useCartApi();
+  const [adding, setAdding] = useState(false);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const { checkAuth } = useAuth();
 
   useEffect(() => {
     const fetchFabric = async () => {
@@ -90,16 +98,6 @@ export default function FabricPage() {
                 <span>No images available</span>
               </div>
             )}
-          </div>
-
-          {/* Product Details */}
-          <div className="space-y-6 order-1">
-            <div>
-              <h1 className="text-5xl font-bold text-(--color-primary) dark:text-white">
-                {fabric.name}
-              </h1>
-            </div>
-
             <p className="text-3xl font-bold text-(--color-text-tertiary) flex  items-center  gap-2">
               {fabric?.price}
               <span className="  text-(--color-text-tertiary)">جنيه</span>{" "}
@@ -122,10 +120,27 @@ export default function FabricPage() {
               >
                 طلب الآن
               </Button>
+              <Button
+                className="w-full md:w-auto mt-2 md:mt-0 md:ml-3 border border-gray-200 dark:border-gray-700"
+                onClick={async () => {
+                  try {
+                    const auth = await checkAuth();
+                    if (!auth?.loggedIn) {
+                      navigate("/signup");
+                      return;
+                    }
+                    setShowAddDialog(true);
+                  } catch (err) {
+                    navigate("/signup");
+                  }
+                }}
+              >
+                أضف إلى السلة
+              </Button>
 
               <Button
                 variant="outline"
-                className="w-full md:w-auto mt-2 md:mt-0 md:ml-3"
+                className="w-full md:w-auto mt-2 md:mt-0 md:ml-3 border border-gray-200 dark:border-gray-700"
                 onClick={async () => {
                   // Use Web Share API on supported devices
                   const shareData = {
@@ -178,6 +193,19 @@ export default function FabricPage() {
           url={typeof window !== "undefined" ? window.location.href : undefined}
           description={fabric.description}
         />
+        {showAddDialog && (
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
+            onClick={() => setShowAddDialog(false)}
+          >
+            <div onClick={(e) => e.stopPropagation()}>
+              <AddToCartForm
+                fabric={fabric}
+                onClose={() => setShowAddDialog(false)}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
