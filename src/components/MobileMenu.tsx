@@ -95,6 +95,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
           </div>
 
           <nav className="flex flex-col space-y-6 text-right">
+            {/*
             <Link
               to="/login"
               className={`text-2xl font-medium ${
@@ -106,6 +107,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             >
               تسجيل الدخول
             </Link>
+            */}
             <Link
               to="/"
               className={`text-2xl font-medium ${

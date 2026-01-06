@@ -89,6 +89,7 @@ const Navbar = () => {
           >
             تواصل معنا
           </Link>
+          {/*
           <Link
             to="/login"
             className={`text-2xl font-medium ${
@@ -99,6 +100,7 @@ const Navbar = () => {
           >
             تسجيل الدخول
           </Link>
+          */}
           <SearchBar />
         </nav>
       </div>

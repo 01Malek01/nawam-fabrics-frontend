@@ -197,6 +197,7 @@ const FabricCard = ({
                 {buttonTitle}
               </Button>
 
+              {/*
               <Button
                 onClick={(e) => {
                   e.preventDefault();
@@ -219,6 +220,7 @@ const FabricCard = ({
               >
                 أضف إلى السلة
               </Button>
+              */}
             </div>
           </div>
         </div>
