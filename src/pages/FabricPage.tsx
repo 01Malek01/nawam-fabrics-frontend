@@ -85,7 +85,7 @@ export default function FabricPage() {
         />
       </Helmet>
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
           {/* Product Images */}
           <div className="bg-white  rounded-lg shadow lg:order-2 lg:p-4">
             {fabric.images && fabric.images.length > 0 ? (
@@ -120,7 +120,7 @@ export default function FabricPage() {
               >
                 طلب الآن
               </Button>
-              <Button
+              {/* <Button
                 className="w-full md:w-auto mt-2 md:mt-0 md:ml-3 border border-gray-200 dark:border-gray-700"
                 onClick={async () => {
                   try {
@@ -136,7 +136,7 @@ export default function FabricPage() {
                 }}
               >
                 أضف إلى السلة
-              </Button>
+              </Button> */}
 
               <Button
                 variant="outline"
