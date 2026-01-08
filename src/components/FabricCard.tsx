@@ -42,7 +42,8 @@ const FabricCard = ({
     (fabric as any)?._raw?.سعر ||
     "—";
 
-  const images = (fabric as any)?.images || [];
+  const images =
+    (fabric as any)?.images || (fabric.image && [fabric.image]) || [];
   const imageCount = images.length || (fabric?.image ? 1 : 0);
   const discountText = (fabric as any)?.discountText || "";
 
@@ -106,7 +107,7 @@ const FabricCard = ({
       )}
 
       {/* 4. Main Card */}
-      <div className="group relative flex flex-col h-full fabric-card rounded-xl shadow-sm border-(--color-border-accent) transition-all duration-300 hover:shadow-lg overflow-hidden">
+      <div className="group relative flex flex-col h-full fabric-card rounded-xl shadow-sm border-(--color-border-accent) transition-all duration-300 hover:shadow-lg overflow-hidden ">
         {/* Main Card Image Section */}
         <div className="relative overflow-hidden aspect-[4/3] sm:aspect-square">
           <div className="absolute top-2 right-2 z-20 bg-black/40 backdrop-blur-md px-2 py-1 rounded-md flex items-center gap-1.5">
@@ -197,7 +198,6 @@ const FabricCard = ({
                 {buttonTitle}
               </Button>
 
-              {/*
               <Button
                 onClick={(e) => {
                   e.preventDefault();
@@ -220,7 +220,6 @@ const FabricCard = ({
               >
                 أضف إلى السلة
               </Button>
-              */}
             </div>
           </div>
         </div>

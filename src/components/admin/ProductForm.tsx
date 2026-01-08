@@ -15,6 +15,7 @@ import {
   Video,
   Star,
 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import type { Category } from "@/components/admin/CategoryForm";
 import toast from "react-hot-toast";
 
@@ -31,6 +32,7 @@ type Product = {
   discount?: number;
   discountText?: string;
   isNewArrival?: boolean;
+  stock?: Array<{ color: string; meters: number }>;
 };
 
 type Props = {
@@ -51,6 +53,7 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
       discount: 0,
       discountText: "",
       isNewArrival: false,
+      stock: [],
     }
   );
   const [imageFiles, setImageFiles] = React.useState<File[] | null>(null);
@@ -67,12 +70,45 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
         discount: 0,
         discountText: "",
         isNewArrival: false,
+        stock: [],
       }
     );
   }, [product]);
 
   const handleChange = (key: keyof Product, value: any) => {
     setForm((s: Product) => ({ ...s, [key]: value }));
+  };
+
+  const addStockEntry = () => {
+    setForm((s) => ({
+      ...(s as Product),
+      stock: [...(s.stock || []), { color: "", meters: 0 }],
+    }));
+  };
+
+  const updateStockEntry = (
+    index: number,
+    field: "color" | "meters",
+    value: any
+  ) => {
+    setForm((s) => {
+      const next = { ...(s as Product) };
+      next.stock = [...(next.stock || [])];
+      next.stock[index] = {
+        ...next.stock[index],
+        [field]: field === "meters" ? Number(value) : value,
+      };
+      return next;
+    });
+  };
+
+  const removeStockEntry = (index: number) => {
+    setForm((s) => {
+      const next = { ...(s as Product) };
+      next.stock = [...(next.stock || [])];
+      next.stock.splice(index, 1);
+      return next;
+    });
   };
 
   const submit = (e: React.FormEvent) => {
@@ -100,6 +136,7 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
             discount: 0,
             discountText: "",
             isNewArrival: false,
+            stock: [],
           });
           setImageFiles(null);
           setVideoFile(null);
@@ -278,6 +315,57 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
             <Star className="w-4 h-4" />
             منتج جديد
           </Label>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <FileText className="w-4 h-4" />
+            المخزون (المتر) حسب اللون
+          </Label>
+
+          <div className="space-y-2">
+            {(form.stock || []).map((s, idx) => (
+              <div key={idx} className="flex items-center gap-2">
+                <Input
+                  placeholder="اللون"
+                  value={s.color || ""}
+                  onChange={(e) =>
+                    updateStockEntry(idx, "color", e.target.value)
+                  }
+                  className="flex-1 border-gray-300 dark:border-gray-600"
+                />
+
+                <Input
+                  placeholder="المخزون بالمتر"
+                  type="number"
+                  value={String(s.meters ?? 0)}
+                  onChange={(e) =>
+                    updateStockEntry(idx, "meters", e.target.value)
+                  }
+                  className="w-44 border-gray-300 dark:border-gray-600"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => removeStockEntry(idx)}
+                  className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+                  aria-label="Remove color"
+                >
+                  <Trash2 className="w-5 h-5 text-red-600" />
+                </button>
+              </div>
+            ))}
+
+            <div>
+              <button
+                type="button"
+                onClick={addStockEntry}
+                className="inline-flex items-center gap-2 px-3 py-2 bg-primary text-white rounded-md"
+              >
+                <Plus className="w-4 h-4" /> إضافة لون
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="space-y-4">

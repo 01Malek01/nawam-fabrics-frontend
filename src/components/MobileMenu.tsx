@@ -1,8 +1,9 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { X, ChevronDown, ChevronUp } from "lucide-react";
+import { X, ChevronDown, ChevronUp, ShoppingCart } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import usePublicApi from "@/hooks/usePublicApi";
+import useAuth from "@/hooks/useAuth";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -14,6 +15,8 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   const navigate = useNavigate();
   const isActive = (path: string) => location.pathname === path;
   const { getCategories } = usePublicApi();
+  const { checkAuth, logout } = useAuth();
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const [categories, setCategories] = useState<
     Array<{
@@ -55,6 +58,14 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     };
 
     fetch();
+    (async () => {
+      try {
+        const res = await checkAuth();
+        if (mounted) setLoggedIn(!!res?.loggedIn);
+      } catch (e) {
+        if (mounted) setLoggedIn(false);
+      }
+    })();
     return () => {
       mounted = false;
     };
@@ -95,19 +106,51 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
           </div>
 
           <nav className="flex flex-col space-y-6 text-right">
-            {/*
-            <Link
-              to="/login"
-              className={`text-2xl font-medium ${
-                isActive("/login")
-                  ? "text-black dark:text-white"
-                  : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
-              }`}
-              onClick={onClose}
-            >
-              تسجيل الدخول
-            </Link>
-            */}
+            {loggedIn ? (
+              <div className="flex flex-col space-y-2">
+                <Link
+                  to="/cart"
+                  className={`text-2xl font-medium flex items-center gap-2 ${
+                    isActive("/cart")
+                      ? "text-black dark:text-white"
+                      : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
+                  }`}
+                  onClick={onClose}
+                >
+                  <ShoppingCart className="h-6 w-6" /> سلة التسوق
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await logout();
+                    } catch (e) {
+                      console.error(e);
+                    } finally {
+                      setLoggedIn(false);
+                      onClose();
+                      navigate("/", { replace: true });
+                    }
+                  }}
+                  className={`text-2xl font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white text-right pr-1`}
+                >
+                  تسجيل الخروج
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className={`text-2xl font-medium ${
+                  isActive("/login")
+                    ? "text-black dark:text-white"
+                    : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
+                }`}
+                onClick={onClose}
+              >
+                تسجيل الدخول
+              </Link>
+            )}
             <Link
               to="/"
               className={`text-2xl font-medium ${

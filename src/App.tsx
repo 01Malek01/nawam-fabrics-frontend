@@ -19,6 +19,9 @@ import FabricTypes from "./pages/FabricTypes";
 import Branches from "./pages/Branches";
 import WashingInstructions from "./pages/WashingInstructions";
 import Admin from "./pages/Admin";
+import AdminRoute from "./components/AdminRoute";
+import Unauthorized from "./pages/Unauthorized";
+import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import LastPieces from "./pages/LastPieces";
 import LastPiecePage from "./pages/LastPiecePage";
@@ -31,7 +34,16 @@ function App() {
         <Navbar />
         <main className="flex-1">
           <Routes>
-            <Route path="/admin" element={<Admin />} />
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <Admin />
+                </AdminRoute>
+              }
+            />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
 

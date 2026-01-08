@@ -51,6 +51,7 @@ export default function FabricPage() {
         mainCategory: fabricData.MainCategory,
         subCategory: fabricData.SubCategory,
         videoUrl: fabricData.VideoUrl || "",
+        stock: Array.isArray(fabricData.stock) ? fabricData.stock : [],
       });
     };
     if (fabricId) fetchFabric();
@@ -84,10 +85,10 @@ export default function FabricPage() {
           content={fabric?.description || "تفاصيل القماش في النوام للأقمشة"}
         />
       </Helmet>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 md:px-8 lg:px-16 py-8 md:py-12">
         <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
           {/* Product Images */}
-          <div className="bg-white  rounded-lg shadow lg:order-2 lg:p-4">
+          <div className="bg-white rounded-lg shadow lg:order-2 p-6 lg:p-8">
             {fabric.images && fabric.images.length > 0 ? (
               <ImagesSlider
                 images={fabric.images}
@@ -113,6 +114,44 @@ export default function FabricPage() {
               </div>
             )}
 
+            {fabric.stock && fabric.stock.length > 0 && (
+              <div className="mt-6 w-1/2">
+                <h2 className="text-2xl font-medium text-gray-900 mb-3">
+                  المخزون حسب اللون
+                </h2>
+                <div className="overflow-x-auto rounded-lg border border-gray-200 p-4">
+                  <table className="min-w-full text-right text-sm">
+                    <thead>
+                      <tr className="bg-gray-50">
+                        <th className="p-3 font-medium text-gray-700">اللون</th>
+                        <th className="p-3 font-medium text-gray-700">
+                          المخزون (متر)
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {fabric.stock.map((s: any, i: number) => (
+                        <tr key={s?._id || i} className="border-t">
+                          <td className="p-3 align-middle">
+                            <div className="flex items-center justify-start gap-3">
+                              <span className="text-lg font-medium">
+                                {s?.color || "-"}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="p-3 align-middle">
+                            <span className="text-lg font-semibold">
+                              {s?.meters ?? 0} م
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
             <div className="pt-4 border-t border-gray-200 space-x-2">
               <Button
                 className="w-full md:w-auto cursor-pointer"
@@ -120,7 +159,7 @@ export default function FabricPage() {
               >
                 طلب الآن
               </Button>
-              {/* <Button
+              <Button
                 className="w-full md:w-auto mt-2 md:mt-0 md:ml-3 border border-gray-200 dark:border-gray-700"
                 onClick={async () => {
                   try {
@@ -136,7 +175,7 @@ export default function FabricPage() {
                 }}
               >
                 أضف إلى السلة
-              </Button> */}
+              </Button>
 
               <Button
                 variant="outline"

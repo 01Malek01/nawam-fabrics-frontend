@@ -36,7 +36,12 @@ export default function AddToCartForm({
     defaultValues: { quantityMeters: "1", Images: [] },
   });
 
-  const images = fabric.images.map((i) => getImageUrl(i)) || [];
+  let images: string[] = [];
+  if ((fabric as any)?.images && (fabric as any)?.images.length > 0) {
+    images = fabric.images.map((i) => getImageUrl(i)) || [];
+  } else if (fabric.image) {
+    images = [getImageUrl(fabric.image)];
+  }
 
   const selectedImages: string[] = watch("Images") || [];
 
@@ -59,7 +64,7 @@ export default function AddToCartForm({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <div className="w-full max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-y-auto max-h-[80vh]">
       <h3 className="text-xl font-bold mb-4 text-right">
         أضف {fabric.name} إلى السلة
       </h3>

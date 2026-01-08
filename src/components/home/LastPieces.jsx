@@ -8,7 +8,7 @@ export default function LastPieces({ lastPieces }) {
   return (
     <section className="mt-8">
       <div className="max-w-7xl mx-auto ">
-        <div className="bg-(--color-bg-dark)  p-2  md:p-10 shadow-lg lg:rounded-2xl lg:overflow-hidden">
+        <div className="bg-(--color-bg-dark)  p-2  md:px-10 shadow-lg lg:rounded-2xl lg:overflow-hidden">
           <div className="text-center mb-6">
             <div className="flex items-center justify-center gap-3">
               <Scissors className="w-8 h-8 text-amber-300" />
@@ -21,8 +21,8 @@ export default function LastPieces({ lastPieces }) {
             </p>
             <div className="mx-auto mt-4 h-1 w-24 rounded-full bg-amber-200" />
           </div>
-          <div className="w-full  dark:bg-black/40 py-4 md:p-6 lg:rounded-xl shadow-inner">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="w-full  dark:bg-black/40 py-4  md:p-6 lg:rounded-xl shadow-inner">
+            <div className="grid grid-cols-2 lg:grid-cols-4  gap-4">
               {lastPieces && lastPieces.length > 0 ? (
                 lastPieces.map((lp) => {
                   const fabric = {

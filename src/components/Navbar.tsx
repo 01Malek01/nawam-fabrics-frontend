@@ -1,16 +1,43 @@
-import { Link, useLocation } from "react-router-dom";
-import { Menu } from "lucide-react";
-import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Menu, ShoppingCart } from "lucide-react";
+import { useState, useEffect } from "react";
 import MobileMenu from "./MobileMenu";
 import SearchBar from "./SearchBar";
+import useAuth from "@/hooks/useAuth";
 import logo from "@/assets/logo-transparent.png";
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { checkAuth, logout } = useAuth();
+  const navigate = useNavigate();
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  // check auth on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await checkAuth();
+        setLoggedIn(!!res?.loggedIn);
+      } catch (e) {
+        setLoggedIn(false);
+      }
+    })();
+  }, [checkAuth]);
 
   // Function to check if a link is active
   const isActive = (path: string) => {
     return location.pathname === path;
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (e) {
+      console.error("logout failed", e);
+    } finally {
+      setLoggedIn(false);
+      navigate("/", { replace: true });
+    }
   };
   return (
     <header className="flex items-center justify-between whitespace-nowrap border-b border-black/10 dark:border-white/10 ">
@@ -89,18 +116,39 @@ const Navbar = () => {
           >
             تواصل معنا
           </Link>
-          {/*
-          <Link
-            to="/login"
-            className={`text-2xl font-medium ${
-              isActive("/login")
-                ? "font-bold text-black dark:text-white"
-                : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
-            }`}
-          >
-            تسجيل الدخول
-          </Link>
-          */}
+
+          {loggedIn ? (
+            <div className="flex items-center gap-4">
+              <Link
+                to="/cart"
+                className={`text-2xl font-medium flex items-center gap-2 ${
+                  isActive("/cart")
+                    ? "font-bold text-black dark:text-white"
+                    : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
+                }`}
+              >
+                <ShoppingCart className="h-6 w-6" /> سلة التسوق
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="text-2xl font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
+              >
+                تسجيل الخروج
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className={`text-2xl font-medium ${
+                isActive("/login")
+                  ? "font-bold text-black dark:text-white"
+                  : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
+              }`}
+            >
+              تسجيل الدخول
+            </Link>
+          )}
+
           <SearchBar />
         </nav>
       </div>
