@@ -18,8 +18,21 @@ const Login = () => {
     try {
       const res = await login({ username, password });
       if (res && res.status === "success" && res.user.role === "admin") {
+        // notify other parts of app that auth changed
+        try {
+          localStorage.setItem("nawam:auth", String(Date.now()));
+        } catch (e) {}
+        try {
+          window.dispatchEvent(new Event("nawam:auth-changed"));
+        } catch (e) {}
         navigate("/admin", { replace: true });
       } else if (res && res.status === "success") {
+        try {
+          localStorage.setItem("nawam:auth", String(Date.now()));
+        } catch (e) {}
+        try {
+          window.dispatchEvent(new Event("nawam:auth-changed"));
+        } catch (e) {}
         navigate("/", { replace: true });
       } else {
         setError("Invalid credentials");

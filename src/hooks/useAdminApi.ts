@@ -390,31 +390,43 @@ export default function useAdminApi() {
   );
 
   /* Reservations admin endpoints */
-  const getReservations = useCallback(async () => {
-    setStatus("loading");
-    try {
-      const res = await fetch(`${BASE}/admin/reservations`, {
-        credentials: "include",
-      });
-      let result: unknown = null;
+  /**
+   * Fetch reservations (admin). Optionally provide pagination params.
+   * @param page 1-based page number
+   * @param limit number of items per page
+   */
+  const getReservations = useCallback(
+    async (page?: number, limit?: number) => {
+      setStatus("loading");
       try {
-        result = await res.json();
+        const params = new URLSearchParams();
+        if (page !== undefined) params.set("page", String(page));
+        if (limit !== undefined) params.set("limit", String(limit));
+        const query = params.toString() ? `?${params.toString()}` : "";
+        const res = await fetch(`${BASE}/admin/reservations${query}`, {
+          credentials: "include",
+        });
+        let result: unknown = null;
+        try {
+          result = await res.json();
+        } catch (e) {
+          /* ignore parse error */
+        }
+        if (!res.ok) {
+          setStatus("error");
+          throw new Error((result as any)?.message || `HTTP ${res.status}`);
+        }
+        setStatus("success");
+        return result;
       } catch (e) {
-        /* ignore parse error */
-      }
-      if (!res.ok) {
         setStatus("error");
-        throw new Error((result as any)?.message || `HTTP ${res.status}`);
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 500);
       }
-      setStatus("success");
-      return result;
-    } catch (e) {
-      setStatus("error");
-      throw e;
-    } finally {
-      setTimeout(() => setStatus("idle"), 500);
-    }
-  }, [BASE]);
+    },
+    [BASE]
+  );
 
   const updateReservationStatus = useCallback(
     async (id: string, statusBody: { status: string }) => {

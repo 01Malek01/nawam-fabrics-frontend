@@ -13,6 +13,12 @@ export default function Signup() {
       password: data.password,
     });
     if (res && res.status === "success") {
+      try {
+        localStorage.setItem("nawam:auth", String(Date.now()));
+      } catch (e) {}
+      try {
+        window.dispatchEvent(new Event("nawam:auth-changed"));
+      } catch (e) {}
       navigate("/", { replace: true });
     } else {
       setError("Invalid credentials");

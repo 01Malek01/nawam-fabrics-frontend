@@ -7,6 +7,7 @@ import useAuth from "@/hooks/useAuth";
 import toast from "react-hot-toast";
 import { getImageUrl } from "@/lib/utils";
 import { Trash2, ShoppingBag, ShoppingCart } from "lucide-react";
+import MultiOrderForm from "@/components/MultiOrderForm";
 
 const Cart = () => {
   const { getCartItems, removeItemFromCart, clearCart } = useCartApi();
@@ -14,6 +15,7 @@ const Cart = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { checkAuth } = useAuth();
+  const [showMultiOrderForm, setShowMultiOrderForm] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -66,6 +68,11 @@ const Cart = () => {
     } catch (err) {
       toast.error(err?.message || "فشل المسح");
     }
+  };
+
+  const handleOrder = () => {
+    console.log("order triggered");
+    setShowMultiOrderForm(true);
   };
 
   const total = items.reduce((acc, it) => {
@@ -135,7 +142,8 @@ const Cart = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-16 py-8 md:py-12">
+    <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-16 py-8 md:py-12 relative">
+      {showMultiOrderForm && <MultiOrderForm />}
       <div className="flex items-center justify-between mb-8 md:mb-10">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-right">
           سلة التسوق
@@ -280,7 +288,7 @@ const Cart = () => {
                   مسح السلة
                 </Button>
                 <Button
-                  onClick={() => navigate("/checkout")}
+                  onClick={handleOrder}
                   className="flex-1 sm:flex-none py-4 text-lg bg-green-600 hover:bg-green-700"
                 >
                   طلب الآن

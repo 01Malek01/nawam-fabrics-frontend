@@ -12,16 +12,36 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
 
-  // check auth on mount
+  // check auth on mount + listen for auth changes (login/logout)
   useEffect(() => {
-    (async () => {
+    let mounted = true;
+    const check = async () => {
       try {
         const res = await checkAuth();
-        setLoggedIn(!!res?.loggedIn);
+        if (mounted) setLoggedIn(!!res?.loggedIn);
       } catch (e) {
-        setLoggedIn(false);
+        if (mounted) setLoggedIn(false);
       }
-    })();
+    };
+    check();
+
+    const handler = () => {
+      // when notified, re-check auth
+      check();
+    };
+
+    const storageHandler = (e: StorageEvent) => {
+      if (e.key === "nawam:auth") handler();
+    };
+
+    window.addEventListener("nawam:auth-changed", handler);
+    window.addEventListener("storage", storageHandler);
+
+    return () => {
+      mounted = false;
+      window.removeEventListener("nawam:auth-changed", handler);
+      window.removeEventListener("storage", storageHandler);
+    };
   }, [checkAuth]);
 
   // Function to check if a link is active
@@ -35,6 +55,12 @@ const Navbar = () => {
     } catch (e) {
       console.error("logout failed", e);
     } finally {
+      try {
+        localStorage.setItem("nawam:auth", String(Date.now()));
+      } catch (e) {}
+      try {
+        window.dispatchEvent(new Event("nawam:auth-changed"));
+      } catch (e) {}
       setLoggedIn(false);
       navigate("/", { replace: true });
     }

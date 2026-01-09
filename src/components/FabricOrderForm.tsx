@@ -302,7 +302,7 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
               تأكيد الطلب
             </Button>
           </div>
-          <div className="mt-3 text-sm text-gray-700 dark:text-gray-300 text-right">
+          <div className="mt-3 text-xl text-gray-700 dark:text-gray-300 text-right">
             <p className="font-semibold">ملحوظة هامة:</p>
             <p>
               عند تأكيد الطلب أونلاين، يتم دفع عربون 10% من قيمة الطلب لضمان
