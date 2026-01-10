@@ -1,11 +1,11 @@
 import { FaWhatsapp } from "react-icons/fa";
 
 const FloatingWhatsApp = () => {
-  const phoneNumber = '01008124051';
+  const phoneNumber = "01008124051";
   const whatsappLink = `https://wa.me/2${phoneNumber}`;
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 group">
+    <div className="fixed bottom-26 left-6 z-50 group">
       <a
         href={whatsappLink}
         target="_blank"
