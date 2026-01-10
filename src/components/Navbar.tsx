@@ -1,16 +1,32 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, ShoppingCart } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Menu, ShoppingCart, User } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import MobileMenu from "./MobileMenu";
 import SearchBar from "./SearchBar";
 import useAuth from "@/hooks/useAuth";
 import logo from "@/assets/logo-transparent.png";
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement | null>(null);
   const location = useLocation();
   const { checkAuth, logout } = useAuth();
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (!showUserMenu) return;
+    const handler = (e: MouseEvent) => {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(e.target as Node)
+      ) {
+        setShowUserMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showUserMenu]);
 
   // check auth on mount + listen for auth changes (login/logout)
   useEffect(() => {
@@ -62,28 +78,21 @@ const Navbar = () => {
         window.dispatchEvent(new Event("nawam:auth-changed"));
       } catch (e) {}
       setLoggedIn(false);
+      setShowUserMenu(false);
       navigate("/", { replace: true });
     }
   };
   return (
-    <header className="flex items-center justify-between whitespace-nowrap border-b border-black/10 dark:border-white/10 ">
-      {/* Mobile layout: menu left, logo center, search right */}
+    <header
+      dir="ltr"
+      className="flex items-center justify-between whitespace-nowrap border-b border-black/10 dark:border-white/10 "
+    >
+      {/* Mobile layout: logo left, icons right */}
       <div className="w-full flex items-center justify-between px-3 md:px-0">
-        <div className="md:hidden flex items-center">
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(true)}
-            className="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5"
-            aria-label="Open menu"
-          >
-            <Menu className="h-6 w-6" />
-          </button>
-        </div>
-
-        <div className="flex-1 flex items-center justify-center md:justify-start">
+        <div className="flex-1 flex items-center justify-start md:justify-start">
           <Link
             to="/"
-            className="flex items-center gap-4 text-[#A8511A] dark:text-[#A8511A] logo-bg p-2"
+            className="flex items-center gap-4 text-[#A8511A] dark:text-[#A8511A] logo-bg p-2 mr-11 "
           >
             <img
               className="h-64 md:h-64 w-auto object-cover "
@@ -95,13 +104,53 @@ const Navbar = () => {
 
         <div className="md:hidden flex items-center">
           {/* Search icon (SearchBar handles its own open state) */}
-          <div className="ml-2">
+          <div className="ml-2 flex items-center gap-2 relative">
             <SearchBar />
+            {loggedIn && (
+              <>
+                <Link
+                  to="/cart"
+                  className="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5"
+                  aria-label="Open cart"
+                >
+                  <ShoppingCart className="h-6 w-6" />
+                </Link>
+
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    onClick={() => setShowUserMenu((s) => !s)}
+                    className="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5"
+                    aria-label="Open account menu"
+                  >
+                    <User className="h-6 w-6" />
+                  </button>
+                  {showUserMenu && (
+                    <div className="absolute z-50 right-0 mt-2 w-40 bg-white dark:bg-gray-900 border border-black/10 dark:border-white/10 rounded shadow-md text-right">
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-right px-4 py-2 text-sm text-black/80 dark:text-white/80 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      >
+                        تسجيل الخروج
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
           </div>
+
+          {/* Mobile Menu Button on right */}
+          <button
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5"
+            aria-label="Open menu"
+          >
+            <Menu className="h-6 w-6" />
+          </button>
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-9">
+        <nav dir="rtl" className="hidden md:flex items-center gap-9">
           <Link
             to="/"
             className={`text-2xl font-medium ${
