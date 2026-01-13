@@ -18,8 +18,8 @@ export default function MostSold() {
       <div className="mx-auto mt-4 h-1 w-24 rounded-full bg-amber-200" />
      </div>
      <div className="w-full dark:bg-black/40 p-0 md:p-6 lg:rounded-xl shadow-inner">
-      <div className="overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-amber-500/20 hover:scrollbar-thumb-amber-500/30 pb-2">
-       <Fabrics showMostSold={true} />
+      <div className="pb-2">
+       <Fabrics showMostSold={true} disableCarousel={true} mobileTwoCols={true} />
       </div>
      </div>
     </div>

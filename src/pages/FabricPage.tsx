@@ -2,7 +2,6 @@
 // @ts-nocheck
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useOrderDialog } from "@/context/OrderDialogContext";
 import type { Fabric } from "@/types";
 import usePublicApi from "@/hooks/usePublicApi";
 import ImagesSlider from "@/components/Slider";
@@ -23,12 +22,57 @@ import AddToCartForm from "@/components/AddToCartForm";
 export default function FabricPage() {
   const navigate = useNavigate();
   const { fabricId } = useParams();
-  const {
-    isOrderDialogOpen,
-    selectedFabricId,
-    openOrderDialogFor,
-    closeOrderDialog,
-  } = useOrderDialog();
+  // local state for order dialog (was previously global via OrderDialogContext)
+  const [isOrderOpen, setIsOrderOpen] = useState(false);
+  const pushedOrderStateRef = React.useRef(false);
+  const ignoreNextPopRef = React.useRef(false);
+
+  // Open order dialog and push a history entry so back button closes it first
+  const openOrderLocal = () => {
+    setIsOrderOpen(true);
+    if (!pushedOrderStateRef.current && typeof window !== "undefined") {
+      try {
+        window.history.pushState({ fabricOrder: true }, "");
+        pushedOrderStateRef.current = true;
+      } catch (e) {
+        /* ignore */
+      }
+    }
+  };
+
+  // Close order dialog and remove pushed history entry (if present)
+  const closeOrderLocal = () => {
+    setIsOrderOpen(false);
+    if (pushedOrderStateRef.current && typeof window !== "undefined") {
+      // we will go back one entry to remove our pushed state; ignore the resulting pop
+      ignoreNextPopRef.current = true;
+      try {
+        window.history.back();
+      } catch (e) {
+        /* ignore */
+      }
+      pushedOrderStateRef.current = false;
+    }
+  };
+
+  // Popstate handler: if we had pushed an order state, first back should close the dialog
+  useEffect(() => {
+    const onPop = (_ev: PopStateEvent) => {
+      if (ignoreNextPopRef.current) {
+        ignoreNextPopRef.current = false;
+        return;
+      }
+      if (pushedOrderStateRef.current) {
+        // clear pushed flag and close if open
+        pushedOrderStateRef.current = false;
+        if (isOrderOpen) setIsOrderOpen(false);
+        return;
+      }
+      // otherwise allow normal back navigation
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, [isOrderOpen]);
   const { getProductById } = usePublicApi();
   const [fabric, setFabric] = useState<Fabric | null>(null);
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -155,7 +199,7 @@ export default function FabricPage() {
             <div className="pt-4 border-t border-gray-200 space-x-2">
               <Button
                 className="w-full md:w-auto cursor-pointer"
-                onClick={() => openOrderDialogFor(fabric.id)}
+                onClick={() => openOrderLocal()}
               >
                 طلب الآن
               </Button>
@@ -202,15 +246,20 @@ export default function FabricPage() {
                 مشاركة
               </Button>
 
-              {/* Order Form Dialog */}
+              {/* Order Form Dialog (local state) */}
               <Dialog
-                open={isOrderDialogOpen && selectedFabricId === fabric.id}
+                open={isOrderOpen}
                 onOpenChange={(open) => {
-                  if (!open) closeOrderDialog();
+                  if (!open) closeOrderLocal();
                 }}
               >
                 <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
-                  {fabric && <FabricOrderForm fabric={fabric} />}
+                  {fabric && (
+                    <FabricOrderForm
+                      fabric={fabric}
+                      onClose={() => closeOrderLocal()}
+                    />
+                  )}
                 </DialogContent>
               </Dialog>
             </div>

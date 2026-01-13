@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import MobileMenu from "./MobileMenu";
 import SearchBar from "./SearchBar";
 import useAuth from "@/hooks/useAuth";
-import logo from "@/assets/logo-transparent.png";
+import logo from "@/assets/نوام_لوجو__فاينل__-removebg-preview.png";
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -95,7 +95,7 @@ const Navbar = () => {
             className="flex items-center gap-4 text-[#A8511A] dark:text-[#A8511A] logo-bg p-2 mr-11 "
           >
             <img
-              className="h-64 md:h-64 w-auto object-cover "
+              className="h-20 md:h-32 w-auto object-cover"
               src={logo}
               alt="el Nawam fabrics image"
             />

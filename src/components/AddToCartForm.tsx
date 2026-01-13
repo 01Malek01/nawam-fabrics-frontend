@@ -33,7 +33,7 @@ export default function AddToCartForm({
     watch,
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { quantityMeters: "1", Images: [] },
+    defaultValues: { quantityMeters: "", Images: [] },
   });
 
   let images: string[] = [];
@@ -47,9 +47,11 @@ export default function AddToCartForm({
 
   const onSubmit = async (values: FormValues) => {
     try {
+      const parsed = parseFloat(values.quantityMeters as any);
+      const meters = Number.isFinite(parsed) ? parsed : 0;
       await addItemToCart({
         productId: fabric.id,
-        meters: parseFloat(values.quantityMeters as any) || 1,
+        meters,
         pricePerMeter: (fabric as any).price,
         // include images array
         images: values.Images,

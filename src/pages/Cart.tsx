@@ -81,6 +81,8 @@ const Cart = () => {
     const price = it.pricePerMeter ?? it.product?.PricePerMeter ?? 0;
     return acc + meters * price * qty;
   }, 0);
+  const deliveryFee = 100; // fixed delivery fee in EGP
+  const finalTotal = total + deliveryFee;
 
   // Mobile Card Component
   const CartItemMobile = ({ item }) => {
@@ -259,18 +261,25 @@ const Cart = () => {
           <div className="mt-8 md:mt-12 bg-white rounded-xl shadow-xl p-6 md:p-8">
             <div className="flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8">
               <div className="w-full md:w-auto text-right order-2 md:order-1">
-                <div className="text-2xl md:text-3xl lg:text-4xl">
-                  الإجمالي:{" "}
-                  <span className="font-extrabold text-3xl md:text-4xl lg:text-5xl">
-                    {total} ج.م
-                  </span>
-                </div>
-                <div className="text-gray-600 text-lg md:text-xl mt-3">
-                  الأسعار تشمل الضرائب
+                <div className="text-right">
+                  <div className="text-lg md:text-xl">
+                    المجموع الفرعي:{" "}
+                    <span className="font-medium">{total} ج.م</span>
+                  </div>
+                  <div className="text-lg md:text-xl mt-1">
+                    تكلفة التوصيل:{" "}
+                    <span className="font-medium">{deliveryFee} ج.م</span>
+                  </div>
+                  <div className="text-2xl md:text-3xl lg:text-4xl mt-2">
+                    الإجمالي:{" "}
+                    <span className="font-extrabold text-3xl md:text-4xl lg:text-5xl">
+                      {finalTotal} ج.م
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto order-1 md:order-2">
+              <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto order-2">
                 <Button
                   variant="outline"
                   onClick={() => navigate("/")}

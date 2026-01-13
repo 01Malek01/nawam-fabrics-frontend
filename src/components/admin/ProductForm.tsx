@@ -70,7 +70,7 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
         discount: 0,
         discountText: "",
         isNewArrival: false,
-        stock: [],
+        stock: null,
       }
     );
   }, [product]);
@@ -136,7 +136,7 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
             discount: 0,
             discountText: "",
             isNewArrival: false,
-            stock: [],
+            stock: null,
           });
           setImageFiles(null);
           setVideoFile(null);

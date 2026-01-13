@@ -15,6 +15,8 @@ const Fabrics = ({
   showMostSold,
   showNewArrival,
   showDiscounts,
+  disableCarousel,
+  mobileTwoCols,
 }: {
   categoryId?: string;
   subCategoryId?: string;
@@ -22,6 +24,8 @@ const Fabrics = ({
   showMostSold?: boolean;
   showNewArrival?: boolean;
   showDiscounts?: boolean;
+  disableCarousel?: boolean;
+  mobileTwoCols?: boolean;
 }) => {
   const navigate = useNavigate();
   const { getProducts } = usePublicApi();
@@ -133,13 +137,16 @@ const Fabrics = ({
     );
   }
 
-  const isCarousel = !!(showMostSold || showNewArrival || showDiscounts);
+  const isCarousel =
+    !disableCarousel && !!(showMostSold || showNewArrival || showDiscounts);
 
   return (
     <div
       className={
         isCarousel
           ? "flex overflow-x-auto gap-3 pb-4 snap-x snap-mandatory scroll-pl-4 px-2"
+          : mobileTwoCols
+          ? "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4"
           : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4"
       }
       role={isCarousel ? "list" : undefined}
@@ -157,7 +164,7 @@ const Fabrics = ({
           <FabricCard
             fabric={fabric}
             href={`/fabric/${fabric.id}`}
-            buttonTitle="اطلب"
+            buttonTitle="عرض التفاصيل"
             buttonAction={() => navigate(`/fabric/${fabric.id}`)}
             isLazyLoaded={false}
           />

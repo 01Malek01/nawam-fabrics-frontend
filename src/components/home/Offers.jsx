@@ -19,8 +19,8 @@ export default function Offers() {
             <div className="mx-auto mt-4 h-1 w-24 rounded-full bg-amber-200" />
           </div>
           <div className="w-full  dark:bg-black/40 py-4 md:p-6 lg:rounded-xl shadow-inner">
-            <div className="overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-amber-500/20 hover:scrollbar-thumb-amber-500/30 pb-2">
-              <Fabrics showDiscounts={true} />
+            <div className="pb-2">
+              <Fabrics showDiscounts={true} disableCarousel={true} mobileTwoCols={true} />
             </div>
           </div>
         </div>

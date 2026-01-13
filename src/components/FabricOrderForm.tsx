@@ -61,10 +61,19 @@ interface FabricOrderFormProps {
   fabric: Fabric;
 }
 
-export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
+export function FabricOrderForm({
+  fabric,
+  onClose,
+  onSubmitted,
+}: FabricOrderFormProps & {
+  onClose?: () => void;
+  onSubmitted?: () => void;
+}) {
   const { createReservation, isLoading, isSuccess, error } =
     useCreateReservation();
-  const { closeOrderDialog, setHasSubmitted } = useOrderDialog();
+  const orderCtx = useOrderDialog();
+  const closeFn = onClose || orderCtx.closeOrderDialog;
+  const submittedFn = onSubmitted || orderCtx.setHasSubmitted;
 
   const navigate = useNavigate();
   const form = useForm<FormValues>({
@@ -73,7 +82,7 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
       customerName: "",
       customerPhone: "",
       confirmPhone: "",
-      quantityMeters: 1,
+      quantityMeters: "",
       customerAddress: "",
       productRecordId: fabric.id,
       Images: [],
@@ -84,7 +93,7 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
     try {
       await createReservation(values);
       form.reset();
-      setHasSubmitted(true);
+      if (submittedFn) submittedFn(true);
     } catch (err) {
       console.error("Error submitting form:", err);
     }
@@ -111,7 +120,7 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
         </p>
         <Button
           onClick={() => {
-            closeOrderDialog();
+            if (closeFn) closeFn();
             navigate("/");
           }}
           className="mt-4"
@@ -140,7 +149,7 @@ export function FabricOrderForm({ fabric }: FabricOrderFormProps) {
         <p>سيتم الغلق هذه النافذة تلقائياً خلال 10 ثواني</p>
         <Button
           onClick={() => {
-            closeOrderDialog();
+            if (closeFn) closeFn();
             navigate("/");
           }}
           className="mt-4"

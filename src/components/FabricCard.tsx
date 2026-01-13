@@ -44,6 +44,7 @@ const FabricCard = ({
 
   const images =
     (fabric as any)?.images || (fabric.image && [fabric.image]) || [];
+  const targetHref = href || `/fabric/${fabric.id}`;
   const imageCount = images.length || (fabric?.image ? 1 : 0);
   const discountText = (fabric as any)?.discountText || "";
 
@@ -167,17 +168,23 @@ const FabricCard = ({
 
           {/* Thumbnails - Hidden on very small screens to save vertical space, or kept small */}
           {images.length > 1 && (
-            <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1 no-scrollbar">
-              {images.slice(1, 4).map((img: any, idx: number) => (
+            <div className="flex gap-1.5 mb-4 flex-wrap pb-1 no-scrollbar">
+              {images.slice(1, 7).map((img: any, idx: number) => (
                 <div
                   key={idx}
-                  className="h-10 w-10 flex-shrink-0 rounded-md overflow-hidden border border-gray-100 dark:border-gray-700"
-                  onClick={() => setIsImageExpanded(true)}
+                  className="h-18 w-18 flex-shrink-0 rounded-md overflow-hidden border border-gray-100 dark:border-gray-700"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigate(targetHref);
+                  }}
+                  role="link"
+                  aria-label={`Open ${fabric?.name}`}
                 >
                   <NoDownloadImage
                     src={getImageUrl(img)}
                     alt="thumb"
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover cursor-pointer"
                   />
                 </div>
               ))}
