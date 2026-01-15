@@ -172,7 +172,7 @@ const FabricCard = ({
               {images.slice(1, 7).map((img: any, idx: number) => (
                 <div
                   key={idx}
-                  className="h-18 w-18 flex-shrink-0 rounded-md overflow-hidden border border-gray-100 dark:border-gray-700"
+                  className="h-17 w-16 flex-shrink-0 rounded-md overflow-hidden border border-gray-100 dark:border-gray-700"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();

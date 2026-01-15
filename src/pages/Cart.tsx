@@ -145,7 +145,12 @@ const Cart = () => {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-16 py-8 md:py-12 relative">
-      {showMultiOrderForm && <MultiOrderForm />}
+      {showMultiOrderForm && (
+        <MultiOrderForm
+          show={showMultiOrderForm}
+          onClose={() => setShowMultiOrderForm(false)}
+        />
+      )}
       <div className="flex items-center justify-between mb-8 md:mb-10">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-right">
           سلة التسوق

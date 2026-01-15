@@ -27,12 +27,16 @@ import Login from "./pages/Login";
 import LastPieces from "./pages/LastPieces";
 import LastPiecePage from "./pages/LastPiecePage";
 import Signup from "./pages/Signup";
+import BottomCartDrawer from "./components/cart/BottomCartDrawer.js";
+
 function App() {
   return (
     <Router>
       <ScrollToTop />
       <div className="min-h-screen flex flex-col  md:px-10">
         <Navbar />
+        <BottomCartDrawer />
+
         <main className="flex-1">
           <Routes>
             <Route

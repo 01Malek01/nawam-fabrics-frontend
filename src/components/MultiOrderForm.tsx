@@ -31,10 +31,9 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-export default function MultiOrderForm() {
+export default function MultiOrderForm({ onClose }: { onClose?: () => void }) {
   const { createCartReservation } = useCreateCartReservation();
   const navigate = useNavigate();
-  const { closeOrderDialog } = useOrderDialog();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -90,7 +89,7 @@ export default function MultiOrderForm() {
         <Button
           onClick={() => {
             setError(null);
-            closeOrderDialog?.();
+            onClose?.();
             navigate("/");
           }}
           className="mt-4"
@@ -119,7 +118,7 @@ export default function MultiOrderForm() {
         <p>سيتم الغلق هذه النافذة تلقائياً خلال 10 ثواني</p>
         <Button
           onClick={() => {
-            closeOrderDialog?.();
+            onClose?.();
             navigate("/");
           }}
           className="mt-4"
@@ -131,16 +130,7 @@ export default function MultiOrderForm() {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md fixed inset-0 m-auto h-[80vh] overflow-y-auto">
-      <button
-        aria-label="Close"
-        onClick={() => {
-          closeOrderDialog?.();
-        }}
-        className="absolute top-3 left-3 text-gray-500 hover:text-gray-700 dark:text-gray-300"
-      >
-        ×
-      </button>
+    <div className=" z-50 w-full max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md fixed top-0 inset-0 m-auto h-[80vh] overflow-y-auto">
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
         طلب متعدد
       </h2>
@@ -192,18 +182,18 @@ export default function MultiOrderForm() {
             <Button type="submit" className="w-full sm:w-auto cursor-pointer">
               تأكيد الطلب
             </Button>
-            <Button
-              variant={"outline"}
-              onClick={() => {
-                closeOrderDialog?.();
-                navigate("/");
-              }}
-              className="w-full sm:w-auto"
-            >
-              إغلاق
-            </Button>
           </div>
         </form>
+        <Button
+          variant={"outline"}
+          onClick={() => {
+            onClose?.();
+            // navigate("/");
+          }}
+          className="w-full sm:w-auto mt-4 cursor-pointer"
+        >
+          إغلاق
+        </Button>
       </Form>
       <div className="mt-3 text-xl text-gray-700 dark:text-gray-300 text-right">
         <p className="font-semibold">ملحوظة هامة:</p>

@@ -306,9 +306,17 @@ export function FabricOrderForm({
             )}
           />
 
-          <div className="flex justify-end gap-4 pt-4">
+          <div className="flex justify-end gap-2 flex-col pt-4">
             <Button type="submit" className="w-full sm:w-auto cursor-pointer">
               تأكيد الطلب
+            </Button>
+            <Button
+              onClick={() => {
+                if (closeFn) closeFn();
+              }}
+              className="w-full sm:w-auto cursor-pointer"
+            >
+              اغلاق
             </Button>
           </div>
           <div className="mt-3 text-xl text-gray-700 dark:text-gray-300 text-right">

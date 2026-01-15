@@ -4,13 +4,15 @@ import "./index.css";
 import App from "./App.tsx";
 import { OrderDialogProvider } from "./context/OrderDialogContext.tsx";
 import { HistoryProvider } from "./context/HistoryContext";
-
+import { CartDrawerProvider } from "./context/CartDrawerContext";
 export const createApp = () => (
   <StrictMode>
     <HistoryProvider>
-      <OrderDialogProvider>
-        <App />
-      </OrderDialogProvider>
+      <CartDrawerProvider>
+        <OrderDialogProvider>
+          <App />
+        </OrderDialogProvider>
+      </CartDrawerProvider>
     </HistoryProvider>
   </StrictMode>
 );

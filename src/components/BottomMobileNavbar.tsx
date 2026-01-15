@@ -2,6 +2,19 @@ import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCart, User, Home } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import useAuth from "@/hooks/useAuth";
+import { useCartDrawer } from "@/context/CartDrawerContext";
+
+function CartButton() {
+  const { openCartDrawer } = useCartDrawer();
+  return (
+    <button onClick={openCartDrawer} aria-label="Open cart" className="flex-1">
+      <div className="flex flex-col items-center text-center text-sm text-[#A8511A] dark:text-[#A8511A]">
+        <ShoppingCart className="h-8 w-8" />
+        <span className="mt-1">سلة التسوق</span>
+      </div>
+    </button>
+  );
+}
 
 const BottomMobileNavbar = () => {
   const { checkAuth, logout } = useAuth();
@@ -79,12 +92,7 @@ const BottomMobileNavbar = () => {
     <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white dark:bg-gray-900 border-t border-black/10 dark:border-white/10">
       <div className="max-w-5xl mx-auto px-4">
         <nav className="flex items-center justify-between py-3 min-h-[68px]">
-          <Link to="/cart" aria-label="Open cart" className="flex-1">
-            <div className="flex flex-col items-center text-center text-sm text-[#A8511A] dark:text-[#A8511A]">
-              <ShoppingCart className="h-8 w-8" />
-              <span className="mt-1">سلة التسوق</span>
-            </div>
-          </Link>
+          <CartButton />
 
           <div className="flex-1 flex justify-center relative" ref={menuRef}>
             <button
