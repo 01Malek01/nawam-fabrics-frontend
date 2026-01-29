@@ -169,7 +169,7 @@ export default function FabricPage() {
             {fabric.name}
           </h1>
 
-          <p className="mt-2 text-xl font-semibold">
+          <p className="mt-2 text-2xl font-semibold">
             {fabric.price}{" "}
             <span className="text-sm text-gray-500">جنيه / متر</span>
           </p>
