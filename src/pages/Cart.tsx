@@ -44,10 +44,10 @@ const Cart = () => {
     };
   }, [getCartItems, checkAuth, navigate]);
 
-  const handleRemove = async (productId) => {
+  const handleRemove = async (itemId) => {
     if (!confirm("هل تريد إزالة هذا العنصر من السلة؟")) return;
     try {
-      await removeItemFromCart(productId);
+      await removeItemFromCart(itemId);
       const res = await getCartItems();
       const fetchedItems = Array.isArray(res)
         ? res
@@ -87,7 +87,7 @@ const Cart = () => {
   // Mobile Card Component
   const CartItemMobile = ({ item }) => {
     const product = item.product || {};
-    const productId = product._id || item.productId || item._id;
+    const productId = item._id;
     const name = product.Name || item.name || product.title || "منتج";
     const meters = item.meters ?? 0;
     const price = item.pricePerMeter ?? product.PricePerMeter ?? 0;
@@ -193,7 +193,7 @@ const Cart = () => {
                 <tbody>
                   {items.map((it) => {
                     const product = it.product || {};
-                    const productId = product._id || it.productId || it._id;
+                    const itemId = it._id;
                     const name =
                       product.Name || it.name || product.title || "منتج";
                     const meters = it.meters ?? 0;
@@ -241,7 +241,7 @@ const Cart = () => {
                             variant="destructive"
                             size="lg"
                             className="px-5 py-3 text-lg"
-                            onClick={() => handleRemove(productId)}
+                            onClick={() => handleRemove(itemId)}
                           >
                             <Trash2 className="h-5 w-5 ml-2" />
                             إزالة

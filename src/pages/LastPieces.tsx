@@ -128,14 +128,14 @@ const LastPieces: React.FC = () => {
                 const goTo = it?.product?._id
                   ? `/fabric/${it.product._id}`
                   : it?.product
-                  ? `/fabric/${it.product}`
-                  : `/lastpieces/${it._id}`;
+                    ? `/fabric/${it.product}`
+                    : `/lastpieces/${it._id}`;
 
                 return (
                   <FabricCard
                     key={it._id}
                     fabric={fabric}
-                    buttonTitle="عرض"
+                    buttonTitle="عرض القطعة"
                     buttonAction={() => navigate(goTo)}
                   />
                 );

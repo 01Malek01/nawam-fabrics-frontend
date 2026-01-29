@@ -22,7 +22,7 @@ const ShareSheet: React.FC<Props> = ({
   const text = description || name || "";
 
   return (
-    <div className="share-sheet fixed inset-x-4 bottom-4 z-50 md:hidden">
+    <div className="share-sheet  fixed inset-x-4 top-20 z-50 md:hidden">
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3">
         <div className="flex items-center justify-between mb-2">
           <div className="font-medium">مشاركة</div>
@@ -36,7 +36,7 @@ const ShareSheet: React.FC<Props> = ({
         <div className="grid grid-cols-4 gap-3 text-center">
           <a
             href={`https://wa.me/?text=${encodeURIComponent(
-              name + " - " + pageUrl
+              name + " - " + pageUrl,
             )}`}
             target="_blank"
             rel="noreferrer"
@@ -46,7 +46,7 @@ const ShareSheet: React.FC<Props> = ({
           </a>
           <a
             href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-              pageUrl
+              pageUrl,
             )}`}
             target="_blank"
             rel="noreferrer"
@@ -56,7 +56,7 @@ const ShareSheet: React.FC<Props> = ({
           </a>
           <a
             href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-              name
+              name,
             )}&url=${encodeURIComponent(pageUrl)}`}
             target="_blank"
             rel="noreferrer"
@@ -66,7 +66,7 @@ const ShareSheet: React.FC<Props> = ({
           </a>
           <a
             href={`https://t.me/share/url?url=${encodeURIComponent(
-              pageUrl
+              pageUrl,
             )}&text=${encodeURIComponent(name)}`}
             target="_blank"
             rel="noreferrer"

@@ -204,7 +204,7 @@ const FabricCard = ({
               >
                 {buttonTitle}
               </Button>
-
+              {/* 
               <Button
                 onClick={(e) => {
                   e.preventDefault();
@@ -226,7 +226,7 @@ const FabricCard = ({
                 className="w-full h-12 sm:h-14 text-lg sm:text-xl font-semibold shadow-sm active:scale-[0.98] transition-transform border border-gray-200 dark:border-gray-700"
               >
                 أضف إلى السلة
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>

@@ -63,8 +63,8 @@ const Fabrics = ({
               typeof r.discount === "number"
                 ? r.discount
                 : r.discount
-                ? Number(r.discount)
-                : 0,
+                  ? Number(r.discount)
+                  : 0,
           } as Fabric;
         });
 
@@ -76,7 +76,7 @@ const Fabrics = ({
               searchRegex.test(fabric.name) ||
               searchRegex.test(fabric.description) ||
               searchRegex.test(fabric.mainCategory) ||
-              searchRegex.test(fabric.subCategory)
+              searchRegex.test(fabric.subCategory),
           );
         }
 
@@ -88,7 +88,7 @@ const Fabrics = ({
         // Filter for new arrivals
         if (showNewArrival) {
           normalized = normalized.filter(
-            (fabric) => fabric.isNewArrival === true
+            (fabric) => fabric.isNewArrival === true,
           );
         }
 
@@ -146,8 +146,8 @@ const Fabrics = ({
         isCarousel
           ? "flex overflow-x-auto gap-3 pb-4 snap-x snap-mandatory scroll-pl-4 px-2"
           : mobileTwoCols
-          ? "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4"
-          : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4"
+            ? "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4"
+            : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4"
       }
       role={isCarousel ? "list" : undefined}
     >
@@ -164,7 +164,7 @@ const Fabrics = ({
           <FabricCard
             fabric={fabric}
             href={`/fabric/${fabric.id}`}
-            buttonTitle="عرض التفاصيل"
+            buttonTitle="عرض القماش"
             buttonAction={() => navigate(`/fabric/${fabric.id}`)}
             isLazyLoaded={false}
           />

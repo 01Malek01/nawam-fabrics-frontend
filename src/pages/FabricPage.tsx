@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import type { Fabric } from "@/types";
 import usePublicApi from "@/hooks/usePublicApi";
-import ImagesSlider from "@/components/Slider";
 import LazyImage from "@/components/LazyImage";
 import { Button } from "@/components/ui/button";
 import useCartApi from "@/hooks/useCartApi";
@@ -17,7 +16,9 @@ import { getImageUrl } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
 import ShareSheet from "@/components/ShareSheet";
+import { Share2, ShoppingCart } from "lucide-react";
 import AddToCartForm from "@/components/AddToCartForm";
+import LengthPicker from "@/components/LengthPicker";
 
 export default function FabricPage() {
   const navigate = useNavigate();
@@ -76,10 +77,37 @@ export default function FabricPage() {
   const { getProductById } = usePublicApi();
   const [fabric, setFabric] = useState<Fabric | null>(null);
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const { addItemToCart } = useCartApi();
   const [adding, setAdding] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [selectedLengths, setSelectedLengths] = useState<number[]>([]);
   const { checkAuth } = useAuth();
+  const [addingIndex, setAddingIndex] = useState<number | null>(null);
+
+  async function handleAddImageToCart(img: string, idx: number) {
+    try {
+      setAddingIndex(idx);
+      const auth = await checkAuth();
+      if (!auth?.loggedIn) {
+        navigate("/signup");
+        return;
+      }
+      const meters = selectedLengths[idx] ?? 1;
+      await addItemToCart({
+        productId: fabric?.id,
+        meters,
+        pricePerMeter: (fabric as any)?.price,
+        images: [img],
+      } as any);
+      toast.success("تمت الإضافة إلى السلة");
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.message || "فشل الإضافة للسلة");
+    } finally {
+      setAddingIndex(null);
+    }
+  }
 
   useEffect(() => {
     const fetchFabric = async () => {
@@ -101,9 +129,18 @@ export default function FabricPage() {
     if (fabricId) fetchFabric();
   }, [fabricId, getProductById]);
 
+  // initialize per-image selected lengths when fabric changes
+  useEffect(() => {
+    if (fabric?.images && Array.isArray(fabric.images)) {
+      setSelectedLengths(fabric.images.map(() => 1));
+    } else {
+      setSelectedLengths([]);
+    }
+  }, [fabric]);
+
   const navigateToPreviousPage = () => {
     navigate(
-      `/categories/${fabric?.mainCategory._id / fabric?.subCategory._id}`
+      `/categories/${fabric?.mainCategory._id / fabric?.subCategory._id}`,
     );
   };
   if (!fabric) {
@@ -119,181 +156,165 @@ export default function FabricPage() {
       </div>
     );
   }
-
   return (
     <>
       <Helmet>
-        <title>{fabric?.name || "قماش"} - النوام للأقمشة</title>
-        <meta
-          name="description"
-          content={fabric?.description || "تفاصيل القماش في النوام للأقمشة"}
-        />
+        <title>{fabric?.name} - النوام للأقمشة</title>
       </Helmet>
-      <div className="container mx-auto px-4 md:px-8 lg:px-16 py-8 md:py-12">
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
-          {/* Product Images */}
-          <div className="bg-white rounded-lg shadow lg:order-2 p-6 lg:p-8">
-            {fabric.images && fabric.images.length > 0 ? (
-              <ImagesSlider
-                images={fabric.images}
-                onBackClick={navigateToPreviousPage}
-              />
-            ) : (
-              <div className="w-full h-64 bg-gray-100 flex items-center justify-center">
-                <span>No images available</span>
-              </div>
-            )}
-            <p className="text-3xl font-bold text-(--color-text-tertiary) flex  items-center  gap-2">
-              {fabric?.price}
-              <span className="  text-(--color-text-tertiary)">جنيه</span>{" "}
-              <span className="text-base font-medium text-gray-500">/ متر</span>
-            </p>
 
+      <div className="container mx-auto px-4 md:px-8 lg:px-16 py-8">
+        {/* Product Header */}
+        <header className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-(--color-text-tertiary)">
+            {fabric.name}
+          </h1>
+
+          <p className="mt-2 text-xl font-semibold">
+            {fabric.price}{" "}
+            <span className="text-sm text-gray-500">جنيه / متر</span>
+          </p>
+          {/* Details Section */}
+
+          <aside className="space-y-6">
             {fabric.description && (
-              <div className="mt-6">
-                <h2 className="text-3xl font-medium text-gray-900">الوصف</h2>
-                <p className="mt-2 text-gray-600 whitespace-pre-line text-2xl">
+              <section>
+                <h2 className="text-xl font-semibold mb-2">الوصف</h2>
+                <p className="text-gray-600 leading-relaxed text-lg">
                   {fabric.description}
                 </p>
-              </div>
+              </section>
             )}
 
-            {fabric.stock && fabric.stock.length > 0 && (
-              <div className="mt-6 w-1/2">
-                <h2 className="text-2xl font-medium text-gray-900 mb-3">
+            {fabric.stock?.length > 0 && (
+              <section>
+                <h2 className="text-xl font-semibold mb-3">
                   المخزون حسب اللون
                 </h2>
-                <div className="overflow-x-auto rounded-lg border border-gray-200 p-4">
-                  <table className="min-w-full text-right text-sm">
-                    <thead>
-                      <tr className="bg-gray-50">
-                        <th className="p-3 font-medium text-gray-700">اللون</th>
-                        <th className="p-3 font-medium text-gray-700">
-                          المخزون (متر)
+
+                <div className="rounded-lg border border-gray-200 overflow-hidden">
+                  <table className="w-full text-right">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="p-3 text-sm font-medium">اللون</th>
+                        <th className="p-3 text-sm font-medium">
+                          المتاح (متر)
                         </th>
                       </tr>
                     </thead>
                     <tbody>
-                      {fabric.stock.map((s: any, i: number) => (
-                        <tr key={s?._id || i} className="border-t">
-                          <td className="p-3 align-middle">
-                            <div className="flex items-center justify-start gap-3">
-                              <span className="text-lg font-medium">
-                                {s?.color || "-"}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="p-3 align-middle">
-                            <span className="text-lg font-semibold">
-                              {s?.meters ?? 0} م
-                            </span>
-                          </td>
+                      {fabric.stock.map((s, i) => (
+                        <tr key={i} className="border-t">
+                          <td className="p-3 font-medium">{s.color}</td>
+                          <td className="p-3 font-semibold">{s.meters}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-              </div>
+              </section>
             )}
+          </aside>
+        </header>
 
-            <div className="pt-4 border-t border-gray-200 space-x-2">
-              <Button
-                className="w-full md:w-auto cursor-pointer"
-                onClick={() => openOrderLocal()}
-              >
-                طلب الآن
-              </Button>
-              <Button
-                className="w-full md:w-auto mt-2 md:mt-0 md:ml-3 border border-gray-200 dark:border-gray-700"
-                onClick={async () => {
-                  try {
-                    const auth = await checkAuth();
-                    if (!auth?.loggedIn) {
-                      navigate("/signup");
-                      return;
-                    }
-                    setShowAddDialog(true);
-                  } catch (err) {
-                    navigate("/signup");
-                  }
-                }}
-              >
-                أضف إلى السلة
-              </Button>
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+          {/* Actions */}
+          <section className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+            <Button
+              variant="outline"
+              onClick={() => setIsShareOpen(true)}
+              className="flex-1   h-20 cursor-pointer  text-2xl  flex items-center justify-center gap-2 border-yellow-300 bg-yellow-50 hover:bg-yellow-100 hover:text-black text-yellow-700"
+            >
+              <Share2 className="h-5 w-5" />
+              مشاركة الصفحة
+            </Button>
+          </section>
+          {/* Images Section */}
+          <section className="space-y-4 ">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 ">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                الألوان والخامات المتاحة
+              </h2>
+              <p className="text-gray-600 text-base mb-4">
+                استعرض الصور واختر اللون والطول المناسب،اضغط طلب الان للطلب
+                السريع او اضف الي السلة لاكمال التسوق.
+              </p>
+              {fabric.images.map((img, idx) => (
+                <article
+                  key={idx}
+                  className="group rounded-xl border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition"
+                >
+                  <LazyImage
+                    src={img}
+                    alt={`${fabric.name} ${idx + 1}`}
+                    className="w-full h-56 object-cover"
+                  />
 
-              <Button
-                variant="outline"
-                className="w-full md:w-auto mt-2 md:mt-0 md:ml-3 border border-gray-200 dark:border-gray-700"
-                onClick={async () => {
-                  // Use Web Share API on supported devices
-                  const shareData = {
-                    title: fabric.name,
-                    text: fabric.description || fabric.name,
-                    url: window.location.href,
-                  };
-                  if (navigator.share) {
-                    try {
-                      await navigator.share(shareData);
-                    } catch (err) {
-                      // user cancelled or error
-                    }
-                  } else {
-                    // fallback: open custom share sheet on mobile
-                    setIsShareOpen(true);
-                  }
-                }}
-              >
-                مشاركة
-              </Button>
-
-              {/* Order Form Dialog (local state) */}
-              <Dialog
-                open={isOrderOpen}
-                onOpenChange={(open) => {
-                  if (!open) closeOrderLocal();
-                }}
-              >
-                <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
-                  {fabric && (
-                    <FabricOrderForm
-                      fabric={fabric}
-                      onClose={() => closeOrderLocal()}
+                  <div className="p-4 space-y-3 flex items-center justify-center flex-col">
+                    <LengthPicker
+                      value={selectedLengths[idx]}
+                      onChange={(v) =>
+                        setSelectedLengths((prev) => {
+                          const copy = [...prev];
+                          copy[idx] = v;
+                          return copy;
+                        })
+                      }
                     />
-                  )}
-                </DialogContent>
-              </Dialog>
+
+                    <div className="flex gap-2  w-full">
+                      <Button
+                        className="flex-1"
+                        onClick={() => {
+                          setSelectedImage(img);
+                          openOrderLocal();
+                        }}
+                      >
+                        طلب الآن
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        disabled={addingIndex === idx}
+                        onClick={() => handleAddImageToCart(img, idx)}
+                      >
+                        {addingIndex === idx ? "جاري الإضافة..." : " أضف للسلة"}
+                        <ShoppingCart className="w-4 h-4 ml-2" />
+                      </Button>
+                    </div>
+                  </div>
+                </article>
+              ))}
             </div>
-          </div>
+          </section>
         </div>
+
+        {/* Video */}
         {fabric.videoUrl && (
-          <div className="product-video w-full mt-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              مقطع الفيديو للمنتج
-            </h2>
+          <section className="mt-12">
+            <h2 className="text-2xl font-bold mb-4">فيديو المنتج</h2>
             <VideoIframe videoUrl={getImageUrl(fabric.videoUrl)} />
-          </div>
+          </section>
         )}
-        {/* Fallback share sheet for non-supporting devices */}
+
+        {/* Dialogs  */}
+        <Dialog open={isOrderOpen} onOpenChange={() => closeOrderLocal()}>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
+            <FabricOrderForm
+              fabric={fabric}
+              selectedImage={selectedImage || undefined}
+              onClose={closeOrderLocal}
+            />
+          </DialogContent>
+        </Dialog>
+
         <ShareSheet
           open={isShareOpen}
           onClose={() => setIsShareOpen(false)}
           name={fabric.name}
-          url={typeof window !== "undefined" ? window.location.href : undefined}
+          url={window.location.href}
           description={fabric.description}
         />
-        {showAddDialog && (
-          <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
-            onClick={() => setShowAddDialog(false)}
-          >
-            <div onClick={(e) => e.stopPropagation()}>
-              <AddToCartForm
-                fabric={fabric}
-                onClose={() => setShowAddDialog(false)}
-              />
-            </div>
-          </div>
-        )}
       </div>
     </>
   );

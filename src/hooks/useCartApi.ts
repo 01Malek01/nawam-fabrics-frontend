@@ -14,7 +14,7 @@ export default function useCartApi() {
 
   const throwResponseError = async (
     res: Response,
-    fallback = "Request failed"
+    fallback = "Request failed",
   ) => {
     const text = await res.text();
     try {
@@ -56,13 +56,13 @@ export default function useCartApi() {
       if (!res.ok) await throwResponseError(res, "Failed to add item to cart");
       return res.json();
     },
-    [BASE]
+    [BASE],
   );
 
   const updateCartItem = useCallback(
     async (
       productId: string,
-      payload: { quantity?: number; meters?: number; pricePerMeter?: number }
+      payload: { quantity?: number; meters?: number; pricePerMeter?: number },
     ) => {
       const res = await fetch(
         `${BASE}/cart/item/${encodeURIComponent(productId)}`,
@@ -74,27 +74,27 @@ export default function useCartApi() {
             Accept: "application/json",
           },
           body: JSON.stringify(payload),
-        }
+        },
       );
       if (!res.ok) await throwResponseError(res, "Failed to update cart item");
       return res.json();
     },
-    [BASE]
+    [BASE],
   );
 
   const removeItemFromCart = useCallback(
-    async (productId: string) => {
+    async (itemId: string) => {
       const res = await fetch(
-        `${BASE}/cart/item/${encodeURIComponent(productId)}`,
+        `${BASE}/cart/item/${encodeURIComponent(itemId)}`,
         {
           method: "DELETE",
           credentials: "include",
-        }
+        },
       );
       if (!res.ok) await throwResponseError(res, "Failed to remove cart item");
       return res.json();
     },
-    [BASE]
+    [BASE],
   );
 
   const clearCart = useCallback(async () => {

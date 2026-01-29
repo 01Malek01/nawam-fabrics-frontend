@@ -42,7 +42,7 @@ export default function LastPieces({ lastPieces }) {
                     <FabricCard
                       key={lp._id}
                       fabric={fabric}
-                      buttonTitle="عرض"
+                      buttonTitle="عرض القطعة"
                       buttonAction={() => navigate(goTo)}
                     />
                   );

@@ -2,6 +2,7 @@
 // @ts-nocheck
 
 import { useForm } from "react-hook-form";
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "./ui/button";
@@ -41,8 +42,8 @@ const formSchema = z
     productRecordId: z.string().min(1, {
       message: "المنتج يجب أن يكون على الأقل 1 حرف",
     }),
-    Images: z.array(z.string()).min(1, {
-      message: "يجب اختيار صورة واحدة على الأقل",
+    Image: z.string().min(1, {
+      message: "يجب اختيار صورة واحدة",
     }),
   })
   .superRefine((data, ctx) => {
@@ -65,9 +66,11 @@ export function FabricOrderForm({
   fabric,
   onClose,
   onSubmitted,
+  selectedImage,
 }: FabricOrderFormProps & {
   onClose?: () => void;
   onSubmitted?: () => void;
+  selectedImage?: string;
 }) {
   const { createReservation, isLoading, isSuccess, error } =
     useCreateReservation();
@@ -85,13 +88,26 @@ export function FabricOrderForm({
       quantityMeters: "",
       customerAddress: "",
       productRecordId: fabric.id,
-      Images: [],
+      Image: selectedImage || "",
     },
   });
 
+  // keep Image value in sync if a selectedImage prop is passed/changed
+  useEffect(() => {
+    if (selectedImage) {
+      form.setValue("Image", selectedImage);
+    }
+  }, [selectedImage]);
+
   async function onSubmit(values: FormValues) {
     try {
-      await createReservation(values);
+      // Backend expects an array of images; send single selected image as single-element array
+      const payload = {
+        ...values,
+        Images: [values.Image],
+        quantityMeters: Number(values.quantityMeters || 0),
+      } as any;
+      await createReservation(payload);
       form.reset();
       if (submittedFn) submittedFn(true);
     } catch (err) {
@@ -252,56 +268,70 @@ export function FabricOrderForm({
 
           <FormField
             control={form.control}
-            name="Images"
+            name="Image"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>اختر الصور المطلوبة</FormLabel>
-                <FormControl>
-                  <div className="grid grid-cols-2 gap-4">
-                    {fabric.images?.map((imageUrl, index) => (
-                      <div key={index} className="relative">
-                        <input
-                          type="checkbox"
-                          id={`image-${index}`}
-                          checked={field.value?.includes(imageUrl)}
-                          onChange={(e) => {
-                            const updatedImages = e.target.checked
-                              ? [...field.value, imageUrl]
-                              : field.value.filter((url) => url !== imageUrl);
-                            field.onChange(updatedImages);
-                          }}
-                          className="sr-only peer"
+                {selectedImage ? (
+                  <>
+                    <FormLabel>الصورة المحددة</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <LazyImage
+                          src={selectedImage}
+                          alt={`الصورة المحددة`}
+                          className="w-full h-40 object-cover rounded-md"
                         />
-                        <label
-                          htmlFor={`image-${index}`}
-                          className="block relative cursor-pointer rounded-lg overflow-hidden border-5 border-transparent peer-checked:border-blue-500 transition-colors"
-                        >
-                          <LazyImage
-                            src={imageUrl}
-                            alt={`صورة ${index + 1} للمنتج`}
-                            className="w-full h-32 object-cover"
-                          />
-                          <div className="absolute inset-0 bg-black/0 peer-checked:bg-black/20 transition-colors flex items-center justify-center">
-                            <div className="w-6 h-6 rounded-full border-2 border-white bg-primary opacity-0 peer-checked:opacity-100 transition-opacity flex items-center justify-center">
-                              <svg
-                                className="w-4 h-4 text-white"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            </div>
-                          </div>
-                        </label>
                       </div>
-                    ))}
-                  </div>
-                </FormControl>
-                <FormMessage />
+                    </FormControl>
+                    <FormMessage />
+                  </>
+                ) : (
+                  <>
+                    <FormLabel>اختر الصورة المطلوبة</FormLabel>
+                    <FormControl>
+                      <div className="grid grid-cols-2 gap-4">
+                        {fabric.images?.map((imageUrl, index) => (
+                          <div key={index} className="relative">
+                            <input
+                              type="radio"
+                              id={`image-${index}`}
+                              name="selected-image"
+                              checked={field.value === imageUrl}
+                              onChange={() => field.onChange(imageUrl)}
+                              className="sr-only peer"
+                            />
+                            <label
+                              htmlFor={`image-${index}`}
+                              className="block relative cursor-pointer rounded-lg overflow-hidden border-5 border-transparent peer-checked:border-blue-500 transition-colors"
+                            >
+                              <LazyImage
+                                src={imageUrl}
+                                alt={`صورة ${index + 1} للمنتج`}
+                                className="w-full h-32 object-cover"
+                              />
+                              <div className="absolute inset-0 bg-black/0 peer-checked:bg-black/20 transition-colors flex items-center justify-center">
+                                <div className="w-6 h-6 rounded-full border-2 border-white bg-primary opacity-0 peer-checked:opacity-100 transition-opacity flex items-center justify-center">
+                                  <svg
+                                    className="w-4 h-4 text-white"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                </div>
+                              </div>
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </>
+                )}
               </FormItem>
             )}
           />
