@@ -7,7 +7,7 @@ function clampToQuarter(v: number) {
 }
 
 export default function LengthPicker({
-  value = 1,
+  value = 3,
   min = 0.25,
   step = 0.25,
   onChange,
