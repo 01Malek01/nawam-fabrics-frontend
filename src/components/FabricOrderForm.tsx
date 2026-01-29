@@ -105,7 +105,7 @@ export function FabricOrderForm({
       const payload = {
         ...values,
         Images: [values.Image],
-        quantityMeters: Number(values.quantityMeters || 0),
+        quantityMeters: String(values.quantityMeters || 0),
       } as any;
       await createReservation(payload);
       form.reset();
