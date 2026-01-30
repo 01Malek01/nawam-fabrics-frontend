@@ -16,9 +16,10 @@ import { getImageUrl } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
 import ShareSheet from "@/components/ShareSheet";
-import { Share2, ShoppingCart } from "lucide-react";
+import { Share2, ShoppingCart, X } from "lucide-react";
 import AddToCartForm from "@/components/AddToCartForm";
 import LengthPicker from "@/components/LengthPicker";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 export default function FabricPage() {
   const navigate = useNavigate();
@@ -84,6 +85,33 @@ export default function FabricPage() {
   const [selectedLengths, setSelectedLengths] = useState<number[]>([]);
   const { checkAuth } = useAuth();
   const [addingIndex, setAddingIndex] = useState<number | null>(null);
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+  const imageDialogPushedRef = React.useRef(false);
+
+  const openImageDialog = (img: string) => {
+    setSelectedImage(img);
+    setIsImageDialogOpen(true);
+    if (!imageDialogPushedRef.current && typeof window !== "undefined") {
+      try {
+        window.history.pushState({ imageDialog: true }, "");
+        imageDialogPushedRef.current = true;
+      } catch (e) {
+        /* ignore */
+      }
+    }
+  };
+
+  const closeImageDialog = () => {
+    setIsImageDialogOpen(false);
+    if (imageDialogPushedRef.current && typeof window !== "undefined") {
+      try {
+        window.history.back();
+      } catch (e) {
+        /* ignore */
+      }
+      imageDialogPushedRef.current = false;
+    }
+  };
 
   async function handleAddImageToCart(img: string, idx: number) {
     try {
@@ -132,12 +160,23 @@ export default function FabricPage() {
   // initialize per-image selected lengths when fabric changes
   useEffect(() => {
     if (fabric?.images && Array.isArray(fabric.images)) {
-      setSelectedLengths(fabric.images.map(() => 1));
+      setSelectedLengths(fabric.images.map(() => 3));
     } else {
       setSelectedLengths([]);
     }
   }, [fabric]);
-
+  // Handle browser back button for image dialog
+  useEffect(() => {
+    const onPop = (ev: PopStateEvent) => {
+      if (imageDialogPushedRef.current) {
+        imageDialogPushedRef.current = false;
+        if (isImageDialogOpen) setIsImageDialogOpen(false);
+        return;
+      }
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, [isImageDialogOpen]);
   const navigateToPreviousPage = () => {
     navigate(
       `/categories/${fabric?.mainCategory._id / fabric?.subCategory._id}`,
@@ -244,12 +283,28 @@ export default function FabricPage() {
                   key={idx}
                   className="group rounded-xl border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition"
                 >
-                  <LazyImage
-                    src={img}
-                    alt={`${fabric.name} ${idx + 1}`}
-                    className="w-full h-56 object-cover"
-                  />
-
+                  <div
+                    className="cursor-zoom-in"
+                    onClick={() => {
+                      setSelectedImage(img);
+                      setIsImageDialogOpen(true);
+                      if (
+                        !imageDialogPushedRef.current &&
+                        typeof window !== "undefined"
+                      ) {
+                        try {
+                          window.history.pushState({ imageDialog: true }, "");
+                          imageDialogPushedRef.current = true;
+                        } catch (e) {}
+                      }
+                    }}
+                  >
+                    <LazyImage
+                      src={img}
+                      alt={`${fabric.name} ${idx + 1}`}
+                      className="w-full h-80 object-cover transition-transform duration-300 hover:scale-105 rounded-xl"
+                    />
+                  </div>
                   <div className="p-4 space-y-3 flex items-center justify-center flex-col">
                     <LengthPicker
                       value={selectedLengths[idx]}
@@ -264,7 +319,7 @@ export default function FabricPage() {
 
                     <div className="flex gap-2  w-full">
                       <Button
-                        className="flex-1"
+                        className="flex-1 text-lg"
                         onClick={() => {
                           setSelectedImage(img);
                           openOrderLocal();
@@ -277,6 +332,7 @@ export default function FabricPage() {
                         variant="outline"
                         disabled={addingIndex === idx}
                         onClick={() => handleAddImageToCart(img, idx)}
+                        className="text-[#A8511A] text-lg"
                       >
                         {addingIndex === idx ? "جاري الإضافة..." : " أضف للسلة"}
                         <ShoppingCart className="w-4 h-4 ml-2" />
@@ -304,6 +360,13 @@ export default function FabricPage() {
               fabric={fabric}
               selectedImage={selectedImage || undefined}
               onClose={closeOrderLocal}
+              selectedLength={
+                selectedImage
+                  ? selectedLengths[
+                      fabric.images.indexOf(selectedImage)
+                    ]?.toString()
+                  : undefined
+              }
             />
           </DialogContent>
         </Dialog>
@@ -315,6 +378,71 @@ export default function FabricPage() {
           url={window.location.href}
           description={fabric.description}
         />
+
+        <Dialog
+          open={isImageDialogOpen}
+          onOpenChange={(open) => {
+            if (!open) {
+              setIsImageDialogOpen(false);
+              if (
+                imageDialogPushedRef.current &&
+                typeof window !== "undefined"
+              ) {
+                try {
+                  window.history.back();
+                } catch (e) {}
+                imageDialogPushedRef.current = false;
+              }
+            }
+          }}
+        >
+          <DialogContent
+            className="max-w-4xl h-[90vh] p-0 flex items-center justify-center bg-black border-0"
+            showCloseButton={false}
+          >
+            <button
+              onClick={() => {
+                setIsImageDialogOpen(false);
+                if (
+                  imageDialogPushedRef.current &&
+                  typeof window !== "undefined"
+                ) {
+                  try {
+                    window.history.back();
+                  } catch (e) {}
+                  imageDialogPushedRef.current = false;
+                }
+              }}
+              className="absolute top-4 right-4 z-50 rounded-full bg-white/90 backdrop-blur-sm p-4 text-black hover:bg-white transition-colors shadow-lg"
+            >
+              <X className="h-8 w-8" />
+            </button>
+            {selectedImage && (
+              <div className="w-full h-full flex items-center justify-center">
+                <TransformWrapper
+                  initialScale={1}
+                  minScale={1}
+                  maxScale={4}
+                  centerOnInit
+                >
+                  <TransformComponent>
+                    <img
+                      src={selectedImage}
+                      alt="صورة القماش"
+                      style={{
+                        maxHeight: "90vh",
+                        maxWidth: "100%",
+                        objectFit: "contain",
+                        cursor: "zoom-in",
+                      }}
+                      className="rounded-xl"
+                    />
+                  </TransformComponent>
+                </TransformWrapper>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </>
   );

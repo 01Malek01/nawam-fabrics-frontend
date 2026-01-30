@@ -6,6 +6,18 @@ function clampToQuarter(v: number) {
   return Math.round(v * 4) / 4;
 }
 
+function normalizeArabicNumerals(input: string): string {
+  const arabicNumerals = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
+  let output = input;
+  for (let i = 0; i < arabicNumerals.length; i++) {
+    const regex = new RegExp(arabicNumerals[i], "g");
+    output = output.replace(regex, i.toString());
+  }
+  // Replace Arabic decimal separator with a period
+  output = output.replace(/٫/g, ".");
+  return output;
+}
+
 export default function LengthPicker({
   value = 3,
   min = 0.25,
@@ -18,14 +30,18 @@ export default function LengthPicker({
   onChange?: (v: number) => void;
 }) {
   const [internal, setInternal] = useState<number>(clampToQuarter(value));
+  const [displayValue, setDisplayValue] = useState(value.toString());
 
   useEffect(() => {
-    setInternal(clampToQuarter(value));
+    const clamped = clampToQuarter(value);
+    setInternal(clamped);
+    setDisplayValue(clamped.toString());
   }, [value]);
 
   function update(v: number) {
     const clamped = Math.max(min, clampToQuarter(v));
     setInternal(clamped);
+    setDisplayValue(clamped.toString());
     onChange?.(clamped);
   }
 
@@ -37,33 +53,32 @@ export default function LengthPicker({
       <Button
         type="button"
         onClick={dec}
-        className="px-2 py-1 h-9 w-9 flex items-center justify-center"
+        className="px-2 py-1 h-9 w-9 flex items-center justify-center text-lg"
       >
         -
       </Button>
       <input
         aria-label="length-meters"
-        value={internal}
+        value={displayValue}
         onChange={(e) => {
           const raw = e.target.value;
-          // allow empty while typing
-          const parsed = parseFloat(raw as any);
-          if (Number.isNaN(parsed)) {
-            setInternal(0);
-            return;
-          }
-          // allow typing, but don't call onChange until blur
-          setInternal(parsed);
+          setDisplayValue(raw);
         }}
         onBlur={() => {
-          update(internal);
+          const normalized = normalizeArabicNumerals(displayValue);
+          const parsed = parseFloat(normalized as any);
+          if (Number.isNaN(parsed)) {
+            update(min);
+          } else {
+            update(parsed);
+          }
         }}
         className="text-center w-20 border rounded px-2 py-1"
       />
       <Button
         type="button"
         onClick={inc}
-        className="px-2 py-1 h-9 w-9 flex items-center justify-center"
+        className="px-2 py-1 h-9 w-9 flex items-center justify-center text-lg "
       >
         +
       </Button>

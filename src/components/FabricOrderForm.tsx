@@ -67,10 +67,12 @@ export function FabricOrderForm({
   onClose,
   onSubmitted,
   selectedImage,
+  selectedLength,
 }: FabricOrderFormProps & {
   onClose?: () => void;
   onSubmitted?: () => void;
   selectedImage?: string;
+  selectedLength?: string;
 }) {
   const { createReservation, isLoading, isSuccess, error } =
     useCreateReservation();
@@ -85,10 +87,10 @@ export function FabricOrderForm({
       customerName: "",
       customerPhone: "",
       confirmPhone: "",
-      quantityMeters: "",
       customerAddress: "",
       productRecordId: fabric.id,
       Image: selectedImage || "",
+      quantityMeters: selectedLength || "",
     },
   });
 
