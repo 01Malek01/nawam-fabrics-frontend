@@ -141,10 +141,16 @@ export default function FabricPage() {
     const fetchFabric = async () => {
       const fabricData = await getProductById(fabricId as string);
       const rawImages = fabricData?.Image || [];
+      const rawSoldOutImages = fabricData?.soldOutImages || [];
+
+      const processedImages =
+        rawImages.map((img: string) => getImageUrl(img) || "") || [];
+      const processedSoldOutImages =
+        rawSoldOutImages.map((img: string) => getImageUrl(img) || "") || [];
 
       setFabric({
         id: fabricData._id,
-        images: rawImages.map((img: string) => getImageUrl(img) || "") || [],
+        images: processedImages,
         name: fabricData.Name,
         price: fabricData.PricePerMeter,
         description: fabricData?.Description || "",
@@ -152,6 +158,7 @@ export default function FabricPage() {
         subCategory: fabricData.SubCategory,
         videoUrl: fabricData.VideoUrl || "",
         stock: Array.isArray(fabricData.stock) ? fabricData.stock : [],
+        soldOutImages: processedSoldOutImages,
       });
     };
     if (fabricId) fetchFabric();
@@ -318,25 +325,54 @@ export default function FabricPage() {
                     />
 
                     <div className="flex gap-2  w-full">
-                      <Button
-                        className="flex-1 text-lg"
-                        onClick={() => {
-                          setSelectedImage(img);
-                          openOrderLocal();
-                        }}
-                      >
-                        طلب الآن
-                      </Button>
+                      {(() => {
+                        const soldOutUrls = (fabric.soldOutImages || []).map(
+                          (img) => getImageUrl(img),
+                        );
+                        const isDirectMatch = soldOutUrls.includes(img);
+                        const isPartialMatch = soldOutUrls.some(
+                          (url) => img.includes(url) || url.includes(img),
+                        );
+                        const isSoldOut = isDirectMatch || isPartialMatch;
 
-                      <Button
-                        variant="outline"
-                        disabled={addingIndex === idx}
-                        onClick={() => handleAddImageToCart(img, idx)}
-                        className="text-[#A8511A] text-lg"
-                      >
-                        {addingIndex === idx ? "جاري الإضافة..." : " أضف للسلة"}
-                        <ShoppingCart className="w-4 h-4 ml-2" />
-                      </Button>
+                        console.log(`Image ${idx + 1} check:`, {
+                          currentImage: img,
+                          soldOutUrls,
+                          isDirectMatch,
+                          isPartialMatch,
+                          isSoldOut,
+                        });
+
+                        return isSoldOut;
+                      })() ? (
+                        <div className="w-full py-4 text-center bg-orange-50 border border-orange-200 text-orange-700 font-bold rounded-lg text-xl">
+                          نفذت الكمية
+                        </div>
+                      ) : (
+                        <>
+                          <Button
+                            className="flex-1 text-lg"
+                            onClick={() => {
+                              setSelectedImage(img);
+                              openOrderLocal();
+                            }}
+                          >
+                            طلب الآن
+                          </Button>
+
+                          <Button
+                            variant="outline"
+                            disabled={addingIndex === idx}
+                            onClick={() => handleAddImageToCart(img, idx)}
+                            className="text-[#A8511A] text-lg"
+                          >
+                            {addingIndex === idx
+                              ? "جاري الإضافة..."
+                              : " أضف للسلة"}
+                            <ShoppingCart className="w-4 h-4 ml-2" />
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </article>

@@ -271,6 +271,7 @@ const AdminDashboard: React.FC = () => {
         products={products}
         setProducts={setProducts}
         managingImagesProduct={managingImagesProduct}
+        setManagingImagesProduct={setManagingImagesProduct}
         closeManageImages={closeManageImages}
         editingProduct={editingProduct}
         setEditingProduct={setEditingProduct}

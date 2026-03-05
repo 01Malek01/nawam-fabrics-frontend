@@ -10,4 +10,5 @@ export interface Fabric {
   mainCategory: string;
   subCategory: string;
   videoUrl?: string;
+  soldOutImages?: string[];
 }

@@ -120,6 +120,7 @@ export default function useAdminApi() {
               fd.append(k, String(v));
             }
           });
+
           if (data._imageFiles) {
             data._imageFiles.forEach((f: File) => fd.append("Image", f));
           }

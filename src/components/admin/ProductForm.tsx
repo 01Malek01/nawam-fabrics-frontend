@@ -33,6 +33,7 @@ type Product = {
   discountText?: string;
   isNewArrival?: boolean;
   stock?: Array<{ color: string; meters: number }>;
+  soldOutImages?: string[];
 };
 
 type Props = {
