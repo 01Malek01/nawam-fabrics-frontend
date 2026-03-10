@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import type { ImgHTMLAttributes } from "react";
+import NoDownloadImage from "./NoDownloadImage";
 
 // In-memory cache for loaded images
 const imageCache = new Set<string>();
@@ -82,7 +83,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
       {
         rootMargin: "50px", // Start loading 50px before entering viewport
         threshold: 0.01,
-      }
+      },
     );
 
     // Start observing
@@ -99,17 +100,18 @@ const LazyImage: React.FC<LazyImageProps> = ({
   }, [src, onLoad, onError]);
 
   return (
-    <img
-      ref={imgRef}
-      src={imageSrc}
-      alt={alt}
-      className={`${className} ${isLoading ? "blur-sm" : "blur-0"} ${
-        hasError ? "opacity-50" : "opacity-100"
-      } transition-all duration-300`}
-      loading="lazy"
-      decoding="async"
-      {...props}
-    />
+    <div ref={imgRef} className="w-full h-full">
+      <NoDownloadImage
+        src={imageSrc}
+        alt={alt}
+        className={`${className} ${isLoading ? "blur-sm" : "blur-0"} ${
+          hasError ? "opacity-50" : "opacity-100"
+        } transition-all duration-300`}
+        loading="lazy"
+        decoding="async"
+        {...props}
+      />
+    </div>
   );
 };
 

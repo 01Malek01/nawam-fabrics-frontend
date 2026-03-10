@@ -1,11 +1,8 @@
 import { X, Image as ImageIcon } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import useAuth from "@/hooks/useAuth";
 import type { Fabric } from "@/types";
 import { Button } from "./ui/button";
-import useCartApi from "@/hooks/useCartApi";
-import toast from "react-hot-toast";
 import AddToCartForm from "./AddToCartForm";
 import { FabricOrderForm } from "./FabricOrderForm";
 import { useOrderDialog } from "@/context/OrderDialogContext";
@@ -28,11 +25,8 @@ const FabricCard = ({
 }) => {
   const { isOrderDialogOpen, closeOrderDialog, selectedFabricId } =
     useOrderDialog();
-  const { addItemToCart } = useCartApi();
-  const { checkAuth } = useAuth();
   const navigate = useNavigate();
   const [isImageExpanded, setIsImageExpanded] = useState(false);
-  const [adding, setAdding] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
 
   const displayPrice =
@@ -204,29 +198,6 @@ const FabricCard = ({
               >
                 {buttonTitle}
               </Button>
-              {/* 
-              <Button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  (async () => {
-                    try {
-                      const auth = await checkAuth();
-                      if (!auth?.loggedIn) {
-                        navigate("/signup");
-                        return;
-                      }
-                      setShowAddDialog(true);
-                    } catch (err) {
-                      navigate("/signup");
-                    }
-                  })();
-                }}
-                variant="ghost"
-                className="w-full h-12 sm:h-14 text-lg sm:text-xl font-semibold shadow-sm active:scale-[0.98] transition-transform border border-gray-200 dark:border-gray-700"
-              >
-                أضف إلى السلة
-              </Button> */}
             </div>
           </div>
         </div>
