@@ -335,14 +335,6 @@ export default function FabricPage() {
                         );
                         const isSoldOut = isDirectMatch || isPartialMatch;
 
-                        console.log(`Image ${idx + 1} check:`, {
-                          currentImage: img,
-                          soldOutUrls,
-                          isDirectMatch,
-                          isPartialMatch,
-                          isSoldOut,
-                        });
-
                         return isSoldOut;
                       })() ? (
                         <div className="w-full py-4 text-center bg-orange-50 border border-orange-200 text-orange-700 font-bold rounded-lg text-xl">

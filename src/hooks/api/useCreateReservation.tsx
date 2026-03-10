@@ -19,7 +19,6 @@ export const useCreateReservation = () => {
     setIsLoading(true);
     setError(undefined);
     try {
-      console.log("reservations triggered-------------");
       // 1) Create reservation in our backend first
       const nodeRes = await fetch(
         `${import.meta.env.VITE_NODE_BACKEND_URL}/reservations`,
@@ -92,7 +91,6 @@ export const useCreateCartReservation = () => {
     setIsLoading(true);
     setError(undefined);
     try {
-      console.log("reservations triggered-------------");
       // 1) Create reservation in our backend first
       const nodeRes = await fetch(
         `${import.meta.env.VITE_NODE_BACKEND_URL}/reservations/cartReservation`,

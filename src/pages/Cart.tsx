@@ -71,7 +71,6 @@ const Cart = () => {
   };
 
   const handleOrder = () => {
-    console.log("order triggered");
     setShowMultiOrderForm(true);
   };
 
