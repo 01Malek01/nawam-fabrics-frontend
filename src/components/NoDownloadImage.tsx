@@ -25,7 +25,7 @@ const NoDownloadImage: React.FC<Props> = ({
 
   return (
     <div
-      className={`no-download-image-wrapper ${className ?? ""}`}
+      className={`no-download-image-wrapper w-full h-full flex items-center justify-center`}
       style={style}
     >
       <img
