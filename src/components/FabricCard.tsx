@@ -137,6 +137,17 @@ const FabricCard = ({
               />
             )}
           </div>
+
+          {fabric?.isOutOfStock && (
+            <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/25">
+              <img
+                src="/sold.png"
+                alt="Sold out"
+                className="max-h-60 max-w-28 object-contain"
+              />
+            </div>
+          )}
+
           {href && (
             <Link to={href} className="absolute inset-0 z-10 sm:hidden" />
           )}
@@ -147,6 +158,11 @@ const FabricCard = ({
           <div className="flex flex-col gap-1 mb-3">
             <h3 className="text-2xl sm:text-3xl font-bold text-(--color-secondary) dark:text-gray-100 leading-tight">
               {fabric?.name}
+              {fabric?.isOutOfStock && (
+                <span className="text-base font-semibold text-red-500 mr-2">
+                  الكمية منتهية
+                </span>
+              )}
             </h3>
           </div>
 

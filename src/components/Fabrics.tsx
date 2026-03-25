@@ -59,6 +59,7 @@ const Fabrics = ({
             isNewArrival: r.isNewArrival || r.isNew || false,
             discountText: r.discountText || "",
             soldOutImages: r.soldOutImages || [],
+            isOutOfStock: r.isOutOfStock || false,
             discount:
               typeof r.discount === "number"
                 ? r.discount

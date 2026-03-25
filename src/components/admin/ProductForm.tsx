@@ -32,6 +32,7 @@ type Product = {
   discount?: number;
   discountText?: string;
   isNewArrival?: boolean;
+  isOutOfStock?: boolean;
   stock?: Array<{ color: string; meters: number }>;
   soldOutImages?: string[];
 };
@@ -54,8 +55,9 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
       discount: 0,
       discountText: "",
       isNewArrival: false,
+      isOutOfStock: false,
       stock: [],
-    }
+    },
   );
   const [imageFiles, setImageFiles] = React.useState<File[] | null>(null);
   const [videoFile, setVideoFile] = React.useState<File | null>(null);
@@ -71,8 +73,9 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
         discount: 0,
         discountText: "",
         isNewArrival: false,
+        isOutOfStock: false,
         stock: null,
-      }
+      },
     );
   }, [product]);
 
@@ -90,7 +93,7 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
   const updateStockEntry = (
     index: number,
     field: "color" | "meters",
-    value: any
+    value: any,
   ) => {
     setForm((s) => {
       const next = { ...(s as Product) };
@@ -220,7 +223,7 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
                 if (form.SubCategory) {
                   const validSubs = categories.filter(
                     (c) =>
-                      c.isSubCategory && c.ParentCategory === e.target.value
+                      c.isSubCategory && c.ParentCategory === e.target.value,
                   );
                   if (!validSubs.find((c) => c._id === form.SubCategory)) {
                     handleChange("SubCategory", undefined);
@@ -260,7 +263,7 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
                 .filter(
                   (c) =>
                     c.isSubCategory &&
-                    c.ParentCategory?._id === form.MainCategory
+                    c.ParentCategory?._id === form.MainCategory,
                 )
                 .map((c) => (
                   <option key={c._id} value={c._id}>
@@ -315,6 +318,24 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
           >
             <Star className="w-4 h-4" />
             منتج جديد
+          </Label>
+        </div>
+
+        <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-md">
+          <input
+            aria-label="is out of stock"
+            id="isOutOfStock"
+            type="checkbox"
+            checked={!!form.isOutOfStock}
+            onChange={(e) => handleChange("isOutOfStock", e.target.checked)}
+            className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+          />
+          <Label
+            htmlFor="isOutOfStock"
+            className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
+            <Star className="w-4 h-4" />
+            خارج المخزون
           </Label>
         </div>
 
@@ -431,8 +452,8 @@ const ProductForm: React.FC<Props> = ({ product, categories }) => {
             {status === "loading"
               ? "جاري الحفظ..."
               : product
-              ? "تحديث"
-              : "إضافة"}{" "}
+                ? "تحديث"
+                : "إضافة"}{" "}
             المنتج
           </Button>
         </div>
