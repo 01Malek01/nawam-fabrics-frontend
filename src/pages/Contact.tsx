@@ -94,7 +94,9 @@ const Contact = () => {
               </p>
               <div className="space-y-2 text-gray-700 dark:text-gray-300">
                 <p className="flex items-center justify-end gap-2">
-                  <span>📲 واتساب: 01148820088 / 01008124051</span>
+                  <span>
+                    📲 واتساب: 01148820088 / 01270027350 / 01008124051
+                  </span>
                 </p>
                 <p className="flex items-center justify-end gap-2">
                   <span>

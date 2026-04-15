@@ -3,21 +3,21 @@ import { Phone, Mail } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
 const Footer = () => {
-  const phoneNumber = '0453316154';
-  const whatsappNumbers = ['01008124051', '01148820088'];
-  const email = 'Info@elnawamfabrics.com';
+  const phoneNumber = "0453316154";
+  const whatsappNumbers = ["01008124051", "01148820088", "01270027350"];
+  const email = "Info@elnawamfabrics.com";
 
   const footerLinks = [
-    { name: 'من نحن؟', path: '/about' },
-    { name: 'الأسئلة الشائعة', path: '/faq' },
-    { name: 'الشروط و الاحكام', path: '/terms' },
-    { name: 'سياسة الاسترجاع و الاستبدال', path: '/return-policy' },
-    { name: 'سياسة الخصوصية', path: '/privacy-policy' },
-    { name: 'الشحن و التوصيل', path: '/shipping' },
-    { name: 'الشكاوي و المقترحات', path: '/complaints' },
-    { name: 'إرشادات الغسيل', path: '/washing-instructions' },
-    { name: 'أنواع الاقمشة', path: '/fabric-types' },
-    { name: 'فروعنا', path: '/branches' },
+    { name: "من نحن؟", path: "/about" },
+    { name: "الأسئلة الشائعة", path: "/faq" },
+    { name: "الشروط و الاحكام", path: "/terms" },
+    { name: "سياسة الاسترجاع و الاستبدال", path: "/return-policy" },
+    { name: "سياسة الخصوصية", path: "/privacy-policy" },
+    { name: "الشحن و التوصيل", path: "/shipping" },
+    { name: "الشكاوي و المقترحات", path: "/complaints" },
+    { name: "إرشادات الغسيل", path: "/washing-instructions" },
+    { name: "أنواع الاقمشة", path: "/fabric-types" },
+    { name: "فروعنا", path: "/branches" },
   ];
 
   return (
@@ -26,7 +26,9 @@ const Footer = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Links Section */}
           <div className="text-center sm:text-right">
-            <h3 className="text-base sm:text-lg font-semibold text-[#A8511A] mb-3 sm:mb-4">روابط مهمة</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-[#A8511A] mb-3 sm:mb-4">
+              روابط مهمة
+            </h3>
             <div className="grid grid-cols-1 gap-2 sm:gap-3">
               {footerLinks.map((link) => (
                 <Link
@@ -42,7 +44,9 @@ const Footer = () => {
 
           {/* Contact Info Section */}
           <div className="text-center sm:text-right">
-            <h3 className="text-base sm:text-lg font-semibold text-[#A8511A] mb-3 sm:mb-4">تواصل معنا</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-[#A8511A] mb-3 sm:mb-4">
+              تواصل معنا
+            </h3>
             <div className="space-y-3 sm:space-y-4">
               {/* Phone */}
               <div className="flex items-center justify-center sm:justify-start gap-2 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
@@ -59,7 +63,9 @@ const Footer = () => {
               <div className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
                 <div className="flex items-center justify-center sm:justify-start gap-2 mb-2">
                   <FaWhatsapp className="h-4 w-4 text-green-600 flex-shrink-0" />
-                  <span className="text-gray-600 dark:text-gray-300 text-sm sm:text-base font-medium">واتساب:</span>
+                  <span className="text-gray-600 dark:text-gray-300 text-sm sm:text-base font-medium">
+                    واتساب:
+                  </span>
                 </div>
                 <div className="flex flex-col gap-2 sm:gap-3 sm:mr-6">
                   {whatsappNumbers.map((number, index) => (
@@ -92,9 +98,12 @@ const Footer = () => {
 
           {/* Company Info */}
           <div className="text-center sm:text-right">
-            <h3 className="text-base sm:text-lg font-semibold text-[#A8511A] mb-3 sm:mb-4">النوام للاقمشة</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-[#A8511A] mb-3 sm:mb-4">
+              النوام للاقمشة
+            </h3>
             <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base leading-relaxed px-4 sm:px-0">
-              نقدم أفضل أنواع الأقمشة بجودة عالية وأسعار تنافسية. نحن ملتزمون بتقديم أفضل خدمة لعملائنا.
+              نقدم أفضل أنواع الأقمشة بجودة عالية وأسعار تنافسية. نحن ملتزمون
+              بتقديم أفضل خدمة لعملائنا.
             </p>
           </div>
         </div>
