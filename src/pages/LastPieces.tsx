@@ -2,7 +2,7 @@
 //@ts-nocheck
 import React, { useEffect, useState } from "react";
 import usePublicApi from "@/hooks/usePublicApi";
-import { Helmet } from "react-helmet";
+import SeoHead from "@/components/SeoHead";
 import { getImageUrl } from "@/lib/utils";
 import FabricCard from "@/components/FabricCard";
 import CategoriesFilter from "@/components/home/CategoriesFilter";
@@ -54,9 +54,11 @@ const LastPieces: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark">
-      <Helmet>
-        <title>قطع أخيرة - النوام للأقمشة</title>
-      </Helmet>
+      <SeoHead
+        title="قطع أخيرة - النوام للأقمشة"
+        description="اكتشف قطع الأقمشة الأخيرة المتوفرة بأسعار مميزة في النوام للأقمشة."
+        path="/lastpieces"
+      />
       <div className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-right mb-6">قطع أخيرة</h1>
 

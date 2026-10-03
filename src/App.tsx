@@ -27,6 +27,8 @@ import Login from "./pages/Login";
 import LastPieces from "./pages/LastPieces";
 import LastPiecePage from "./pages/LastPiecePage";
 import Signup from "./pages/Signup";
+import Blogs from "./pages/Blogs";
+import BlogPage from "./pages/BlogPage";
 import BottomCartDrawer from "./components/cart/BottomCartDrawer.js";
 
 function App() {
@@ -63,6 +65,8 @@ function App() {
             <Route path="/categories/:categoryId" element={<ProductsPage />} />
             <Route path="/lastpieces" element={<LastPieces />} />
             <Route path="/lastpieces/:id" element={<LastPiecePage />} />
+            <Route path="/blogs" element={<Blogs />} />
+            <Route path="/blogs/:slug" element={<BlogPage />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/return-policy" element={<ReturnPolicy />} />

@@ -17,6 +17,7 @@ const Fabrics = ({
   showDiscounts,
   disableCarousel,
   mobileTwoCols,
+  onProductsLoaded,
 }: {
   categoryId?: string;
   subCategoryId?: string;
@@ -26,6 +27,7 @@ const Fabrics = ({
   showDiscounts?: boolean;
   disableCarousel?: boolean;
   mobileTwoCols?: boolean;
+  onProductsLoaded?: (records: unknown[]) => void;
 }) => {
   const navigate = useNavigate();
   const { getProducts } = usePublicApi();
@@ -41,6 +43,9 @@ const Fabrics = ({
         if (subCategoryId) params.subcategory = subCategoryId;
 
         const records = await getProducts(params);
+
+        // Expose raw records to the parent (e.g. for JSON-LD schema).
+        if (onProductsLoaded) onProductsLoaded(records);
 
         // Normalize API records to the Fabric shape our components expect
         let normalized = records.map((r: any) => {
@@ -109,7 +114,7 @@ const Fabrics = ({
     };
 
     fetchFabrics();
-  }, [categoryId, subCategoryId, searchQuery, showMostSold, getProducts]);
+  }, [categoryId, subCategoryId, searchQuery, showMostSold, getProducts, onProductsLoaded]);
 
   if (isLoading) {
     return (

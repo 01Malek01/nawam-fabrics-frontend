@@ -7,6 +7,8 @@ import ProductsTab from "./ProductsTab";
 import LastPieceForm from "./LastPieceForm";
 import CategoriesTab from "./CategoriesTab";
 import LastPiecesTab from "./LastPiecesTab";
+import BlogsTab from "./BlogsTab";
+import BlogForm from "./BlogForm";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
@@ -49,10 +51,26 @@ type Category = {
   priority?: number;
 };
 
+type Post = {
+  _id?: string;
+  title?: string;
+  slug?: string;
+  content?: string;
+  excerpt?: string;
+  coverImage?: string;
+  images?: string[];
+  tags?: string[];
+  status?: "draft" | "published";
+  seoTitle?: string;
+  seoDescription?: string;
+  createdAt?: string;
+};
+
 const TABS = [
   { key: "products", label: "المنتجات" },
   { key: "categories", label: "الفئات" },
   { key: "lastpieces", label: "قطع أخيرة" },
+  { key: "blogs", label: "المقالات" },
   { key: "reservations", label: "الحجوزات" },
 ];
 
@@ -62,22 +80,27 @@ const AdminDashboard: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [lastPieces, setLastPieces] = useState<any[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [editingLastPiece, setEditingLastPiece] = useState<any | null>(null);
+  const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [isCreatingProduct, setIsCreatingProduct] = useState(false);
   const [isCreatingLastPiece, setIsCreatingLastPiece] = useState(false);
+  const [isCreatingPost, setIsCreatingPost] = useState(false);
 
   const load = async () => {
-    const [p, c, lp] = await Promise.all([
+    const [p, c, lp, po] = await Promise.all([
       api.getProducts(),
       api.getCategories(),
       api.getAdminLastPieces(),
+      api.getPosts(),
     ]);
     setProducts(p || []);
     setCategories(c || []);
     setLastPieces(lp || []);
+    setPosts(po || []);
   };
 
   const openEditingProduct = (p: Product) => {
@@ -134,6 +157,8 @@ const AdminDashboard: React.FC = () => {
       setIsCreatingProduct(false);
       setEditingProduct(null);
       setEditingCategory(null);
+      setIsCreatingPost(false);
+      setEditingPost(null);
     };
 
     window.addEventListener("popstate", handlePop);
@@ -163,6 +188,14 @@ const AdminDashboard: React.FC = () => {
       setLastPieces((prev) => prev.map((p) => (p._id === item._id ? item : p)));
     } else {
       setLastPieces((prev) => [...prev, item]);
+    }
+  };
+
+  const updatePostState = (item: Post, isUpdate: boolean) => {
+    if (isUpdate) {
+      setPosts((prev) => prev.map((p) => (p._id === item._id ? item : p)));
+    } else {
+      setPosts((prev) => [item, ...prev]);
     }
   };
 
@@ -199,6 +232,12 @@ const AdminDashboard: React.FC = () => {
   const handleDeleteLastPiece = async (id: string) => {
     if (!confirm("هل أنت متأكد أنك تريد حذف هذه القطعة؟")) return;
     await api.deleteLastPiece(id);
+    await load();
+  };
+
+  const handleDeletePost = async (id: string) => {
+    if (!confirm("هل أنت متأكد أنك تريد حذف هذا المقال؟")) return;
+    await api.deletePost(id);
     await load();
   };
 
@@ -259,6 +298,31 @@ const AdminDashboard: React.FC = () => {
         />
       )}
 
+      {activeTab === "blogs" && (
+        <BlogsTab
+          posts={posts}
+          onCreate={() => {
+            setEditingPost(null);
+            setIsCreatingPost(true);
+            try {
+              history.pushState({ nawamDialog: true }, "");
+            } catch (e) {
+              void e;
+            }
+          }}
+          onEdit={(post) => {
+            setEditingPost(post);
+            setIsCreatingPost(false);
+            try {
+              history.pushState({ nawamDialog: true }, "");
+            } catch (e) {
+              void e;
+            }
+          }}
+          onDelete={handleDeletePost}
+        />
+      )}
+
       {activeTab === "reservations" && (
         <section className="bg-white/60 dark:bg-white/5 p-4 rounded-lg">
           <ReservationsManager />
@@ -285,6 +349,17 @@ const AdminDashboard: React.FC = () => {
         updateLastPieceState={updateLastPieceState}
         handleUpdateProduct={handleUpdateProduct}
         handleUpdateCategory={handleUpdateCategory}
+      />
+
+      {/* Blog create / edit dialog */}
+      <BlogForm
+        isOpen={isCreatingPost || editingPost !== null}
+        post={editingPost}
+        onClose={() => {
+          setIsCreatingPost(false);
+          setEditingPost(null);
+        }}
+        onSave={updatePostState}
       />
     </div>
   );

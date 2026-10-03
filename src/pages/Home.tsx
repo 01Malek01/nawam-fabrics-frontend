@@ -10,7 +10,7 @@ import HeroSlider from "@/components/HeroSlider";
 import LazyImage from "@/components/LazyImage";
 import type { Category } from "@/types";
 import MostSold from "@/components/home/MostSold";
-import { Helmet } from "react-helmet";
+import SeoHead from "@/components/SeoHead";
 import { getImageUrl } from "@/lib/utils";
 
 type ApiCategory = {
@@ -96,17 +96,12 @@ const Home = () => {
 
   return (
     <>
-      <Helmet>
-        <title>الرئيسية - النوام للأقمشة</title>
-        <meta
-          name="description"
-          content="اكتشف مجموعة واسعة من الأقمشة عالية الجودة في النوام للأقمشة. تصفح الفئات والمنتجات الأكثر مبيعاً."
-        />
-        <meta
-          name="keywords"
-          content="أقمشة, قماش, ملابس, نوام, fabrics, textile"
-        />
-      </Helmet>
+      <SeoHead
+        title="الرئيسية - النوام للأقمشة"
+        description="اكتشف مجموعة واسعة من الأقمشة عالية الجودة في النوام للأقمشة. تصفح الفئات والمنتجات الأكثر مبيعاً."
+        keywords="أقمشة, قماش, ملابس, نوام, fabrics, textile"
+        path="/"
+      />
       <div className="bg-background-light dark:bg-background-dark  font-display text-gray-800 dark:text-gray-200 min-h-screen border-(--color-border-accent)">
         <HeroSlider />
         <MainCategories categories={categories} />

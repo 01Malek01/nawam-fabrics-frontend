@@ -1,15 +1,13 @@
-import { Helmet } from "react-helmet";
+import SeoHead from "@/components/SeoHead";
 
 const Branches = () => {
   return (
     <>
-      <Helmet>
-        <title>الفروع - نوام للأقمشة</title>
-        <meta
-          name="description"
-          content="اكتشف فروع نوام للأقمشة في مختلف المحافظات. زورنا للحصول على أفضل الأقمشة."
-        />
-      </Helmet>
+      <SeoHead
+        title="الفروع - نوام للأقمشة"
+        description="اكتشف فروع نوام للأقمشة في مختلف المحافظات. زورنا للحصول على أفضل الأقمشة."
+        path="/branches"
+      />
       <section className="max-w-4xl mx-auto py-10 px-4">
         <h1 className="text-3xl font-bold mb-8 text-right">فروعنا</h1>
 

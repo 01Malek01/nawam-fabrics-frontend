@@ -788,6 +788,187 @@ export default function useAdminApi() {
     [BASE]
   );
 
+  /* Blog posts admin endpoints */
+
+  const getPosts = useCallback(async () => {
+    const res = await fetch(`${BASE}/admin/posts`, {
+      credentials: "include",
+    });
+    if (!res.ok) return [];
+    return res.json();
+  }, [BASE]);
+
+  const getPost = useCallback(
+    async (id: string) => {
+      const res = await fetch(`${BASE}/admin/posts/${id}`, {
+        credentials: "include",
+      });
+      if (!res.ok) return null;
+      return res.json();
+    },
+    [BASE]
+  );
+
+/** Builds a FormData payload from a post object, appending any new image files. */
+  const buildPostFormData = (data: any) => {
+    const fd = new FormData();
+    Object.keys(data).forEach((k) => {
+      // _imageFiles are appended separately below; images are server-derived.
+      if (k === "_imageFiles" || k === "images") return;
+      const v = data[k];
+      if (v === undefined || v === null) return;
+      if (Array.isArray(v)) {
+        fd.append(k, JSON.stringify(v));
+      } else {
+        fd.append(k, String(v));
+      }
+    });
+    if (Array.isArray(data._imageFiles)) {
+      data._imageFiles.forEach((f: File) => fd.append("images", f));
+    }
+    return fd;
+  };
+
+  const createPost = useCallback(
+    async (data: any) => {
+      setStatus("loading");
+      try {
+        const hasFiles = Array.isArray(data?._imageFiles) && data._imageFiles.length > 0;
+        const res = hasFiles
+          ? await fetch(`${BASE}/admin/posts`, {
+              method: "POST",
+              body: buildPostFormData(data),
+              credentials: "include",
+            })
+          : await fetch(`${BASE}/admin/posts`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify(data),
+            });
+
+        let result: any = null;
+        try {
+          result = await res.json();
+        } catch (e) {
+          /* ignore parse error */
+        }
+        if (!res.ok) {
+          setStatus("error");
+          throw new Error(
+            result?.message || JSON.stringify(result) || `HTTP ${res.status}`
+          );
+        }
+        setStatus("success");
+        return result;
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 1000);
+      }
+    },
+    [BASE]
+  );
+
+  const updatePost = useCallback(
+    async (id: string, data: any) => {
+      setStatus("loading");
+      try {
+        const hasFiles = Array.isArray(data?._imageFiles) && data._imageFiles.length > 0;
+        const res = hasFiles
+          ? await fetch(`${BASE}/admin/posts/${id}`, {
+              method: "PUT",
+              body: buildPostFormData(data),
+              credentials: "include",
+            })
+          : await fetch(`${BASE}/admin/posts/${id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify(data),
+            });
+
+        let result: any = null;
+        try {
+          result = await res.json();
+        } catch (e) {
+          /* ignore parse error */
+        }
+        if (!res.ok) {
+          setStatus("error");
+          throw new Error(
+            result?.message || JSON.stringify(result) || `HTTP ${res.status}`
+          );
+        }
+        setStatus("success");
+        return result;
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 1000);
+      }
+    },
+    [BASE]
+  );
+
+  const deletePost = useCallback(
+    async (id: string) => {
+      setStatus("loading");
+      try {
+        const res = await fetch(`${BASE}/admin/posts/${id}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+        if (!res.ok) {
+          setStatus("error");
+          throw new Error(`HTTP ${res.status}`);
+        }
+        setStatus("success");
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 500);
+      }
+    },
+    [BASE]
+  );
+
+  const deletePostImage = useCallback(
+    async (postId: string, imageIndex: number) => {
+      setStatus("loading");
+      try {
+        const res = await fetch(
+          `${BASE}/admin/posts/${postId}/gallery/${imageIndex}`,
+          {
+            method: "PUT",
+            credentials: "include",
+          }
+        );
+        let result: any = null;
+        try {
+          result = await res.json();
+        } catch (e) {
+          /* ignore parse error */
+        }
+        if (!res.ok) {
+          setStatus("error");
+          throw new Error(result?.message || `HTTP ${res.status}`);
+        }
+        setStatus("success");
+        return result;
+      } catch (e) {
+        setStatus("error");
+        throw e;
+      } finally {
+        setTimeout(() => setStatus("idle"), 500);
+      }
+    },
+    [BASE]
+  );
+
   return {
     getProducts,
     createProduct,
@@ -815,5 +996,12 @@ export default function useAdminApi() {
     createLastPiece,
     updateLastPiece,
     deleteLastPiece,
+    // blog posts
+    getPosts,
+    getPost,
+    createPost,
+    updatePost,
+    deletePost,
+    deletePostImage,
   };
 }

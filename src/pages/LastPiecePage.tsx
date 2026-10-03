@@ -9,10 +9,20 @@ import LazyImage from "@/components/LazyImage";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { FabricOrderForm } from "@/components/FabricOrderForm";
-import { Helmet } from "react-helmet";
+import SeoHead from "@/components/SeoHead";
 import { getImageUrl } from "@/lib/utils";
 import VideoIframe from "@/components/VideoIframe";
 import { useNavigate } from "react-router-dom";
+import {
+  buildBreadcrumbSchema,
+  buildProductSchema,
+  SITE_URL,
+  toAbsoluteImageUrl,
+} from "@/lib/schema";
+import {
+  buildLastPieceDescription,
+  buildLastPieceTitle,
+} from "@/lib/seo";
 
 export default function LastPiecePage() {
   const navigate = useNavigate();
@@ -42,6 +52,7 @@ export default function LastPiecePage() {
         product: data.product,
         category: data.category,
         description: data.description || "",
+        rawImage: data.image || "",
       });
     };
     fetchItem();
@@ -61,11 +72,45 @@ export default function LastPiecePage() {
     );
   }
 
+  const typeName = item.category?.Name || item.category?.name || "";
+  const seoTitle = buildLastPieceTitle(item.name, typeName);
+  const seoDescription = buildLastPieceDescription({
+    name: item.name,
+    type: typeName,
+    price: item.price,
+    description: item.description,
+  });
+  const ogImage = item.rawImage
+    ? toAbsoluteImageUrl(item.rawImage)
+    : item.images?.[0];
+
   return (
     <>
-      <Helmet>
-        <title>{item?.name || "قطعة"} - النوام للأقمشة</title>
-      </Helmet>
+      <SeoHead
+        title={seoTitle}
+        description={seoDescription}
+        path={`/lastpieces/${item.id}`}
+        image={ogImage}
+        type="website"
+        jsonLd={[
+          buildProductSchema(
+            {
+              id: item.id,
+              name: item.name,
+              description: item.description,
+              price: item.price,
+              image: ogImage || "",
+              images: item.images || [],
+            },
+            `${SITE_URL}/lastpieces/${item.id}`,
+          ),
+          buildBreadcrumbSchema([
+            { name: "الرئيسية", path: "/" },
+            { name: "قطع أخيرة", path: "/lastpieces" },
+            { name: item.name, path: `/lastpieces/${item.id}` },
+          ]),
+        ]}
+      />
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-white rounded-lg shadow lg:order-2 lg:p-4">

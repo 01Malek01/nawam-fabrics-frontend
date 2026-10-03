@@ -182,6 +182,16 @@ const Navbar = () => {
             الأسئلة الشائعة
           </Link>
           <Link
+            to="/blogs"
+            className={`text-2xl font-medium ${
+              isActive("/blogs")
+                ? "font-bold text-black dark:text-white"
+                : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
+            }`}
+          >
+            المقالات
+          </Link>
+          <Link
             to="/contact"
             className={`text-2xl font-medium ${
               isActive("/contact")

@@ -65,11 +65,39 @@ export default function usePublicApi() {
     [BASE]
   );
 
+  const getBlogs = useCallback(async () => {
+    const res = await fetch(`${BASE}/blogs`, {
+      method: "GET",
+      credentials: "include",
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) return [];
+    return res.json();
+  }, [BASE]);
+
+  const getBlogById = useCallback(
+    async (slugOrId: string) => {
+      const res = await fetch(
+        `${BASE}/blogs/${encodeURIComponent(slugOrId)}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: { Accept: "application/json" },
+        }
+      );
+      if (!res.ok) return null;
+      return res.json();
+    },
+    [BASE]
+  );
+
   return {
     getProducts,
     getCategories,
     getProductById,
     getLastPieces,
     getLastPieceById,
+    getBlogs,
+    getBlogById,
   };
 }

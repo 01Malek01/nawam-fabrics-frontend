@@ -11,7 +11,6 @@ import toast from "react-hot-toast";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { FabricOrderForm } from "@/components/FabricOrderForm";
 import VideoIframe from "@/components/VideoIframe";
-import { Helmet } from "react-helmet";
 import { getImageUrl } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
@@ -20,6 +19,18 @@ import { Share2, ShoppingCart, X } from "lucide-react";
 import AddToCartForm from "@/components/AddToCartForm";
 import LengthPicker from "@/components/LengthPicker";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import SeoHead from "@/components/SeoHead";
+import {
+  buildBreadcrumbSchema,
+  buildProductSchema,
+  productFromApiRecord,
+  toAbsoluteImageUrl,
+  type ProductApiRecord,
+} from "@/lib/schema";
+import {
+  buildProductDescription,
+  buildProductTitle,
+} from "@/lib/seo";
 
 export default function FabricPage() {
   const navigate = useNavigate();
@@ -77,6 +88,7 @@ export default function FabricPage() {
   }, [isOrderOpen]);
   const { getProductById } = usePublicApi();
   const [fabric, setFabric] = useState<Fabric | null>(null);
+  const [productData, setProductData] = useState<ProductApiRecord | null>(null);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const { addItemToCart } = useCartApi();
@@ -143,6 +155,8 @@ export default function FabricPage() {
       const rawImages = fabricData?.Image || [];
       const rawSoldOutImages = fabricData?.soldOutImages || [];
 
+      setProductData(fabricData);
+
       const processedImages =
         rawImages.map((img: string) => getImageUrl(img) || "") || [];
       const processedSoldOutImages =
@@ -202,11 +216,56 @@ export default function FabricPage() {
       </div>
     );
   }
+
+  const productInput = productData ? productFromApiRecord(productData) : null;
+  const ogImage = productData?.Image?.[0]
+    ? toAbsoluteImageUrl(productData.Image[0])
+    : undefined;
+
+  const breadcrumb = [
+    { name: "الرئيسية", path: "/" },
+  ];
+  const mainCategory = productData?.MainCategory;
+  const subCategory = productData?.SubCategory;
+
+  const typeName =
+    subCategory?.Name || subCategory?.name || mainCategory?.Name || mainCategory?.name || "";
+  const seoTitle = buildProductTitle(fabric.name, typeName);
+  const seoDescription = buildProductDescription({
+    name: fabric.name,
+    type: typeName,
+    price: fabric.price,
+    description: fabric.description,
+  });
+
+  if (mainCategory?._id) {
+    breadcrumb.push({
+      name: mainCategory.Name || mainCategory.name || "",
+      path: `/categories/${mainCategory._id}`,
+    });
+  }
+  if (subCategory?._id && mainCategory?._id) {
+    breadcrumb.push({
+      name: subCategory.Name || subCategory.name || "",
+      path: `/categories/${mainCategory._id}/${subCategory._id}`,
+    });
+  }
+  breadcrumb.push({ name: fabric.name, path: `/fabric/${fabric.id}` });
+
   return (
     <>
-      <Helmet>
-        <title>{fabric?.name} - النوام للأقمشة</title>
-      </Helmet>
+      <SeoHead
+        title={seoTitle}
+        description={seoDescription}
+        path={`/fabric/${fabric.id}`}
+        image={ogImage}
+        type="website"
+        jsonLd={
+          productInput
+            ? [buildProductSchema(productInput), buildBreadcrumbSchema(breadcrumb)]
+            : buildBreadcrumbSchema(breadcrumb)
+        }
+      />
 
       <div className="container mx-auto px-4 md:px-8 lg:px-16 py-8">
         {/* Product Header */}

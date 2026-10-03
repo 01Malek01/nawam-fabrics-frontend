@@ -233,6 +233,17 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               الأسئلة الشائعة
             </Link>
             <Link
+              to="/blogs"
+              className={`text-2xl font-medium ${
+                isActive("/blogs")
+                  ? "text-black dark:text-white"
+                  : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
+              }`}
+              onClick={onClose}
+            >
+              المقالات
+            </Link>
+            <Link
               to="/contact"
               className={`text-2xl font-medium ${
                 isActive("/contact")
