@@ -71,6 +71,20 @@ export function productFromApiRecord(record: ProductApiRecord): ProductSchemaInp
   };
 }
 
+/** Extracts a clean numeric price (digits and one decimal point only). */
+export function toNumericPrice(
+  value: number | string | null | undefined,
+): number | undefined {
+  if (value === null || value === undefined) return undefined;
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : undefined;
+  }
+  const cleaned = String(value).replace(/[^0-9.]/g, "");
+  if (!cleaned) return undefined;
+  const num = Number(cleaned);
+  return Number.isFinite(num) ? num : undefined;
+}
+
 /** Builds a schema.org Product object for a single product. */
 export function buildProductSchema(
   p: ProductSchemaInput,
@@ -79,12 +93,12 @@ export function buildProductSchema(
   const url =
     path ??
     `${SITE_URL}/fabric/${encodeURIComponent(p.id)}`;
-  const priceValue = Number(p.price);
+  const priceValue = toNumericPrice(p.price);
   const image = [p.image, ...(p.images || [])].filter(Boolean);
   const description = p.description?.trim();
 
   const schema: Record<string, unknown> = {
-    "@context": "https://schema.org",
+    "@context": "https://schema.org/",
     "@type": "Product",
     "@id": url,
     name: p.name,
@@ -92,16 +106,14 @@ export function buildProductSchema(
     image,
     sku: p.id,
     brand: {
-      "@type": "Organization",
-      name: ORGANIZATION.name,
-      url: ORGANIZATION.url,
-      logo: ORGANIZATION.logo,
+      "@type": "Brand",
+      name: "Elnawam",
     },
     offers: {
       "@type": "Offer",
       url,
       priceCurrency: "EGP",
-      price: Number.isFinite(priceValue) ? priceValue : undefined,
+      ...(priceValue !== undefined ? { price: priceValue } : {}),
       availability: p.isOutOfStock
         ? "https://schema.org/OutOfStock"
         : "https://schema.org/InStock",
